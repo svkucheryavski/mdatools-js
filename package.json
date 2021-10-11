@@ -1,6 +1,6 @@
 {
   "name": "stat-js",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": false,
   "type": "module",
   "description": "Tools and methods for statistical analysis and data manipulation.",
@@ -15,10 +15,10 @@
   "keywords": [
     "statistics"
   ],
-  "author": "Sergey Kucheryavskiy <svkucheryavski@gmail.com> (https://mdatools.com)",
+  "author": "Sergey Kucheryavskiy <svkucheryavski@gmail.com> (https://mda.tools)",
   "license": "MIT",
   "bugs": {
-    "url": ""
+    "url": "https://github.com/svkucheryavski/stat-js/issues"
   },
   "homepage": "",
   "devDependencies": {
