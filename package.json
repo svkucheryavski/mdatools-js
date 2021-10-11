@@ -1,0 +1,28 @@
+{
+  "name": "stat-js",
+  "version": "1.0.0",
+  "private": false,
+  "type": "module",
+  "description": "Tools and methods for statistical analysis and data manipulation.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "statistics"
+  ],
+  "author": "Sergey Kucheryavskiy <svkucheryavski@gmail.com> (https://mdatools.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "mocha": "^8.4.0"
+  }
+}
