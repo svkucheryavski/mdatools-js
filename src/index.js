@@ -524,9 +524,8 @@ export function subset(x, indices) {
 }
 
 /**
- * Generate combination of all levels of two vectors
- * @param {number[]} a - a vector with unique values
- * @param {number[]} b - a vector with unique values
+ * Generate combination of all levels of vectors
+ * @param {...} args - a sequence of vectors
  */
 export function expandGrid(...args) {
 
