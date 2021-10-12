@@ -546,3 +546,22 @@ export function expandGrid(...args) {
 
    return grid;
 }
+
+/**
+ * Shuffles values in vector x using Fisher–Yates algorithm
+ * @param {Array} x - a vector with values
+ */
+export function shuffle(x) {
+  let y = [...x];
+  let n = y.length;
+  let t, i;
+
+  while (n) {
+    i = Math.floor(Math.random() * n--);
+    t = y[n];
+    y[n] = y[i];
+    y[i] = t;
+  }
+
+  return y;
+}

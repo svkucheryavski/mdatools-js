@@ -2,7 +2,7 @@
 import {min, max, sum, prod, mean, sd, quantile, skewness, kurtosis} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints} from '../src/index.js';
 import {runif, rnorm, dnorm, dunif, pnorm, punif} from '../src/index.js';
-import {rep, subset, expandGrid} from '../src/index.js';
+import {rep, subset, expandGrid, shuffle} from '../src/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();
@@ -618,6 +618,26 @@ describe('Tests for expandGrid() function.', function () {
       expect(z1).to.have.lengthOf(2);
       expect(z1[0]).to.eql([100, 200, 300, 100, 200, 300]);
       expect(z1[1]).to.eql(["A", "A", "A", "B", "B", "B"]);
+   })
+
+});
+
+describe('Tests for shuffle() function.', function () {
+   it('shuffle() works correctly with any vectors.', function () {
+
+      const x1 = [1, 2, 3, 4, 5];
+      const z1 = shuffle(x1);
+      z1.should.be.a('Array');
+      expect(z1).to.have.lengthOf(x1.length);
+      expect(z1).to.not.eql(x1);
+      expect(sort(z1)).to.eql(x1);
+
+      const x2 = ["a", "b", "c", "d"];
+      const z2 = shuffle(x2);
+      z2.should.be.a('Array');
+      expect(z2).to.have.lengthOf(x2.length);
+      expect(z2).to.not.eql(x2);
+
    })
 
 });
