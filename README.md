@@ -21,31 +21,35 @@ Following functions compute single statistic for one or two vectors.
 * `skewness(x)` — skewness (measure of symmetry)
 * `kurtosis(x)` — kurtosis (measure of tailedness)
 
+**Not implemented yet**
+
+* `cov(x, y)` — covariance between `x` and `y`.
+* `cor(x, y, type = 'pearson')` — correlation between `x` and `y`.
+
 Following functions compute and return either single or a vector with statistics.
 
-* `quantile(x, p)` — p-th quantile, `0 > p > 1`, if `p` is a vector, it returns a vector with quantiles.
-* `range(x)` — a vector with smallest (min) and largest (max) values.
+* `quantile(x, p)` — computes p-th quantile, `0 > p > 1`, if `p` is a vector, it returns a vector with quantiles.
+* `range(x)` — returns a vector with smallest (min) and largest (max) values.
 * `mrange(x, margin)` — similar to `range()` but with margins on both sides of the interval.
-* `split(x, n)` — split a range of values from `x` into `n` equal intervals.
-* `count(x, bins`) — counts how many values from `x` falls into bins defined by `bins`.
-* `mids(x)` — return a vector with middle points between the adjacent values from `x`.
-* `diff(x)` — return a vector with differences between adjacent values (e.g. `x[1] - x[0]`, ...).
+* `split(x, n)` — splits a range of values from `x` into `n` equal intervals.
+* `count(x, bins`) — counts how many values from `x` fall into bins defined by `bins`.
+* `mids(x)` — returns a vector with middle points between the adjacent values from `x`.
+* `diff(x)` — returns a vector with differences between the adjacent values (e.g. `x[1] - x[0]`, ...).
 * `getOutliers(x, Q1, Q3)` — finds outliers in `x` based on 1.5 IQR rule (like in boxplots).
 * `seq(a, b, n)` — creates a sequence of `n` values equally distanced in interval [a, b].
-* `ppoints(n)` — generate probability points for QQ plot.
+* `ppoints(n)` — computes probability points for QQ plot.
 
 **Not implemented yet**
 
 * `rank(x)` — return vector with ranks of values from `x`.
-* `cov(x, y)` — compute covariance between `x` and `y`.
-* `cor(x, y, type = 'pearson')` — compute correlation between `x` and `y`.
 
 ## Manipulations with values
 
-* `sort(x, decreasing = false)` — sort values in `x`.
+* `sort(x, decreasing = false)` — sorts values in `x`.
 * `subset(x, ind)` — returns a subset of `x`, defined by vector of indices `ind`. Indices start with 1.
-* `rep(x, n)` — replicates vector `x` `n` times. If `n` is a vector of the same length as `x` then it is assumed that it contains separate number of replicates for each value in `x`.
-* `expandGrid(...args)` — generates all combinations of all values of the provided vectors.
+* `rep(x, n)` — replicates vector `x` `n` times. If `n` is a vector, it is assumed that it contains number of replicates for each value in `x`.
+* `expandGrid(...args)` — generates all combinations of values of two or more vectors (e.g. full factorial design).
+* `shuffle(x)` — shuffles values in `x` using Fisher–Yates algorithm.
 
 ### Theoretical distributions
 
