@@ -44,7 +44,7 @@ Following functions compute single statistic for one or two vectors.
 
 Following functions compute and return either single or a vector with statistics.
 
-* `quantile(x, p)` — computes p-th quantile, `0 > p > 1`, if `p` is a vector, it returns a vector with quantiles.
+* `quantile(x, p)` — computes p-th quantile, `0 > p > 1`.
 * `range(x)` — returns a vector with smallest (min) and largest (max) values.
 * `mrange(x, margin)` — similar to `range()` but with margins on both sides of the interval.
 * `split(x, n)` — splits a range of values from `x` into `n` equal intervals.
@@ -60,8 +60,8 @@ Following functions compute and return either single or a vector with statistics
 
 * `sort(x, decreasing = false)` — sorts values in `x`.
 * `subset(x, ind)` — returns a subset of `x`, defined by vector of indices `ind`. Indices start with 1.
-* `rep(x, n)` — replicates vector `x` `n` times. If `n` is a vector, it is assumed that it contains number of replicates for each value in `x`.
-* `expandGrid(...args)` — generates all combinations of values of two or more vectors (e.g. full factorial design).
+* `rep(x, n)` — replicates vector `x` `n` times. If `n` is a vector, it contains number of replicates for all `x` values.
+* `expandGrid(...args)` — generates all combinations of vector values (full factorial design).
 * `shuffle(x)` — shuffles values in `x` using Fisher–Yates algorithm.
 
 ### Theoretical distributions
