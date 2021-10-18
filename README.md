@@ -65,3 +65,11 @@ The package has support for several known theoretical distributions. Every distr
 * `pnorm(x, mean = 0, sd = 1)`
 * `rnorm(n, mean = 0, sd = 1)`
 
+#### Student's t-distribution
+* `dt(x, dof)`
+
+### Additional functions (helpers)
+
+* `gamma(z)` — Lanczos approximation of the Gamma function.
+* `beta(x, y)` — Beta function computed via approximation of Gamma function.
+
