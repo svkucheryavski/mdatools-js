@@ -1,3 +1,87 @@
+/***************************************************
+ * Mathematical functions needed for computations  *
+ ***************************************************/
+
+
+/**
+ * Error function for normal distribution
+ * @param {number} x - a number
+ * @returns {number} value for erf
+ */
+export function erf(x) {
+
+  const sign = (x >= 0) ? 1 : -1;
+  x = Math.abs(x);
+
+  // constants
+  const a1 =  0.254829592;
+  const a2 = -0.284496736;
+  const a3 =  1.421413741;
+  const a4 = -1.453152027;
+  const a5 =  1.061405429;
+  const p  =  0.3275911;
+
+  // approximation
+  const t = 1.0 / (1.0 + p * x);
+  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+  return sign * y;
+}
+
+
+/**
+ * Gamma function (approximation)
+ * @param {number|number[]} z - argument (one value or a vector)
+ * @returns {number} value of the Gamma function
+ */
+export function gamma(z) {
+
+   if (Array.isArray(z)) {
+      return z.map(v => gamma(v));
+   }
+
+   if (z <= 0) {
+      throw new Error("Gamma function only works with arguments > 0.");
+   }
+
+   // coefficients
+   const p = [
+        676.5203681218851,
+      -1259.1392167224028,
+        771.32342877765313,
+       -176.61502916214059,
+         12.507343278686905,
+         -0.13857109526572012,
+          9.9843695780195716e-6,
+          1.5056327351493116e-7
+    ];
+
+   if (z < 0.5) {
+      return Math.PI / (Math.sin(Math.PI * z) + gamma(1 - z));
+   }
+
+   z = z - 1;
+   let x = 0.99999999999980993;
+
+   for (let i = 0; i < p.length; i++) {
+      x = x + p[i] / (z + i + 1);
+   }
+
+   const t = z + p.length - 0.5;
+   return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+}
+
+
+/**
+ * Betta function (approximation)
+ * @param {number} x - first argument (one value)
+ * @param {number} y - second argument (one value)
+ * @returns {number} value of the Beta function
+ */
+export function beta(x, y) {
+   return gamma(x) * gamma(y) / gamma(x + y);
+}
+
+
 /**********************************************
  * Functions for computing single statistics  *
  **********************************************/

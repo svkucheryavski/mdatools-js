@@ -641,3 +641,32 @@ describe('Tests for shuffle() function.', function () {
    })
 
 });
+
+describe('Tests for beta and gamma functions.', function () {
+
+   it('gamma() works correctly for single argument.', function () {
+      expect(() => gamma(-1)).to.throw(Error, "Gamma function only works with arguments > 0.");
+      expect(() => gamma(0)).to.throw(Error, "Gamma function only works with arguments > 0.");
+      gamma(1).should.be.closeTo(1, 0.000001);
+      gamma(4).should.be.closeTo(6, 0.000001);
+      gamma(0.5).should.be.closeTo(1.772454, 0.000001);
+      gamma(1.5).should.be.closeTo(0.8862269, 0.000001);
+   });
+
+   it('gamma() works correctly for vector argument.', function () {
+      expect(() => gamma([1, 2, -1, 3])).to.throw(Error, "Gamma function only works with arguments > 0.");
+      expect(() => gamma([1, 2, 0, 3])).to.throw(Error, "Gamma function only works with arguments > 0.");
+      const g = gamma([1, 4, 0.5, 1.5]);
+      g[0].should.be.closeTo(1, 0.000001);
+      g[1].should.be.closeTo(6, 0.000001);
+      g[2].should.be.closeTo(1.772454, 0.000001);
+      g[3].should.be.closeTo(0.8862269, 0.000001);
+   });
+
+   it('beta() works correctly for single argument.', function () {
+      beta(1, 1).should.be.closeTo(1, 0.000001);
+      beta(0.5, 0.5).should.be.closeTo(3.141593, 0.000001);
+      beta(0.5, 1.5).should.be.closeTo(1.570796, 0.000001);
+   });
+
+});
