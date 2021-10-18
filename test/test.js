@@ -1,13 +1,12 @@
 
 import {min, max, sum, prod, mean, sd, quantile, skewness, kurtosis} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints} from '../src/index.js';
-import {runif, rnorm, dnorm, dunif, pnorm, punif} from '../src/index.js';
+import {runif, rnorm, dnorm, dunif, dt, beta, gamma, pnorm, punif} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();
 const expect = chai.expect;
-
 
 describe('Simple test for functions computing single statistic.', function () {
 
@@ -432,6 +431,38 @@ describe('Tests for theoretical distribution functions.', function () {
    });
 
 
+   it('dt() works correctly (n = 1 000 000).', function () {
+      const n = 1000000;
+
+      //  distribution for DoF = 1
+      const x1 = seq(-5, 5, n);
+      const d1 = dt(x1, 1);
+      expect(d1).to.have.lengthOf(n);
+      d1[0].should.be.closeTo(0.01224269, 0.00000001);
+      d1[n-1].should.be.closeTo(0.01224269, 0.00000001);
+      d1[n/2].should.be.closeTo(0.31830989, 0.0000001);
+
+      //  distribution for DoF = 3
+      const x2 = seq(-5, 5, n);
+      const d2 = dt(x2, 3);
+      expect(d2).to.have.lengthOf(n);
+      d2[0].should.be.closeTo(0.004219354, 0.00000001);
+      d2[n-1].should.be.closeTo(0.004219354, 0.00000001);
+      d2[n/2].should.be.closeTo(0.3675526, 0.0000001);
+
+      //  distribution for DoF = 30
+      const x3 = seq(-3, 3, n);
+      const d3 = dt(x3, 30);
+      expect(d3).to.have.lengthOf(n);
+      d3[0].should.be.closeTo(0.006779063, 0.00000001);
+      d3[n-1].should.be.closeTo(0.006779063, 0.00000001);
+      d3[n/2].should.be.closeTo(0.3956322, 0.0000001);
+
+      //  distribution for DoF = 10000 should be the same as normal
+
+   });
+
+
    it('pnorm() works correctly (n = 1 000 000).', function () {
       const n = 1000000;
 
@@ -632,7 +663,7 @@ describe('Tests for shuffle() function.', function () {
       expect(z1).to.not.eql(x1);
       expect(sort(z1)).to.eql(x1);
 
-      const x2 = ["a", "b", "c", "d"];
+      const x2 = ["a", "b", "c", "d", "e", "f"];
       const z2 = shuffle(x2);
       z2.should.be.a('Array');
       expect(z2).to.have.lengthOf(x2.length);

@@ -105,6 +105,7 @@ export function kurtosis(x) {
    return (m4/n) / Math.pow((m2/n), 2);
 }
 
+
 /**
  * Computes skewness of values
  * @param {number[]} x - vector with values
@@ -124,6 +125,7 @@ export function skewness(x) {
    return (m3/n) / Math.pow((m2/n), 1.5);
 }
 
+
 /**
  * Finds smallest value in a vector
  * @param {number[]} x - vector with values
@@ -137,6 +139,7 @@ export function min(x) {
    return min;
 }
 
+
 /**
  * Finds largest value in a vector
  * @param {number[]} x - vector with values
@@ -149,6 +152,7 @@ export function max(x) {
    while (n--) max = x[n] > max ? x[n] : max;
    return max;
 }
+
 
 /**
  * Computes sum of all value in a vector
@@ -168,6 +172,7 @@ export function sum(x) {
 export function prod(x) {
    return x.reduce((t, v) => t * v);
 }
+
 
 /**
  * Computes mean (average) value for a vector
@@ -249,7 +254,6 @@ export function seq(min, max, n) {
 }
 
 
-
 /**
  * Finds a range of values in a vector (min and max)
  * @param {number[]} x - vector with values
@@ -258,6 +262,7 @@ export function seq(min, max, n) {
 export function range(x) {
    return [min(x), max(x)];
 }
+
 
 /**
  * Computes a range of values in a vector with a margin
@@ -340,6 +345,7 @@ export function mids(x) {
    return x.slice(1).map((v, i) => (0.5 * (v + x[i])));
 }
 
+
 /**
  * Computes difference between all adjacent values in a vector
  * @param {number[]} x - vector with values
@@ -385,6 +391,7 @@ export function runif(n, a = 0, b = 1) {
    return out;
 }
 
+
 /**
  * Probability density function for uniform distribution
  * @param {Array} x - vector of values
@@ -406,6 +413,7 @@ export function dunif(x, a = 0, b = 1) {
 
    return d;
 }
+
 
 /**
  * Cumulative distribution function for uniform distribution
@@ -500,29 +508,6 @@ export function pnorm(x, mu = 0, sigma = 1) {
    return p;
 }
 
-/**
- * Error function for normal distribution
- * @param {number} x - a number
- * @returns {number} value for erf
- */
-export function erf(x) {
-
-  const sign = (x >= 0) ? 1 : -1;
-  x = Math.abs(x);
-
-  // constants
-  const a1 =  0.254829592;
-  const a2 = -0.284496736;
-  const a3 =  1.421413741;
-  const a4 = -1.453152027;
-  const a5 =  1.061405429;
-  const p  =  0.3275911;
-
-  // approximation
-  const t = 1.0 / (1.0 + p * x);
-  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
-  return sign * y;
-}
 
 /**
  * Generate probability points for QQ plot
@@ -534,6 +519,32 @@ export function ppoints(n) {
    return Array.from({length: n}, (v, i) => (i + 1 - a) / (n + (1 - a) - a));
 }
 
+
+/**
+ * Probability density function for Student's t-distribution
+ * @param {Array} x - vector of values
+ * @param {number} dof - degrees of freedom
+ */
+export function dt(x, dof) {
+
+   if (dof < 0) {
+      throw new Error("Parameter 'dof' should be a positive number.");
+   }
+
+   if (!Array.isArray(x)) x = [x];
+
+   const n = x.length;
+   const pow = -0.5 * (dof + 1);
+   const A = 1 / (Math.sqrt(dof) * beta(0.5, dof/2));
+
+   let d = Array(n);
+
+   for (let i = 0; i < n; i++) {
+      d[i] = A * Math.pow((1 + x[i] * x[i] / dof), pow);
+   }
+
+   return d;
+}
 
 /*******************************************
  * Other functions                         *
@@ -549,13 +560,13 @@ export function sort(x, decreasing = false) {
    return decreasing ? x.sort((a, b) => b - a) : x.sort((a, b) => a - b);
 }
 
+
 /**
  * Replicates values in x n times
  * @param {any} x - single value or a vector with values
  * @param {number} n - how many times to replicate
  */
 export function rep(x, n) {
-
 
    if (Array.isArray(n)) {
       if (x.length != n.length) {
@@ -584,6 +595,7 @@ export function rep(x, n) {
    return x;
 }
 
+
 /**
  * Create a subset of vectors based on a vector of indices
  * @param {number[]} x - a vector with values
@@ -606,6 +618,7 @@ export function subset(x, indices) {
 
    return out;
 }
+
 
 /**
  * Generate combination of all levels of vectors
@@ -630,6 +643,7 @@ export function expandGrid(...args) {
 
    return grid;
 }
+
 
 /**
  * Shuffles values in vector x using Fisher–Yates algorithm
