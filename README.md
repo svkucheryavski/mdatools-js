@@ -60,7 +60,7 @@ Following functions compute and return either single or a vector with statistics
 
 * `sort(x, decreasing = false)` — sorts values in `x`.
 * `subset(x, ind)` — returns a subset of `x`, defined by vector of indices `ind`. Indices start with 1.
-* `rep(x, n)` — replicates vector `x` `n` times. If `n` is a vector, it contains number of replicates for all `x` values.
+* `rep(x, n)` — replicates values in vector `x` `n` times (`n` can be a vector).
 * `expandGrid(...args)` — generates all combinations of vector values (full factorial design).
 * `shuffle(x)` — shuffles values in `x` using Fisher–Yates algorithm.
 
