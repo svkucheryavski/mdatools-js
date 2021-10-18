@@ -54,9 +54,6 @@ Following functions compute and return either single or a vector with statistics
 * `getOutliers(x, Q1, Q3)` — finds outliers in `x` based on 1.5 IQR rule (like in boxplots).
 * `seq(a, b, n)` — creates a sequence of `n` values equally distanced in interval [a, b].
 * `ppoints(n)` — computes probability points for QQ plot.
-
-**Not implemented yet**
-
 * `rank(x)` — return vector with ranks of values from `x`.
 
 ## Manipulations with values

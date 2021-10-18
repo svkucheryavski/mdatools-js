@@ -1,6 +1,6 @@
 
 import {min, max, sum, prod, mean, sd, quantile, skewness, kurtosis} from '../src/index.js';
-import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints} from '../src/index.js';
+import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints, rank} from '../src/index.js';
 import {runif, rnorm, dnorm, dunif, dt, beta, gamma, pnorm, punif} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
 import {default as chai} from 'chai';
@@ -340,6 +340,20 @@ describe('Simple test for functions computing vectors with statistics.', functio
       p4[ 5].should.be.closeTo(0.50000000, 0.0000001);
       p4[ 7].should.be.closeTo(0.68181818, 0.0000001);
       p4[10].should.be.closeTo(0.95454545, 0.0000001);
+   });
+
+   it('rank() works correctly.', function () {
+      // i:       1   2  3  4  5  6  7  8
+      // sorted: -3   0  1  2  3  4  8  9
+      // rank:    5   1  2  6  3  4  8  7
+      const x1 = [3, -3, 0, 4, 1, 2, 9, 8];
+      expect(rank(x1)).to.eql([5, 1, 2, 6, 3, 4, 8, 7]);
+
+      //  i:       1   2   3   4   5   6   7
+      // sorted:  -2  -2  -2   1   3  10  11
+      // rank:     1   5   1   4   6   7   1
+      const x2 = [-2,  3, -2, 1, 10, 11, -2];
+      expect(rank(x2)).to.eql([1, 5, 1, 4, 6, 7, 1]);
    });
 });
 

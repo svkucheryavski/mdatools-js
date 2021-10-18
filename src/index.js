@@ -374,6 +374,16 @@ export function getOutliers(x, Q1 = undefined, Q3 = undefined) {
    return(x.filter(v => v < bl || v > bu));
 }
 
+/**
+ * Returns ranks of values in a vector (ranks start from 1, not 0)
+ * @param {number[]} x - vector with values
+ * @returns {number[]} vector with ranks
+ */
+export function rank(x) {
+   const y = [...x].sort((a, b) => a - b);
+   return(x.map(v => y.indexOf(v) + 1));
+}
+
 /*******************************************
  * Functions for theoretical distributions *
  *******************************************/
