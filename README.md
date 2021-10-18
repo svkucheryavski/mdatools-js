@@ -4,6 +4,22 @@ A simple library for statistic analysis and manipulations with single vector val
 
 The library is currently under development, breaking changes may occur in the coming versions.
 
+## How to
+
+```javascript
+export {rnorm, mean, sd} from "stat-js";
+
+// generate vector of n = 10 random numbers from N(µ = 5, σ = 2)
+const x = rnorm(10, 5, 2);
+
+// compute mean and standard deviation
+const m = mean(x);
+const s = sd(x);
+
+// show both statistics
+console.log([m, s]);
+```
+
 ## List of functions
 
 If nothing specific is written, then in all functions variables named `x` and `y` are expected to be vectors with numbers (`number[]`).
