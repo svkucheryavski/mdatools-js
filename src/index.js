@@ -557,7 +557,7 @@ export function dt(x, dof) {
  * @returns {Array} vector with sorted values
  */
 export function sort(x, decreasing = false) {
-   return decreasing ? x.sort((a, b) => b - a) : x.sort((a, b) => a - b);
+   return decreasing ? [...x].sort((a, b) => b - a) : [...x].sort((a, b) => a - b);
 }
 
 
