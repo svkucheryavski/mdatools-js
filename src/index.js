@@ -241,6 +241,10 @@ export function seq(min, max, n) {
       throw new Error("Parameter 'n' should be ≥ 2.");
    }
 
+   if (n === undefined && Number.isInteger(min) && Number.isInteger(max)) {
+      n = max - min + 1;
+   }
+
    const step = (max - min + 0.0) / (n - 1 + 0.0)
    let out = [...Array(n)].map((x, i) => min + i * step);
 
@@ -672,4 +676,14 @@ export function shuffle(x) {
   }
 
   return y;
+}
+
+/**
+ * Finds index of value in x which is closest to the value a
+ * @param {number[]} x - a vector with values
+ * @param {number}  a - a value
+ */
+export function closestIndex(x, a) {
+   const c = x.reduce((prev, curr) => Math.abs(curr - a) < Math.abs(prev - a) ? curr : prev);
+   return x.indexOf(c);
 }
