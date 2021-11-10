@@ -1,5 +1,5 @@
 
-import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis} from '../src/index.js';
+import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis, round} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints, rank} from '../src/index.js';
 import {runif, rnorm, dnorm, dunif, dt, beta, gamma, pnorm, punif} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
@@ -719,6 +719,28 @@ describe('Tests for beta and gamma functions.', function () {
       beta(1, 1).should.be.closeTo(1, 0.000001);
       beta(0.5, 0.5).should.be.closeTo(3.141593, 0.000001);
       beta(0.5, 1.5).should.be.closeTo(1.570796, 0.000001);
+   });
+
+});
+
+describe('Tests for other functions.', function () {
+
+   it('round() works correctly for single argument.', function () {
+      round(1.23456789).should.be.equal(1)
+      round(1.23456789, 2).should.be.equal(1.23)
+
+      round(1.5000001).should.be.equal(2)
+      round(1.5000001, 2).should.be.equal(1.50)
+      round(1.4999999).should.be.equal(1)
+      round(1.4999999, 2).should.be.equal(1.50)
+
+      round(-1.23456789).should.be.equal(-1)
+      round(-1.23456789, 2).should.be.equal(-1.23)
+   });
+
+   it('round() works correctly for vectors.', function () {
+      expect(round([1.23456789, 2.3456789])).be.eql([1, 2])
+      expect(round([1.23456789, 2.3456789], 2)).be.eql([1.23, 2.35])
    });
 
 });

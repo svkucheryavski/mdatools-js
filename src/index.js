@@ -697,3 +697,16 @@ export function closestIndex(x, a) {
    const c = x.reduce((prev, curr) => Math.abs(curr - a) < Math.abs(prev - a) ? curr : prev);
    return x.indexOf(c);
 }
+
+
+/**
+ * Rounds number (or vector of numbers) to given amount of decimals
+ * @param {number | number[]} x - a vector with values
+ * @return {number | number[]}
+ */
+export function round(x, n = 0) {
+   if (Array.isArray(x)) {
+      return x.map(v => round(v, n));
+   }
+   return Number.parseFloat(x.toFixed(n));
+}
