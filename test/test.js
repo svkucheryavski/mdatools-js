@@ -1,5 +1,5 @@
 
-import {min, max, sum, prod, mean, sd, quantile, skewness, kurtosis} from '../src/index.js';
+import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints, rank} from '../src/index.js';
 import {runif, rnorm, dnorm, dunif, dt, beta, gamma, pnorm, punif} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
@@ -59,6 +59,13 @@ describe('Simple test for functions computing single statistic.', function () {
       sum(x1).should.be.closeTo(sm1, 0.0000001);
       sum(x2).should.be.closeTo(sm2, 0.0000001);
       sum(x3).should.be.closeTo(sm3, 0.0000001);
+   });
+
+   it('cumsum() returns correct results.', function () {
+      cumsum([1, 2, 3]).should.be.a('Array');
+      expect(cumsum([1, 2, 3])).to.eql([1, 3, 6]);
+      expect(cumsum([1])).to.eql([1]);
+      cumsum(seq(1, 1000000))[999999].should.be.equal(1000000 * 1000001 / 2);
    });
 
    it('prod() returns correct results.', function () {

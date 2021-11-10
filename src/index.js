@@ -163,6 +163,16 @@ export function sum(x) {
    return x.reduce((t, v) => t + v);
 }
 
+/**
+ * Computes cumulative sums for the vector values
+ * @param {number[]} x - vector with values
+ * @returns {number[]}
+ */
+export function cumsum(x) {
+   let s = 0;
+   return x.map(v => s += v);
+}
+
 
 /**
  * Computes product of all value in a vector
