@@ -595,20 +595,23 @@ export function ppoints(n) {
 
 /**
  * Probability density function for Student's t-distribution
- * @param {Array} x - vector of values
+ * @param {number|number[]} t - t-value or a vector of t-values
  * @param {number} dof - degrees of freedom
  */
-export function dt(x, dof) {
+export function dt(t, dof) {
 
    if (dof < 0) {
       throw new Error("Parameter 'dof' should be a positive number.");
    }
 
-   if (!Array.isArray(x)) x = [x];
+   if (Array.isArray(t)) {
+      return t.map(v => dt(v, dof));
+   }
 
-   const n = x.length;
    const pow = -0.5 * (dof + 1);
    const A = 1 / (Math.sqrt(dof) * beta(0.5, dof/2));
+   return (A * Math.pow((1 + t * t / dof), pow));
+}
 
    let d = Array(n);
 
