@@ -63,6 +63,7 @@ Following functions compute and return either single or a vector with statistics
 * `rep(x, n)` — replicates values in vector `x` `n` times (`n` can be a vector).
 * `expandGrid(...args)` — generates all combinations of vector values (full factorial design).
 * `shuffle(x)` — shuffles values in `x` using Fisher–Yates algorithm.
+* `roound(x, n)` — rounds `x` to `n` decimals.
 
 ### Theoretical distributions
 
@@ -70,7 +71,7 @@ The package has support for several known theoretical distributions. Every distr
 
 #### Uniform distribution
 * `dunif(x, a = 0, b = 1)` — `x` is a vector of values, `a` and `b` — distribution parameters.
-* `punif(x, a = 0, b = 1)` — same as for `dunif`
+* `punif(x, a = 0, b = 1)` — same parameters as for `dunif`
 * `runif(n, a = 0, b = 1)` — `n` is a number of values to generate.
 
 #### Normal distribution
@@ -79,10 +80,13 @@ The package has support for several known theoretical distributions. Every distr
 * `rnorm(n, mean = 0, sd = 1)`
 
 #### Student's t-distribution
-* `dt(x, dof)`
+* `dt(t, dof)`
+* `pt(t, dof)`
+
 
 ### Additional functions (helpers)
 
+* `integrate(f, a, b)` — numeric integration of function `f` with limits `(a, b)`.
 * `gamma(z)` — Lanczos approximation of the Gamma function.
 * `beta(x, y)` — Beta function computed via approximation of Gamma function.
 
