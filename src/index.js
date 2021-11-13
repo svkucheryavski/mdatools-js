@@ -7,12 +7,25 @@
  * @param {function} f - a reference to a function
  * @param {number} a - lower limit for integration
  * @param {number} b - upper limit for integration
- * @param {number} acc - accuracy
- * @param {number} eps - epsilon
+ * @param {number} acc - absolute accuracy
+ * @param {number} eps - relative accuracy
  * @param {number[]} oldfs - vector of values needed for recursion
  * @returns {number} result of integration
  */
-export function integrate(f, a, b, acc = 0.0001, eps = 0.001, oldfs = undefined) {
+export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefined) {
+
+   // check if one of the limit is infinite
+   if (a === -Infinity && b !== Infinity) {
+      return integrate((t) => f(b - (1 - t) / t) / (t ** 2), 0, 1);
+   }
+
+   if (a !== -Infinity && b === Infinity) {
+      return integrate((t) => f(a + (1 - t) / t) / (t ** 2), 0, 1);
+   }
+
+   if (a === -Infinity && b === Infinity) {
+      return integrate((t) => (f((1 - t) / t) + f((t - 1) / t)) / t ** 2, 0, 1);
+   }
 
    const x = [1/6, 2/6, 4/6, 5/6];
    const w = [2/6, 1/6, 1/6, 2/6];
