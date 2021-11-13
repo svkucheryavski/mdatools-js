@@ -613,14 +613,24 @@ export function dt(t, dof) {
    return (A * Math.pow((1 + t * t / dof), pow));
 }
 
-   let d = Array(n);
+/**
+ * Cumulative distribution function for Student's t-distribution
+ * @param {number|number[]} t - t-value or a vector of t-values
+ * @param {number} dof - degrees of freedom
+ */
+export function pt(t, dof) {
 
-   for (let i = 0; i < n; i++) {
-      d[i] = A * Math.pow((1 + x[i] * x[i] / dof), pow);
+   if (Array.isArray(t)) {
+      return t.map(v => pt(v, dof));
    }
 
-   return d;
+   // since distribution in symmetric we can use only left tail
+   if (t > 0) return (1 - pt(-t, dof));
+
+   return integrate((x) => dt(x, dof), -30, t);
 }
+
+
 
 /*******************************************
  * Other functions                         *
