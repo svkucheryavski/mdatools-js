@@ -143,6 +143,16 @@ export function beta(x, y) {
    return gamma(x) * gamma(y) / gamma(x + y);
 }
 
+/**
+ * Incomplete Betta function (approximation via numeric integration)
+ * @param {number} x - first argument (one value)
+ * @param {number} a - second argument (one value)
+ * @param {number} b - third argument (one value)
+ * @returns {number} value of the function
+ */
+export function ibeta(x, a, b) {
+   return integrate((t) => t ** (a - 1) * (1 - t) ** (b - 1), 0, x);
+}
 
 /**********************************************
  * Functions for computing single statistics  *
