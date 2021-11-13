@@ -2,6 +2,55 @@
  * Mathematical functions needed for computations  *
  ***************************************************/
 
+/**
+ * Computes numeric integral for function "f" with limits (a, b)
+ * @param {function} f - a reference to a function
+ * @param {number} a - lower limit for integration
+ * @param {number} b - upper limit for integration
+ * @param {number} acc - accuracy
+ * @param {number} eps - epsilon
+ * @param {number[]} oldfs - vector of values needed for recursion
+ * @returns {number} result of integration
+ */
+export function integrate(f, a, b, acc = 0.0001, eps = 0.001, oldfs = undefined) {
+
+   const x = [1/6, 2/6, 4/6, 5/6];
+   const w = [2/6, 1/6, 1/6, 2/6];
+   const v = [1/4, 1/4, 1/4, 1/4];
+   const p = [1, 0, 0, 1];
+
+   let n = x.length, h = b - a;
+   let fs;
+
+   if (oldfs === undefined) {
+      fs = x.map(v => f(a + v * h));
+   } else {
+      fs = new Array(n);
+      for (let k = 0, i = 0; i < n; i++) {
+         fs[i] = p[i] === 1 ? f(a + x[i] * h) : oldfs[k++];
+      }
+   }
+
+   let q4 = 0, q2 = 0;
+   for (let i = 0; i < n; i++) {
+      q4 += w[i] * fs[i] * h;
+      q2 += v[i] * fs[i] * h;
+   }
+
+   let tol = acc + eps * Math.abs(q4);
+   let err = Math.abs((q4 - q2)/3);
+
+   if (err < tol) return q4;
+
+   acc = acc / Math.sqrt(2.);
+   let mid = (a + b) / 2;
+   let left = fs.filter((v, i) => i < n/2);
+   let right = fs.filter((v, i) => i >= n/2);
+
+   let ql = integrate(f, a, mid, eps, acc, left);
+   let qr = integrate(f, mid, b, eps, acc, right);
+   return (ql + qr);
+}
 
 /**
  * Error function for normal distribution
