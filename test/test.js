@@ -1,13 +1,12 @@
 
 import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis, round, integrate} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints, rank} from '../src/index.js';
-import {runif, rnorm, dnorm, dunif, dt, beta, gamma, pnorm, punif} from '../src/index.js';
+import {runif, rnorm, dnorm, dunif, dt, beta, gamma, ibeta, pnorm, punif, pt} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();
 const expect = chai.expect;
-
 
 describe('Simple test for functions computing single statistic.', function () {
 
@@ -453,8 +452,8 @@ describe('Tests for theoretical distribution functions.', function () {
    });
 
 
-   it('dt() works correctly (n = 1 000 000).', function () {
-      const n = 1000000;
+   it('dt() works correctly (n = 100 000).', function () {
+      const n = 100000;
 
       //  distribution for DoF = 1
       const x1 = seq(-5, 5, n);
@@ -534,6 +533,35 @@ describe('Tests for theoretical distribution functions.', function () {
       expect(p2).to.have.lengthOf(n);
       punif([a - 10], a, b)[0].should.be.closeTo(0.0, 0.00001);
       punif([b + 10], a, b)[0].should.be.closeTo(1.0, 0.00001);
+   });
+
+   it('pt() works correctly (n = 100 000).', function () {
+      const n = 10000;
+
+      //  distribution for DoF = 1
+      const t1 = seq(-5, 5, n);
+      const p1 = pt(t1, 1);
+      expect(p1).to.have.lengthOf(n);
+      p1[0].should.be.closeTo(0.06283296, 0.001);
+      p1[n-1].should.be.closeTo(0.937167, 0.001);
+      p1[n/2].should.be.closeTo(0.5, 0.001);
+
+      //  distribution for DoF = 3
+      const t2 = seq(-5, 5, n);
+      const p2 = pt(t2, 3);
+      expect(p2).to.have.lengthOf(n);
+      p2[0].should.be.closeTo(0.007696219, 0.001);
+      p2[n-1].should.be.closeTo(0.9923038, 0.001);
+      p2[n/2].should.be.closeTo(0.5, 0.001);
+
+      //  distribution for DoF = 30
+      const t3 = seq(-5, 5, n);
+      const p3 = pt(t3, 30);
+      expect(p3).to.have.lengthOf(n);
+      p3[0].should.be.closeTo(0.00001164834, 0.001);
+      p3[n-1].should.be.closeTo(0.9999884, 0.001);
+      p3[n/2].should.be.closeTo(0.5, 0.001);
+
    });
 
 });
@@ -745,11 +773,24 @@ describe('Tests for other functions.', function () {
    });
 
    it('integrate() works correctly', function() {
+
       integrate(x => x**2, -1, 1).should.be.closeTo(0.6666667, 0.00001);
       integrate(x => x**2, -1, 0).should.be.closeTo(0.3333333, 0.00001);
       integrate(x => x**2,  0, 1).should.be.closeTo(0.3333333, 0.00001);
 
       integrate(Math.sin,  0, Math.PI).should.be.closeTo(2, 0.00001);
       integrate(Math.sin,  0, 2 * Math.PI).should.be.closeTo(0, 0.00001);
+      integrate((x) => Math.exp(-x), 0, Infinity).should.be.closeTo(1, 0.00001);
+
+      [0.1, 0.5, 1, 5, 10].map(a =>
+         integrate((x) => 1/Math.sqrt(a**2 - x**2), 0, a).should.be.closeTo(Math.PI/2, 0.00001)
+      );
+
+      integrate((x) => Math.exp(-(x**2)), -Infinity, Infinity).should.be.closeTo(Math.sqrt(Math.PI), 0.0001);
+
+      // integrate over CDF of normal distribution
+      integrate((x) => dnorm(x, 0, 1), -Infinity, 0).should.be.closeTo(0.5, 0.00001);
+      integrate((x) => dnorm(x, 0, 1), -1.96, 1.96).should.be.closeTo(0.95, 0.00001);
+      integrate((x) => dnorm(x, 0, 1), -Infinity, 1.96).should.be.closeTo(0.975, 0.00001);
    });
 });
