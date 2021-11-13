@@ -650,7 +650,7 @@ export function pt(t, dof) {
    // since distribution in symmetric we can use only left tail
    if (t > 0) return (1 - pt(-t, dof));
 
-   return integrate((x) => dt(x, dof), -30, t);
+   return integrate((x) => dt(x, dof), -Infinity, t);
 }
 
 
