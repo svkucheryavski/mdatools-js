@@ -1,5 +1,5 @@
 
-import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis, round} from '../src/index.js';
+import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis, round, integrate} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints, rank} from '../src/index.js';
 import {runif, rnorm, dnorm, dunif, dt, beta, gamma, pnorm, punif} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
@@ -7,6 +7,7 @@ import {default as chai} from 'chai';
 
 const should = chai.should();
 const expect = chai.expect;
+
 
 describe('Simple test for functions computing single statistic.', function () {
 
@@ -743,4 +744,12 @@ describe('Tests for other functions.', function () {
       expect(round([1.23456789, 2.3456789], 2)).be.eql([1.23, 2.35])
    });
 
+   it('integrate() works correctly', function() {
+      integrate(x => x**2, -1, 1).should.be.closeTo(0.6666667, 0.00001);
+      integrate(x => x**2, -1, 0).should.be.closeTo(0.3333333, 0.00001);
+      integrate(x => x**2,  0, 1).should.be.closeTo(0.3333333, 0.00001);
+
+      integrate(Math.sin,  0, Math.PI).should.be.closeTo(2, 0.00001);
+      integrate(Math.sin,  0, 2 * Math.PI).should.be.closeTo(0, 0.00001);
+   });
 });
