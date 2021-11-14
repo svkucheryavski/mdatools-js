@@ -152,6 +152,10 @@ export function beta(x, y) {
  * @returns {number} value of the function
  */
 export function ibeta(x, a, b) {
+   if (x === 0) return 0;
+   if (x === 1) return 1;
+   if (b === 1) return x ** a;
+   if (a === 1) return (1 - (1 - x)**b);
    return integrate((t) => t ** (a - 1) * (1 - t) ** (b - 1), 0, x) / beta(a, b);
 }
 
