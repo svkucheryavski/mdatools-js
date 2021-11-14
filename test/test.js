@@ -1,10 +1,10 @@
 
 import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis, round, integrate} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints, rank} from '../src/index.js';
-import {runif, rnorm, dnorm, dunif, dt, beta, gamma, ibeta, pnorm, punif, pt} from '../src/index.js';
+import {runif, dunif, punif, rnorm, dnorm, pnorm, dt, pt, pf, beta, gamma} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
-import {default as chai} from 'chai';
 
+import {default as chai} from 'chai';
 const should = chai.should();
 const expect = chai.expect;
 

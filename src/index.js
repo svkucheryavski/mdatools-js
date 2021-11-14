@@ -1,6 +1,6 @@
-/***************************************************
- * Mathematical functions needed for computations  *
- ***************************************************/
+/***************************************************************
+ * Mathematical functions and methods needed for computations  *
+ ***************************************************************/
 
 /**
  * Computes numeric integral for function "f" with limits (a, b)
@@ -143,6 +143,7 @@ export function beta(x, y) {
    return gamma(x) * gamma(y) / gamma(x + y);
 }
 
+
 /**
  * Incomplete Betta function (approximation via numeric integration)
  * @param {number} x - first argument (one value)
@@ -151,8 +152,9 @@ export function beta(x, y) {
  * @returns {number} value of the function
  */
 export function ibeta(x, a, b) {
-   return integrate((t) => t ** (a - 1) * (1 - t) ** (b - 1), 0, x);
+   return integrate((t) => t ** (a - 1) * (1 - t) ** (b - 1), 0, x) / beta(a, b);
 }
+
 
 /**********************************************
  * Functions for computing single statistics  *
@@ -227,7 +229,7 @@ export function max(x) {
 
 
 /**
- * Computes sum of all value in a vector
+ * Computes sum of all values in a vector
  * @param {number[]} x - vector with values
  * @returns {number}
  */
@@ -235,15 +237,6 @@ export function sum(x) {
    return x.reduce((t, v) => t + v);
 }
 
-/**
- * Computes cumulative sums for the vector values
- * @param {number[]} x - vector with values
- * @returns {number[]}
- */
-export function cumsum(x) {
-   let s = 0;
-   return x.map(v => s += v);
-}
 
 
 /**
@@ -265,6 +258,7 @@ export function mean(x) {
    return sum(x) / x.length;
 }
 
+
 /**
  * Computes standard deviation for a vector
  * @param {number[]} x - vector with values
@@ -278,9 +272,22 @@ export function sd(x, biased = false, m = undefined) {
 }
 
 
+
 /***************************************************
  * Functions for computing vectors of statistics   *
  ***************************************************/
+
+
+/**
+ * Computes cumulative sums for the vector values
+ * @param {number[]} x - vector with values
+ * @returns {number[]}
+ */
+export function cumsum(x) {
+   let s = 0;
+   return x.map(v => s += v);
+}
+
 
 /**
  * Computes a p-th quantile/quantiles for a numeric vector
@@ -364,6 +371,7 @@ export function mrange(x, margin) {
    return [mn - d * margin, max(x) + d * margin];
 }
 
+
 /**
  * Splits range of vector values into equal intervals
  * @param {number[]} x - vector with values
@@ -422,6 +430,7 @@ export function count(x, bins) {
    return counts;
 }
 
+
 /**
  * Computes middle points between values of a vector
  * @param {number[]} x - vector with values
@@ -460,6 +469,7 @@ export function getOutliers(x, Q1 = undefined, Q3 = undefined) {
    return(x.filter(v => v < bl || v > bu));
 }
 
+
 /**
  * Returns ranks of values in a vector (ranks start from 1, not 0)
  * @param {number[]} x - vector with values
@@ -470,8 +480,21 @@ export function rank(x) {
    return(x.map(v => y.indexOf(v) + 1));
 }
 
+
+/**
+ * Generate probability points for QQ plot
+ * @param {number} n - number of points
+ * @returns {Array} a sequence of probabilities between 0 and 1
+ */
+export function ppoints(n) {
+   const a = n < 10 ? 3.0/8.0 : 0.5;
+   return Array.from({length: n}, (v, i) => (i + 1 - a) / (n + (1 - a) - a));
+}
+
+
+
 /*******************************************
- * Functions for theoretical distributions *
+ * Functions for uniform distribution      *
  *******************************************/
 
 /**
@@ -538,6 +561,12 @@ export function punif(x, a = 0, b = 1) {
 }
 
 
+
+/*******************************************
+ * Functions for normal distribution       *
+ *******************************************/
+
+
  /**
  * Generates 'n' random numbers from a normal distribution
  * @param {number} n - amount of numbers to generate
@@ -582,6 +611,7 @@ export function dnorm(x, mu = 0, sigma = 1) {
    return d;
 }
 
+
 /**
  * Cumulative distribution function for normal distribution
  * @param {Array} x - vector of values
@@ -605,15 +635,10 @@ export function pnorm(x, mu = 0, sigma = 1) {
 }
 
 
-/**
- * Generate probability points for QQ plot
- * @param {number} n - number of points
- * @returns {Array} a sequence of probabilities between 0 and 1
- */
-export function ppoints(n) {
-   const a = n < 10 ? 3.0/8.0 : 0.5;
-   return Array.from({length: n}, (v, i) => (i + 1 - a) / (n + (1 - a) - a));
-}
+
+/*******************************************
+ * Functions for Student's t-distribution  *
+ *******************************************/
 
 
 /**
@@ -636,6 +661,7 @@ export function dt(t, dof) {
    return (A * Math.pow((1 + t * t / dof), pow));
 }
 
+
 /**
  * Cumulative distribution function for Student's t-distribution
  * @param {number|number[]} t - t-value or a vector of t-values
@@ -656,6 +682,10 @@ export function pt(t, dof) {
 
 
 /*******************************************
+ * Functions for F-distribution            *
+ *******************************************/
+
+
 /**
  * Cumulative distribution function for F-distribution
  * @param {number|number[]} F - F-value or a vector of t-values
@@ -675,6 +705,9 @@ export function pf(F, d1, d2) {
    return ibeta(d1 * F / (d1 * F + d2), d1/2, d2/2)
 }
 
+
+/*******************************************
+ * Other functions (helpers)               *
  *******************************************/
 
 
