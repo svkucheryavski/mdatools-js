@@ -656,7 +656,25 @@ export function pt(t, dof) {
 
 
 /*******************************************
- * Other functions                         *
+/**
+ * Cumulative distribution function for F-distribution
+ * @param {number|number[]} F - F-value or a vector of t-values
+ * @param {number} d1 - degrees of freedom
+ * @param {number} d2 - degrees of freedom
+ */
+export function pf(F, d1, d2) {
+
+   if (d2 <= d1) {
+      throw new Error("Parameter 'd2' should be larger 'd1'.");
+   }
+
+   if (Array.isArray(F)) {
+      return F.map(v => df(F, d1, d2));
+   }
+
+   return ibeta(d1 * F / (d1 * F + d2), d1/2, d2/2)
+}
+
  *******************************************/
 
 
