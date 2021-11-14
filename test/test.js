@@ -535,7 +535,7 @@ describe('Tests for theoretical distribution functions.', function () {
       punif([b + 10], a, b)[0].should.be.closeTo(1.0, 0.00001);
    });
 
-   it('pt() works correctly (n = 100 000).', function () {
+   it('pt() works correctly (n = 10 000).', function () {
       const n = 10000;
 
       //  distribution for DoF = 1
