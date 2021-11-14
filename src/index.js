@@ -14,6 +14,10 @@
  */
 export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefined) {
 
+   if (b < a) {
+      throw Error("Parameter 'b' must be larger 'a'.");
+   }
+
    // check if one of the limit is infinite
    if (a === -Infinity && b !== Infinity) {
       return integrate((t) => f(b - (1 - t) / t) / (t ** 2), 0, 1);
