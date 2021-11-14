@@ -91,5 +91,5 @@ The package has support for several known theoretical distributions. Every distr
 * `integrate(f, a, b)` — numeric integration of function `f` with limits `(a, b)`.
 * `gamma(z)` — Lanczos approximation of the Gamma function.
 * `beta(x, y)` — Beta function computed via approximation of Gamma function.
-* `ibeta(x, a, b)` — Standardized incomplete Beta function (a.k.a. I<sup>x</sup>(a, b)).
+* `ibeta(x, a, b)` — Standardized incomplete Beta function (a.k.a. I<sub>x</sub>(a, b)).
 
