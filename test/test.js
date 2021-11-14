@@ -564,6 +564,28 @@ describe('Tests for theoretical distribution functions.', function () {
 
    });
 
+
+   it('pf() works correctly (n = 10 000).', function () {
+      const n = 10000;
+
+      //  distribution for DoF = 1, 2
+      const F1 = seq(0, 10, n);
+      const p1 = pf(F1, 1, 2);
+      expect(p1).to.have.lengthOf(n);
+      p1[0].should.be.closeTo(0, 0.001);
+      p1[n-1].should.be.closeTo(0.9128709, 0.001);
+      p1[n/2].should.be.closeTo(0.8451543, 0.001);
+
+      //  distribution for DoF = 3, 10
+      const F2 = seq(0, 10, n);
+      const p2 = pf(F2, 3, 10);
+      expect(p2).to.have.lengthOf(n);
+      p2[0].should.be.closeTo(0, 0.001);
+      p2[n-1].should.be.closeTo(0.9976484, 0.001);
+      p2[n/2].should.be.closeTo(0.9773861, 0.001);
+
+   });
+
 });
 
 describe('Tests for replicate functions.', function () {
