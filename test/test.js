@@ -1,7 +1,7 @@
 
 import {min, max, sum, cumsum, prod, mean, sd, quantile, skewness, kurtosis, round, integrate} from '../src/index.js';
 import {range, mrange, split, count, mids, diff, sort, getOutliers, seq, ppoints, rank} from '../src/index.js';
-import {runif, dunif, punif, rnorm, dnorm, pnorm, dt, pt, pf, beta, gamma} from '../src/index.js';
+import {runif, dunif, punif, rnorm, dnorm, pnorm, dt, pt, df, pf, beta, gamma} from '../src/index.js';
 import {rep, subset, expandGrid, shuffle} from '../src/index.js';
 
 import {default as chai} from 'chai';
@@ -478,11 +478,29 @@ describe('Tests for theoretical distribution functions.', function () {
       d3[0].should.be.closeTo(0.006779063, 0.00000001);
       d3[n-1].should.be.closeTo(0.006779063, 0.00000001);
       d3[n/2].should.be.closeTo(0.3956322, 0.0000001);
-
-      //  distribution for DoF = 10000 should be the same as normal
-
    });
 
+
+   it('df() works correctly (n = 10 000).', function () {
+      const n = 10000;
+
+      //  distribution for DoF = 1, 2
+      const F1 = seq(0.001, 10, n);
+      const d1 = df(F1, 1, 2);
+      expect(d1).to.have.lengthOf(n);
+      d1[0].should.be.closeTo(11.17196, 0.001);
+      d1[n-1].should.be.closeTo(0.007607258, 0.001);
+      d1[n/2].should.be.closeTo(0.02414726, 0.001);
+
+      //  distribution for DoF = 3, 10
+      const F2 = seq(0.001, 10, n);
+      const d2 = df(F2, 3, 10);
+      expect(d2).to.have.lengthOf(n);
+      d2[0].should.be.closeTo(0.07019374, 0.001);
+      d2[n-1].should.be.closeTo(0.0008585295, 0.001);
+      d2[n/2].should.be.closeTo(0.01288309, 0.001);
+
+   });
 
    it('pnorm() works correctly (n = 1 000 000).', function () {
       const n = 1000000;
