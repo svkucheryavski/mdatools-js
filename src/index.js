@@ -693,6 +693,29 @@ export function pt(t, dof) {
  * Functions for F-distribution            *
  *******************************************/
 
+/**
+ * Probabilty density function for F-distribution
+ * @param {number|number[]} F - F-value or a vector of t-values
+ * @param {number} d1 - degrees of freedom
+ * @param {number} d2 - degrees of freedom
+ */
+export function df(F, d1, d2) {
+
+   if (F < 0 || d1 < 0 || d2 < 0) {
+      throw new Error("All 3 parameters must be positive.");
+   }
+
+   if (d2 <= d1) {
+      throw new Error("Parameter 'd1' must be larger 'd2'.");
+   }
+
+   if (Array.isArray(F)) {
+      return F.map(v => df(v, d1, d2));
+   }
+
+   return Math.sqrt( ( (d1 * F)**d1 * d2**d2) / ((d1 * F + d2)**(d1 + d2))) / (F * beta(d1/2, d2/2))
+}
+
 
 /**
  * Cumulative distribution function for F-distribution
