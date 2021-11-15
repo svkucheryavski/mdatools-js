@@ -84,7 +84,8 @@ The package has support for several known theoretical distributions. Every distr
 * `pt(t, dof)`
 
 #### F-distribution
-* `pf(t, d1, d2)`
+* `df(F, d1, d2)`
+* `pf(F, d1, d2)`
 
 ### Additional functions (helpers)
 
