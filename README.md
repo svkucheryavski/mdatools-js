@@ -1,8 +1,6 @@
 # Javascript library for statistic analysis and data manipulations
 
-A simple library for statistic analysis and manipulations with single vector values. Most of the functions work similar to statistical functions in R. The function names use camel case convention, e.g. R function `expand.grid()` has name `expandGrid()` in this library.
-
-The library is currently under development, breaking changes may occur in the coming versions.
+A simple library for statistic analysis and manipulations with single vector values. The library is currently under development, breaking changes may occur in the coming versions.
 
 ## How to
 
@@ -42,7 +40,7 @@ Following functions compute single statistic for one or two vectors.
 * `cov(x, y)` — covariance between `x` and `y`.
 * `cor(x, y, type = 'pearson')` — correlation between `x` and `y`.
 
-Following functions compute and return either single or a vector with statistics.
+Following functions compute and return either single statistic or a vector with statistics.
 
 * `quantile(x, p)` — computes p-th quantile, `0 > p > 1`.
 * `range(x)` — returns a vector with smallest (min) and largest (max) values.
@@ -50,20 +48,20 @@ Following functions compute and return either single or a vector with statistics
 * `split(x, n)` — splits a range of values from `x` into `n` equal intervals.
 * `count(x, bins`) — counts how many values from `x` fall into bins defined by `bins`.
 * `mids(x)` — returns a vector with middle points between the adjacent values from `x`.
-* `diff(x)` — returns a vector with differences between the adjacent values (e.g. `x[1] - x[0]`, ...).
-* `getOutliers(x, Q1, Q3)` — finds outliers in `x` based on 1.5 IQR rule (like in boxplots).
+* `diff(x)` — returns a vector with differences between the adjacent values from `x`.
+* `getOutliers(x, Q1, Q3)` — finds outliers in `x` based on 1.5 IQR rule (like in boxplot).
 * `seq(a, b, n)` — creates a sequence of `n` values equally distanced in interval [a, b].
 * `ppoints(n)` — computes probability points for QQ plot.
-* `rank(x)` — return vector with ranks of values from `x`.
+* `rank(x)` — returns a vector with ranks of values from `x`.
 
 ## Manipulations with values
 
 * `sort(x, decreasing = false)` — sorts values in `x`.
-* `subset(x, ind)` — returns a subset of `x`, defined by vector of indices `ind`. Indices start with 1.
-* `rep(x, n)` — replicates values in vector `x` `n` times (`n` can be a vector).
+* `subset(x, ind)` — returns a subset of `x`, defined by vector of indices `ind`.
+* `rep(x, n)` — replicates values in a vector `x` `n` times (`n` can be a vector).
 * `expandGrid(...args)` — generates all combinations of vector values (full factorial design).
 * `shuffle(x)` — shuffles values in `x` using Fisher–Yates algorithm.
-* `roound(x, n)` — rounds `x` to `n` decimals.
+* `round(x, n)` — rounds `x` to `n` decimals.
 
 ### Theoretical distributions
 

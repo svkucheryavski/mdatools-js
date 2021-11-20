@@ -18,19 +18,22 @@ export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefi
       throw Error("Parameter 'b' must be larger 'a'.");
    }
 
-   // check if one of the limit is infinite
+   // special case when left limit is minus infinity
    if (a === -Infinity && b !== Infinity) {
       return integrate((t) => f(b - (1 - t) / t) / (t ** 2), 0, 1);
    }
 
+   // special case when right limit is plus infinity
    if (a !== -Infinity && b === Infinity) {
       return integrate((t) => f(a + (1 - t) / t) / (t ** 2), 0, 1);
    }
 
+   // special case when both limits are infinite
    if (a === -Infinity && b === Infinity) {
       return integrate((t) => (f((1 - t) / t) + f((t - 1) / t)) / t ** 2, 0, 1);
    }
 
+   // constants for splitting the integration interval
    const x = [1/6, 2/6, 4/6, 5/6];
    const w = [2/6, 1/6, 1/6, 2/6];
    const v = [1/4, 1/4, 1/4, 1/4];
@@ -68,6 +71,7 @@ export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefi
    let qr = integrate(f, mid, b, eps, acc, right);
    return (ql + qr);
 }
+
 
 /**
  * Error function for normal distribution
@@ -505,6 +509,7 @@ export function ppoints(n) {
  * Functions for uniform distribution      *
  *******************************************/
 
+
 /**
  * Generates 'n' random numbers from a uniform distribution
  * @param {number} n - amount of numbers to generate
@@ -693,8 +698,9 @@ export function pt(t, dof) {
  * Functions for F-distribution            *
  *******************************************/
 
+
 /**
- * Probabilty density function for F-distribution
+ * Probability density function for F-distribution
  * @param {number|number[]} F - F-value or a vector of t-values
  * @param {number} d1 - degrees of freedom
  * @param {number} d2 - degrees of freedom
@@ -739,6 +745,7 @@ export function pf(F, d1, d2) {
 
    return ibeta(d1 * F / (d1 * F + d2), d1/2, d2/2)
 }
+
 
 
 /*******************************************
@@ -794,7 +801,7 @@ export function rep(x, n) {
 /**
  * Create a subset of vectors based on a vector of indices
  * @param {number[]} x - a vector with values
- * @param {number[]} indices - a vector with element indices
+ * @param {number[]} indices - a vector with element indices (first index is 1 not 0!)
  */
 export function subset(x, indices) {
 
@@ -858,6 +865,7 @@ export function shuffle(x) {
 
   return y;
 }
+
 
 /**
  * Finds index of value in x which is closest to the value a
