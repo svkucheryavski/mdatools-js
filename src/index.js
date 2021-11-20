@@ -773,6 +773,28 @@ export function round(x, n = 0) {
    return Number.parseFloat(x.toFixed(n));
 }
 
+/**
+ * Standardize (mean center and sd scale) values from a vector
+ * @param {number | number[]} x - a vector with values
+ * @return {number} center - value for centering the values (if undefined, will use mean(x))
+ * @return {number} scale - value for scaling the values (if undefined, will use sd(x))
+ *
+ */
+export function scale(x, center = undefined, scale = undefined) {
+   if (center === undefined) center = mean(x);
+   if (scale === undefined) scale = sd(x);
+
+   const n = x.length;
+   let y = Array(n);
+
+   for (let i = 0; i < n; i++) {
+      y[i] = (x[i] - center) / scale;
+   }
+
+   return y;
+}
+
+
 
 /***************************************************************
  * Mathematical functions and methods needed for computations  *

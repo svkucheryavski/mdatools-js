@@ -212,4 +212,24 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(round([1.23456789, 2.3456789], 2)).be.eql([1.23, 2.35])
    });
 
+
+   it('scale() works correctly with default arguments.', function () {
+      const x = rnorm(1000, 100, 2);
+      mean(scale(x)).should.be.closeTo(0, 0.0000001);
+      sd(scale(x)).should.be.closeTo(1, 0.0000001);
+   });
+
+   it('scale() works correctly with default arguments.', function () {
+      const x = rnorm(1000, 100, 2);
+
+      mean(scale(x, 0, sd(x))).should.be.closeTo(mean(x) / sd(x), 0.0000001);
+      sd(scale(x, 0, sd(x))).should.be.closeTo(1, 0.0000001);
+
+      mean(scale(x, mean(x), 1)).should.be.closeTo(0, 0.0000001);
+      sd(scale(x, mean(x), 1)).should.be.closeTo(sd(x), 0.0000001);
+
+      mean(scale(x, 0, 1)).should.be.closeTo(mean(x), 0.0000001);
+      sd(scale(x, 0, 1)).should.be.closeTo(sd(x), 0.0000001);
+   });
+
 });
