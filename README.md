@@ -50,6 +50,7 @@ Following functions compute and return either single statistic or a vector with 
 * `ppoints(n)` — computes probability points for QQ plot.
 * `rank(x)` — returns a vector with ranks of values from `x`.
 * `cumsum(x)` — computes cumulative sum of a vector of values.
+* `scale(x, center, scale)` — center and scale values from `x` (e.g. standardize).
 
 ## Manipulations with values
 

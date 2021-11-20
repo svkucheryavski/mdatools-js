@@ -3,10 +3,10 @@
  ******************************************************************/
 
 // import of functions to test
-import {seq, rep, sort, subset, expandGrid, shuffle, round} from '../src/index.js';
+import {seq, rep, sort, subset, expandGrid, shuffle, round, scale} from '../src/index.js';
 
 // import dependencies
-import {runif} from '../src/index.js';
+import {runif, rnorm, mean, sd} from '../src/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();
@@ -36,6 +36,7 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(y3[100000]).to.eql(30);
 
    });
+
 
    it('rep() works correctly with vector of numbers.', function () {
 
@@ -94,7 +95,8 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(subset(x, 1)).to.eql([10]);
       expect(subset(x, 3)).to.eql([30]);
       expect(subset(x, 10)).to.eql([100]);
-   })
+   });
+
 
    it('subset() works correctly with vector of indices.', function () {
       const x = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
@@ -121,7 +123,7 @@ describe('Tests for functions for manipulation of values.', function () {
       const z = subset(y, [1, 100, 1000, 10000, 100000, 1000000]);
       z[0].should.be.closeTo(10.0, 0.01);
       z[5].should.be.closeTo(20.0, 0.01);
-   })
+   });
 
 
    it('expandGrid() works correctly with numeric vectors.', function () {
@@ -139,7 +141,8 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(z2[1]).to.eql([10, 10, 10, 20, 20, 20, 10, 10, 10, 20, 20, 20]);
       expect(z2[2]).to.eql([-20, -20, -20, -20, -20, -20, 20, 20, 20, 20, 20, 20]);
 
-   })
+   });
+
 
    it('expandGrid() works correctly with text vectors.', function () {
       const z1 = expandGrid([100, 200, 300], ["A", "B"]);
@@ -147,7 +150,8 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(z1).to.have.lengthOf(2);
       expect(z1[0]).to.eql([100, 200, 300, 100, 200, 300]);
       expect(z1[1]).to.eql(["A", "A", "A", "B", "B", "B"]);
-   })
+   });
+
 
    it('shuffle() works correctly with any vectors.', function () {
 
@@ -164,7 +168,8 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(z2).to.have.lengthOf(x2.length);
       expect(z2).to.not.eql(x2);
 
-   })
+   });
+
 
    it('seq() returns correct results.', function () {
       const s1 = seq(1, 10, 10);
@@ -176,6 +181,7 @@ describe('Tests for functions for manipulation of values.', function () {
       const s3 = seq(0, 1, 11);
       expect(s3).to.eql([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]);
    });
+
 
    it('sort() returns correct results.', function () {
       const x1 = [-10, -2, 0, 2, 10, 20, 50, 100, 150];
@@ -206,6 +212,7 @@ describe('Tests for functions for manipulation of values.', function () {
       round(-1.23456789).should.be.equal(-1)
       round(-1.23456789, 2).should.be.equal(-1.23)
    });
+
 
    it('round() works correctly for vectors.', function () {
       expect(round([1.23456789, 2.3456789])).be.eql([1, 2])

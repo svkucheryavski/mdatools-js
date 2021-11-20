@@ -457,12 +457,6 @@ export function punif(x, a = 0, b = 1) {
 }
 
 
-
-/*******************************************
- * Functions for normal distribution       *
- *******************************************/
-
-
  /**
  * Generates 'n' random numbers from a normal distribution
  * @param {number} n - amount of numbers to generate
@@ -531,12 +525,6 @@ export function pnorm(x, mu = 0, sigma = 1) {
 }
 
 
-
-/*******************************************
- * Functions for Student's t-distribution  *
- *******************************************/
-
-
 /**
  * Probability density function for Student's t-distribution
  * @param {number|number[]} t - t-value or a vector of t-values
@@ -574,12 +562,6 @@ export function pt(t, dof) {
 
    return integrate((x) => dt(x, dof), -Infinity, t);
 }
-
-
-
-/*******************************************
- * Functions for F-distribution            *
- *******************************************/
 
 
 /**
@@ -631,9 +613,9 @@ export function pf(F, d1, d2) {
 
 
 
-/*******************************************
- * Other functions (helpers)               *
- *******************************************/
+/***********************************************
+ * Functions for manipulations with values     *
+ ***********************************************/
 
 
 /**
