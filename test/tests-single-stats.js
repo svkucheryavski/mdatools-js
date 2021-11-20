@@ -3,7 +3,7 @@
  ******************************************************************/
 
 // import of functions to test
-import {min, max, sum, prod, mean, sd, skewness, kurtosis, cov} from '../src/index.js';
+import {min, max, sum, prod, mean, sd, skewness, kurtosis, cov, cor} from '../src/index.js';
 
 // import dependencies
 import {runif} from '../src/index.js';
@@ -104,6 +104,15 @@ describe('Simple test for functions computing single statistic.', function () {
       cov([1, 2, 1, 2], [10, 10, 20, 20]).should.equal(0);
    })
 
+   it('cor() returns correct results.', function() {
+      cor([1, 2, 3], [1, 2, 3]).should.equal(1);
+      cor([1, 2, 3], [3, 2, 1]).should.equal(-1);
+
+      cor([1, 2, 3], [10, 20, 30]).should.equal(1);
+      cor([1, 2, 3], [30, 20, 10]).should.equal(-1);
+
+      cor([1, 2, 1, 2], [10, 10, 20, 20]).should.equal(0);
+   })
 });
 
 describe('Functions computing single statistic work with n = 1 000 000.', function () {

@@ -167,6 +167,23 @@ export function sd(x, biased = false, m = undefined) {
 }
 
 
+/**
+ * Computes correlation between two vectors
+ * @param {number[]} x - vector with values
+ * @param {number[]} y - vector with values
+ * @param {string} method - which method to use ("pearson" or "spearman")
+ * @returns {number}
+ */
+export function cor(x, y, method = "pearson") {
+
+   if (method === "spearman") {
+      return cor(rank(x), rank(y));
+   }
+
+   return cov(x, y) / (sd(x) * sd(y));
+}
+
+
 
 /***************************************************
  * Functions for computing vectors of statistics   *
