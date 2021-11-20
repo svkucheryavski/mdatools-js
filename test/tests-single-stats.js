@@ -94,6 +94,14 @@ describe('Simple test for functions computing single statistic.', function () {
    it('cov() returns correct results.', function() {
       expect(() => cov([1, 2], [1, 2, 3]).to.throw(Error, "Vectors 'x' and 'y' must have the same length."));
       expect(() => cov([1], [1]).to.throw(Error, "Vectors 'x' and 'y' must have at least two values."));
+
+      cov([1, 2, 3], [1, 2, 3]).should.equal(1);
+      cov([1, 2, 3], [3, 2, 1]).should.equal(-1);
+
+      cov([1, 2, 3], [10, 20, 30]).should.equal(10);
+      cov([1, 2, 3], [30, 20, 10]).should.equal(-10);
+
+      cov([1, 2, 1, 2], [10, 10, 20, 20]).should.equal(0);
    })
 
 });
