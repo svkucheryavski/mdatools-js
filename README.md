@@ -34,9 +34,6 @@ Following functions compute single statistic for one or two vectors.
 * `sd(x, biased = false)` — standard deviation.
 * `skewness(x)` — skewness (measure of symmetry)
 * `kurtosis(x)` — kurtosis (measure of tailedness)
-
-**Not implemented yet**
-
 * `cov(x, y)` — covariance between `x` and `y`.
 * `cor(x, y, type = 'pearson')` — correlation between `x` and `y`.
 
@@ -50,18 +47,19 @@ Following functions compute and return either single statistic or a vector with 
 * `mids(x)` — returns a vector with middle points between the adjacent values from `x`.
 * `diff(x)` — returns a vector with differences between the adjacent values from `x`.
 * `getOutliers(x, Q1, Q3)` — finds outliers in `x` based on 1.5 IQR rule (like in boxplot).
-* `seq(a, b, n)` — creates a sequence of `n` values equally distanced in interval [a, b].
 * `ppoints(n)` — computes probability points for QQ plot.
 * `rank(x)` — returns a vector with ranks of values from `x`.
+* `cumsum(x)` — computes cumulative sum of a vector of values.
 
 ## Manipulations with values
 
+* `seq(a, b, n)` — creates a sequence of `n` values equally distanced in interval [a, b].
+* `rep(x, n)` — replicates values in a vector `x` `n` times (`n` can be a vector).
 * `sort(x, decreasing = false)` — sorts values in `x`.
 * `subset(x, ind)` — returns a subset of `x`, defined by vector of indices `ind`.
-* `rep(x, n)` — replicates values in a vector `x` `n` times (`n` can be a vector).
-* `expandGrid(...args)` — generates all combinations of vector values (full factorial design).
 * `shuffle(x)` — shuffles values in `x` using Fisher–Yates algorithm.
 * `round(x, n)` — rounds `x` to `n` decimals.
+* `expandGrid(...args)` — generates all combinations of vector values (full factorial design).
 
 ### Theoretical distributions
 

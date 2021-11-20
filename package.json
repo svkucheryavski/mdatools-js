@@ -5,6 +5,7 @@
   "type": "module",
   "description": "Tools and methods for statistical analysis and data manipulation.",
   "main": "src/index.js",
+
   "scripts": {
     "test": "mocha"
   },

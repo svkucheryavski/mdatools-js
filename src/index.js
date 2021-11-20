@@ -1,173 +1,3 @@
-/***************************************************************
- * Mathematical functions and methods needed for computations  *
- ***************************************************************/
-
-/**
- * Computes numeric integral for function "f" with limits (a, b)
- * @param {function} f - a reference to a function
- * @param {number} a - lower limit for integration
- * @param {number} b - upper limit for integration
- * @param {number} acc - absolute accuracy
- * @param {number} eps - relative accuracy
- * @param {number[]} oldfs - vector of values needed for recursion
- * @returns {number} result of integration
- */
-export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefined) {
-
-   if (b < a) {
-      throw Error("Parameter 'b' must be larger 'a'.");
-   }
-
-   // special case when left limit is minus infinity
-   if (a === -Infinity && b !== Infinity) {
-      return integrate((t) => f(b - (1 - t) / t) / (t ** 2), 0, 1);
-   }
-
-   // special case when right limit is plus infinity
-   if (a !== -Infinity && b === Infinity) {
-      return integrate((t) => f(a + (1 - t) / t) / (t ** 2), 0, 1);
-   }
-
-   // special case when both limits are infinite
-   if (a === -Infinity && b === Infinity) {
-      return integrate((t) => (f((1 - t) / t) + f((t - 1) / t)) / t ** 2, 0, 1);
-   }
-
-   // constants for splitting the integration interval
-   const x = [1/6, 2/6, 4/6, 5/6];
-   const w = [2/6, 1/6, 1/6, 2/6];
-   const v = [1/4, 1/4, 1/4, 1/4];
-   const p = [1, 0, 0, 1];
-
-   let n = x.length, h = b - a;
-   let fs;
-
-   if (oldfs === undefined) {
-      fs = x.map(v => f(a + v * h));
-   } else {
-      fs = new Array(n);
-      for (let k = 0, i = 0; i < n; i++) {
-         fs[i] = p[i] === 1 ? f(a + x[i] * h) : oldfs[k++];
-      }
-   }
-
-   let q4 = 0, q2 = 0;
-   for (let i = 0; i < n; i++) {
-      q4 += w[i] * fs[i] * h;
-      q2 += v[i] * fs[i] * h;
-   }
-
-   let tol = acc + eps * Math.abs(q4);
-   let err = Math.abs((q4 - q2)/3);
-
-   if (err < tol) return q4;
-
-   acc = acc / Math.sqrt(2.);
-   let mid = (a + b) / 2;
-   let left = fs.filter((v, i) => i < n/2);
-   let right = fs.filter((v, i) => i >= n/2);
-
-   let ql = integrate(f, a, mid, eps, acc, left);
-   let qr = integrate(f, mid, b, eps, acc, right);
-   return (ql + qr);
-}
-
-
-/**
- * Error function for normal distribution
- * @param {number} x - a number
- * @returns {number} value for erf
- */
-export function erf(x) {
-
-  const sign = (x >= 0) ? 1 : -1;
-  x = Math.abs(x);
-
-  // constants
-  const a1 =  0.254829592;
-  const a2 = -0.284496736;
-  const a3 =  1.421413741;
-  const a4 = -1.453152027;
-  const a5 =  1.061405429;
-  const p  =  0.3275911;
-
-  // approximation
-  const t = 1.0 / (1.0 + p * x);
-  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
-  return sign * y;
-}
-
-
-/**
- * Gamma function (approximation)
- * @param {number|number[]} z - argument (one value or a vector)
- * @returns {number} value of the Gamma function
- */
-export function gamma(z) {
-
-   if (Array.isArray(z)) {
-      return z.map(v => gamma(v));
-   }
-
-   if (z <= 0) {
-      throw new Error("Gamma function only works with arguments > 0.");
-   }
-
-   // coefficients
-   const p = [
-        676.5203681218851,
-      -1259.1392167224028,
-        771.32342877765313,
-       -176.61502916214059,
-         12.507343278686905,
-         -0.13857109526572012,
-          9.9843695780195716e-6,
-          1.5056327351493116e-7
-    ];
-
-   if (z < 0.5) {
-      return Math.PI / (Math.sin(Math.PI * z) + gamma(1 - z));
-   }
-
-   z = z - 1;
-   let x = 0.99999999999980993;
-
-   for (let i = 0; i < p.length; i++) {
-      x = x + p[i] / (z + i + 1);
-   }
-
-   const t = z + p.length - 0.5;
-   return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
-}
-
-
-/**
- * Betta function (approximation)
- * @param {number} x - first argument (one value)
- * @param {number} y - second argument (one value)
- * @returns {number} value of the Beta function
- */
-export function beta(x, y) {
-   return gamma(x) * gamma(y) / gamma(x + y);
-}
-
-
-/**
- * Incomplete Betta function (approximation via numeric integration)
- * @param {number} x - first argument (one value)
- * @param {number} a - second argument (one value)
- * @param {number} b - third argument (one value)
- * @returns {number} value of the function
- */
-export function ibeta(x, a, b) {
-   if (x === 0) return 0;
-   if (x === 1) return 1;
-   if (b === 1) return x ** a;
-   if (a === 1) return (1 - (1 - x)**b);
-   return integrate((t) => t ** (a - 1) * (1 - t) ** (b - 1), 0, x) / beta(a, b);
-}
-
-
 /**********************************************
  * Functions for computing single statistics  *
  **********************************************/
@@ -246,9 +76,13 @@ export function max(x) {
  * @returns {number}
  */
 export function sum(x) {
-   return x.reduce((t, v) => t + v);
-}
+   let s = 0;
+   for (let i = 0; i < x.length; i++) {
+      s = s + x[i];
+   }
 
+   return s;
+}
 
 
 /**
@@ -257,7 +91,12 @@ export function sum(x) {
  * @returns {number}
  */
 export function prod(x) {
-   return x.reduce((t, v) => t * v);
+   let p = 1;
+   for (let i = 0; i < x.length; i++) {
+      p = p * x[i];
+   }
+
+   return p;
 }
 
 
@@ -272,6 +111,51 @@ export function mean(x) {
 
 
 /**
+ * Computes covariance between two vectors
+ * @param {number[]} x - vector with values
+ * @param {number[]} y - vector with values
+ * @param {boolean} biased - compute a biased version with n degrees of freedom or not (with n-1).
+ * @param {number} mx - mean of x values (if already known)
+ * @param {number} my - mean of y values (if already known)
+ * @returns {number}
+ */
+export function cov(x, y, biased = false, mx = undefined, my = undefined) {
+
+   const n = x.length;
+
+   if (y.length !== n) {
+      throw Error("Vectors 'x' and 'y' must have the same length.");
+   }
+
+   if (n < 2) {
+      throw Error("Vectors 'x' and 'y' must have at least two values.");
+   }
+
+   if (mx === undefined) mx = mean(x);
+   if (my === undefined) my = mean(y);
+
+   let cov = 0;
+   for (let i = 0; i < n; i++) {
+      cov = cov + (x[i] - mx) * (y[i] - my);
+   }
+
+   return cov / (biased ? n : n - 1);
+}
+
+
+/**
+ * Computes variance for a vector
+ * @param {number[]} x - vector with values
+ * @param {boolean} biased - compute a biased version with n degrees of freedom or not (with n-1).
+ * @param {number} m - mean value (e.g. if already computed).
+ * @returns {number}
+ */
+export function variance(x, biased = false, m = undefined) {
+   return cov(x, x, biased, m, m);
+}
+
+
+/**
  * Computes standard deviation for a vector
  * @param {number[]} x - vector with values
  * @param {boolean} biased - compute a biased version with n degrees of freedom or not (with n-1).
@@ -279,8 +163,7 @@ export function mean(x) {
  * @returns {number}
  */
 export function sd(x, biased = false, m = undefined) {
-   if (m === undefined) m = mean(x)
-   return Math.sqrt(sum(x.map(v => (v - m) ** 2 )) / (x.length - (biased ? 0 : 1)));
+   return Math.sqrt(variance(x, biased, m));
 }
 
 
@@ -288,17 +171,6 @@ export function sd(x, biased = false, m = undefined) {
 /***************************************************
  * Functions for computing vectors of statistics   *
  ***************************************************/
-
-
-/**
- * Computes cumulative sums for the vector values
- * @param {number[]} x - vector with values
- * @returns {number[]}
- */
-export function cumsum(x) {
-   let s = 0;
-   return x.map(v => s += v);
-}
 
 
 /**
@@ -504,10 +376,21 @@ export function ppoints(n) {
 }
 
 
+/**
+ * Computes cumulative sums for the vector values
+ * @param {number[]} x - vector with values
+ * @returns {number[]}
+ */
+export function cumsum(x) {
+   let s = 0;
+   return x.map(v => s += v);
+}
 
-/*******************************************
- * Functions for uniform distribution      *
- *******************************************/
+
+
+/***********************************************
+ * Functions for theoretical distribution      *
+ ***********************************************/
 
 
 /**
@@ -888,4 +771,174 @@ export function round(x, n = 0) {
       return x.map(v => round(v, n));
    }
    return Number.parseFloat(x.toFixed(n));
+}
+
+
+/***************************************************************
+ * Mathematical functions and methods needed for computations  *
+ ***************************************************************/
+
+/**
+ * Computes numeric integral for function "f" with limits (a, b)
+ * @param {function} f - a reference to a function
+ * @param {number} a - lower limit for integration
+ * @param {number} b - upper limit for integration
+ * @param {number} acc - absolute accuracy
+ * @param {number} eps - relative accuracy
+ * @param {number[]} oldfs - vector of values needed for recursion
+ * @returns {number} result of integration
+ */
+export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefined) {
+
+   if (b < a) {
+      throw Error("Parameter 'b' must be larger 'a'.");
+   }
+
+   // special case when left limit is minus infinity
+   if (a === -Infinity && b !== Infinity) {
+      return integrate((t) => f(b - (1 - t) / t) / (t ** 2), 0, 1);
+   }
+
+   // special case when right limit is plus infinity
+   if (a !== -Infinity && b === Infinity) {
+      return integrate((t) => f(a + (1 - t) / t) / (t ** 2), 0, 1);
+   }
+
+   // special case when both limits are infinite
+   if (a === -Infinity && b === Infinity) {
+      return integrate((t) => (f((1 - t) / t) + f((t - 1) / t)) / t ** 2, 0, 1);
+   }
+
+   // constants for splitting the integration interval
+   const x = [1/6, 2/6, 4/6, 5/6];
+   const w = [2/6, 1/6, 1/6, 2/6];
+   const v = [1/4, 1/4, 1/4, 1/4];
+   const p = [1, 0, 0, 1];
+
+   let n = x.length, h = b - a;
+   let fs;
+
+   if (oldfs === undefined) {
+      fs = x.map(v => f(a + v * h));
+   } else {
+      fs = new Array(n);
+      for (let k = 0, i = 0; i < n; i++) {
+         fs[i] = p[i] === 1 ? f(a + x[i] * h) : oldfs[k++];
+      }
+   }
+
+   let q4 = 0, q2 = 0;
+   for (let i = 0; i < n; i++) {
+      q4 += w[i] * fs[i] * h;
+      q2 += v[i] * fs[i] * h;
+   }
+
+   let tol = acc + eps * Math.abs(q4);
+   let err = Math.abs((q4 - q2)/3);
+
+   if (err < tol) return q4;
+
+   acc = acc / Math.sqrt(2.);
+   let mid = (a + b) / 2;
+   let left = fs.filter((v, i) => i < n/2);
+   let right = fs.filter((v, i) => i >= n/2);
+
+   let ql = integrate(f, a, mid, eps, acc, left);
+   let qr = integrate(f, mid, b, eps, acc, right);
+   return (ql + qr);
+}
+
+
+/**
+ * Error function for normal distribution
+ * @param {number} x - a number
+ * @returns {number} value for erf
+ */
+export function erf(x) {
+
+  const sign = (x >= 0) ? 1 : -1;
+  x = Math.abs(x);
+
+  // constants
+  const a1 =  0.254829592;
+  const a2 = -0.284496736;
+  const a3 =  1.421413741;
+  const a4 = -1.453152027;
+  const a5 =  1.061405429;
+  const p  =  0.3275911;
+
+  // approximation
+  const t = 1.0 / (1.0 + p * x);
+  const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+  return sign * y;
+}
+
+
+/**
+ * Gamma function (approximation)
+ * @param {number|number[]} z - argument (one value or a vector)
+ * @returns {number} value of the Gamma function
+ */
+export function gamma(z) {
+
+   if (Array.isArray(z)) {
+      return z.map(v => gamma(v));
+   }
+
+   if (z <= 0) {
+      throw new Error("Gamma function only works with arguments > 0.");
+   }
+
+   // coefficients
+   const p = [
+        676.5203681218851,
+      -1259.1392167224028,
+        771.32342877765313,
+       -176.61502916214059,
+         12.507343278686905,
+         -0.13857109526572012,
+          9.9843695780195716e-6,
+          1.5056327351493116e-7
+    ];
+
+   if (z < 0.5) {
+      return Math.PI / (Math.sin(Math.PI * z) + gamma(1 - z));
+   }
+
+   z = z - 1;
+   let x = 0.99999999999980993;
+
+   for (let i = 0; i < p.length; i++) {
+      x = x + p[i] / (z + i + 1);
+   }
+
+   const t = z + p.length - 0.5;
+   return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+}
+
+
+/**
+ * Betta function (approximation)
+ * @param {number} x - first argument (one value)
+ * @param {number} y - second argument (one value)
+ * @returns {number} value of the Beta function
+ */
+export function beta(x, y) {
+   return gamma(x) * gamma(y) / gamma(x + y);
+}
+
+
+/**
+ * Incomplete Betta function (approximation via numeric integration)
+ * @param {number} x - first argument (one value)
+ * @param {number} a - second argument (one value)
+ * @param {number} b - third argument (one value)
+ * @returns {number} value of the function
+ */
+export function ibeta(x, a, b) {
+   if (x === 0) return 0;
+   if (x === 1) return 1;
+   if (b === 1) return x ** a;
+   if (a === 1) return (1 - (1 - x)**b);
+   return integrate((t) => t ** (a - 1) * (1 - t) ** (b - 1), 0, x) / beta(a, b);
 }
