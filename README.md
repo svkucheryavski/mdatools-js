@@ -64,7 +64,7 @@ Following functions compute and return either single statistic or a vector with 
 
 ### Theoretical distributions
 
-The package has support for several known theoretical distributions. Every distribution is represented by four functions `d*` for computing density, `p*` for computing probability, and `r*` for generating random numbers. The following distributions are supported:
+The package has support for several known theoretical distributions. Every distribution is represented by four functions `d*` for computing density, `p*` for computing probability, `q*` for computing quantiles and `r*` for generating random numbers. The following distributions are supported:
 
 #### Uniform distribution
 * `dunif(x, a = 0, b = 1)` — `x` is a vector of values, `a` and `b` — distribution parameters.
@@ -74,11 +74,13 @@ The package has support for several known theoretical distributions. Every distr
 #### Normal distribution
 * `dnorm(x, mean = 0, sd = 1)`
 * `pnorm(x, mean = 0, sd = 1)`
+* `qnorm(p, mean = 0, sd = 1)`
 * `rnorm(n, mean = 0, sd = 1)`
 
 #### Student's t-distribution
 * `dt(t, dof)`
 * `pt(t, dof)`
+* `qt(p, dof)`
 
 #### F-distribution
 * `df(F, d1, d2)`
