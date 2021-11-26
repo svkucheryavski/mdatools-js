@@ -3,7 +3,7 @@
  ******************************************************************/
 
 // import of functions to test
-import {runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, df, pf} from '../src/index.js';
+import {runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf} from '../src/index.js';
 
 // import dependencies
 import {seq, sum, sd, mean, min, max} from '../src/index.js';
@@ -11,7 +11,6 @@ import {default as chai} from 'chai';
 
 const should = chai.should();
 const expect = chai.expect;
-
 
 describe('Tests for theoretical distribution functions.', function () {
 
@@ -292,6 +291,73 @@ describe('Tests for theoretical distribution functions.', function () {
       expect(q).to.have.lengthOf(n);
       q[0].should.be.equal(qnorm(0.0001));
       q[n-1].should.be.equal(qnorm(0.9999));
+   });
+
+   it('qt() works correctly (n = 1 000 000).', function () {
+      const n = 1000000;
+
+      // border cases
+      qt(0, 1).should.be.equal(-Infinity);
+      qt(1, 1).should.be.equal(Infinity);
+      qt([0, 0, 1, 1], 1).should.be.eql([-Infinity, -Infinity, Infinity, Infinity]);
+
+      // middle point and border cases
+      qt(0.5, 1).should.be.equal(0);
+      qt([0.5, 0.5], 1).should.be.eql([0, 0]);
+      qt([0, 0.5, 1], 1).should.be.eql([-Infinity, 0, Infinity]);
+
+      // other fixed cases
+      const dof = [1, 2, 3, 4, 10, 30, 100];
+      let p, expected;
+
+      p = 0.9999
+      expected = [3183.098757, 70.700071, 22.203742, 13.033672, 5.693820, 4.233986, 3.861600];
+      for (let i = 0; i < dof.length; i++) {
+         qt(p, dof[i]).should.be.closeTo(expected[i], 0.00001);
+         qt(1 - p, dof[i]).should.be.closeTo(-expected[i], 0.00001);
+      }
+
+      p = 0.99
+      expected = [31.820516, 6.964557, 4.540703, 3.746947, 2.763769, 2.457262, 2.364217];
+      for (let i = 0; i < dof.length; i++) {
+         qt(p, dof[i]).should.be.closeTo(expected[i], 0.0001);
+         qt(1 - p, dof[i]).should.be.closeTo(-expected[i], 0.0001);
+      }
+
+      p = 0.95
+      expected = [6.313752, 2.919986, 2.353363, 2.131847, 1.812461, 1.697261, 1.660234];
+      for (let i = 0; i < dof.length; i++) {
+         qt(p, dof[i]).should.be.closeTo(expected[i], 0.0001);
+         qt(1 - p, dof[i]).should.be.closeTo(-expected[i], 0.0001);
+      }
+
+      p = 0.85
+      expected = [1.962611, 1.386207, 1.249778, 1.189567, 1.093058, 1.054662, 1.041836];
+      for (let i = 0; i < dof.length; i++) {
+         qt(p, dof[i]).should.be.closeTo(expected[i], 0.0001);
+         qt(1 - p, dof[i]).should.be.closeTo(-expected[i], 0.0001);
+      }
+
+      p = 0.75
+      expected = [1.0000000, 0.8164966, 0.7648923, 0.7406971, 0.6998121, 0.6827557, 0.6769510];
+      for (let i = 0; i < dof.length; i++) {
+         qt(p, dof[i]).should.be.closeTo(expected[i], 0.0001);
+         qt(1 - p, dof[i]).should.be.closeTo(-expected[i], 0.0001);
+      }
+
+      // errors
+      expect(() => qt(-0.0001, 1)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
+      expect(() => qt( 1.0001, 1)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
+      expect(() => qt(0.2)).to.throw(Error, "Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
+      expect(() => qt(0.2, -1)).to.throw(Error, "Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
+      expect(() => qt(0.2, 0.5)).to.throw(Error, "Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
+
+      // long vectors
+      p = seq(0.0001, 0.9999, n);
+      const q = qt(p, 10);
+      expect(q).to.have.lengthOf(n);
+      q[0].should.be.equal(qt(0.0001, 10));
+      q[n-1].should.be.equal(qt(0.9999, 10));
    });
 });
 

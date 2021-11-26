@@ -655,6 +655,81 @@ export function pt(t, dof) {
 
 
 /**
+ * Inverse cumulative distribution function for Student's t-distribution
+ * @param {number|number[]} p - probability or vector with probabilities
+ * @param {number} dof - degrees of freedom
+ */
+export function qt(p, dof) {
+
+   if (dof === undefined || dof === null || dof < 1) {
+      throw Error("Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
+   }
+
+   if (p < 0 || p > 1) {
+      throw Error("Parameter 'p' must be between 0 and 1.");
+   }
+
+   if (Array.isArray(p)) {
+      return p.map(v => qt(v, dof));
+   }
+
+   if (p < 0.0000000001) return -Infinity;
+   if (p > 0.9999999999) return +Infinity;
+
+
+   // simple cases — exact solutions
+   if (dof === 1) {
+      return Math.tan(Math.PI * (p - 0.5));
+   }
+
+   if (dof === 2) {
+      return 2 * (p - 0.5) * Math.sqrt(2 / (4 * p * (1 - p)));
+   }
+
+   // approximation
+
+   let sign = -1;
+   if (p >= 0.5){
+      sign = +1 ;
+      p = 2 * (1 - p);
+   } else {
+      sign = -1;
+      p = 2 * p;
+   }
+
+   const a = 1.0 / (dof - 0.5);
+   const b = 48.0 / (a ** 2);
+   let c = ((20700 * a / b - 98) * a - 16) * a + 96.36;
+   const d = ((94.5 / (b + c) - 3.0)/b + 1.0) * Math.sqrt(a * Math.PI / 2) * dof;
+
+   let x = d * p;
+   let y = x ** (2.0/dof);
+
+   if (y > 0.05 + a) {
+
+      // asymptotic inverse expansion about normal
+      x = qnorm(p * 0.5);
+      y = x ** 2;
+
+      if (dof < 5) {
+         c = c + 0.3 * (dof - 4.5) * (x + 0.6);
+      }
+
+      c = (((0.05 * d * x - 5.0) * x - 7.0) * x - 2.0) * x + b + c;
+      y = (((((0.4 * y + 6.3) * y + 36.0) * y + 94.5) / c - y - 3.0)/b + 1.0) * x;
+      y = a * (y ** 2);
+      y = y > 0.002 ? Math.exp(y) - 1.0 : 0.5 * (y ** 2) + y;
+   } else {
+      y = ((1.0 / (((dof + 6.0)/(dof * y) - 0.089 * d - 0.822) * (dof + 2.0) * 3.0) + 0.5/(dof + 4.0)) * y - 1.0) *
+         (dof + 1.0)/(dof + 2.0) + 1.0/y;
+   }
+
+   return sign * Math.sqrt(dof * y);
+}
+
+
+
+/**
  * Probability density function for F-distribution
  * @param {number|number[]} F - F-value or a vector of t-values
  * @param {number} d1 - degrees of freedom
