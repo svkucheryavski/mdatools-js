@@ -541,6 +541,79 @@ export function pnorm(x, mu = 0, sigma = 1) {
    return p;
 }
 
+/**
+ * Inverse cumulative distribution function for normal distribution
+ * @param {number|number[]} p - vector of probabilities or a single probability value
+ * @param {number} mu - average value of the population
+ * @param {number} sigma - standard deviation of the population
+ * @returns {number|number[]} vector with quantiles or single quantile value
+ */
+export function qnorm(p, mu = 0, sigma = 1) {
+
+   if (Array.isArray(p)) {
+      return p.map(v => qnorm(v, mu, sigma));
+   }
+
+   if (mu !== 0 || sigma !== 1) {
+      return qnorm(p) * sigma + mu;
+   }
+
+   if (p < 0 || p > 1) {
+      throw Error("Parameter 'p' must be between 0 and 1.");
+   }
+
+   if (p < 0.0000000001) return -Infinity;
+   if (p > 0.9999999999) return +Infinity;
+
+   const SP1 = 0.425;
+   const SP2 = 5.0;
+   const C1 = 0.180625;
+   const C2 = 1.6;
+
+   const a0 = 3.3871327179;
+   const a1 = 5.0434271938 * 10;
+   const a2 = 1.5929113202 * 100;
+   const a3 = 5.9109374720 * 10;
+   const b1 = 1.7895169469 * 10;
+   const b2 = 7.8757757664 * 10;
+   const b3 = 6.7187563600 * 10;
+
+   const c0 = 1.4234372777;
+   const c1 = 2.7568153900;
+   const c2 = 1.3067284816;
+   const c3 = 1.7023821103 * 0.1;
+   const d1 = 7.3700164250 * 0.1;
+   const d2 = 1.2021132975 * 0.1;
+
+   const e0 = 6.6579051150;
+   const e1 = 3.0812263860;
+   const e2 = 4.2868294337 * 0.1;
+   const e3 = 1.7337203997 * 0.01;
+   const f1 = 2.4197894225 * 0.1;
+   const f2 = 1.2258202635 * 0.01;
+
+   const q = p - 0.5;
+   let r;
+
+   if (Math.abs(q) <= SP1) {
+      r = C1 - q * q;
+      return q * (((a3 * r + a2) * r + a1) *r + a0) / (((b3 * r + b2) * r + b1) * r + 1.0);
+   }
+
+   r = q < 0 ? p : 1 - p;
+   r = Math.sqrt(-Math.log(r));
+   let res;
+
+   if (r <= SP2) {
+      r = r - C2;
+      res = (((c3 * r + c2) * r + c1) * r + c0) / ((d2 * r + d1) * r + 1.0);
+   } else {
+      r = r - SP2;
+      res = (((e3 * r + e2) * r + e1) + e0) / ((f2 * r + f1) * r + 1.0);
+   }
+
+   return q < 0 ? -res : res;
+}
 
 /**
  * Probability density function for Student's t-distribution

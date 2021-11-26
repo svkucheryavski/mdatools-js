@@ -3,7 +3,7 @@
  ******************************************************************/
 
 // import of functions to test
-import {runif, dunif, punif, rnorm, dnorm, pnorm, dt, pt, df, pf} from '../src/index.js';
+import {runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, df, pf} from '../src/index.js';
 
 // import dependencies
 import {seq, sum, sd, mean, min, max} from '../src/index.js';
@@ -252,5 +252,46 @@ describe('Tests for theoretical distribution functions.', function () {
 
    });
 
+   it('qnorm() works correctly (n = 1 000 000).', function () {
+      const n = 1000000;
+
+      // border cases
+      qnorm(0).should.be.equal(-Infinity);
+      qnorm(1).should.be.equal(Infinity);
+      qnorm([0, 0, 1, 1]).should.be.eql([-Infinity, -Infinity, Infinity, Infinity]);
+
+      // middle point and border cases
+      qnorm(0.5).should.be.equal(0);
+      qnorm([0.5, 0.5]).should.be.eql([0, 0]);
+      qnorm([0, 0.5, 1]).should.be.eql([-Infinity, 0, Infinity]);
+
+      // other cases
+      qnorm(0.9999).should.be.closeTo( 3.719016, 0.00001);
+      qnorm(0.0001).should.be.closeTo(-3.719016, 0.00001);
+
+      qnorm(0.975).should.be.closeTo( 1.959964, 0.00001);
+      qnorm(0.025).should.be.closeTo(-1.959964, 0.00001);
+
+      qnorm(0.840).should.be.closeTo( 0.9944579, 0.00001);
+      qnorm(0.160).should.be.closeTo(-0.9944579, 0.00001);
+
+      qnorm(0.750).should.be.closeTo( 0.6744898, 0.00001);
+      qnorm(0.250).should.be.closeTo(-0.6744898, 0.00001);
+
+      // cases with non standard distribution
+      qnorm(0.975, 10, 2).should.be.closeTo(13.91993, 0.00001);
+      qnorm(0.025, 10, 2).should.be.closeTo( 6.080072, 0.00001);
+
+      // errors
+      expect(() => qnorm(-0.0001)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
+      expect(() => qnorm( 1.0001)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
+
+      // long vectors
+      const p = seq(0.0001, 0.9999, n);
+      const q = qnorm(p);
+      expect(q).to.have.lengthOf(n);
+      q[0].should.be.equal(qnorm(0.0001));
+      q[n-1].should.be.equal(qnorm(0.9999));
+   });
 });
 
