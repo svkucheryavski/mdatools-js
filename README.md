@@ -86,6 +86,19 @@ The package has support for several known theoretical distributions. Every distr
 * `df(F, d1, d2)`
 * `pf(F, d1, d2)`
 
+### Hypothesis testing
+
+#### Student t-test for means
+
+The tests compute the observed effect, standard error, t- and p-values as well
+as confidence interval and return everything as JSON. The two-sample t-test assumes
+that population variances are equal. Confidence intervals always computed around
+the observed effect and for both tails.
+
+* `tTest1(x, mu = 0, alpha = 0.05, tail = "both")` - one sample t-test
+* `tTest2(x, y, alpha = 0.05, tail = "both")` - two sample t-test
+
+
 ### Additional functions (helpers)
 
 * `integrate(f, a, b)` — numeric integration of function `f` with limits `(a, b)`.
