@@ -1,3 +1,6 @@
+/**********************************************
+ * Functions for statistical tests            *
+ **********************************************/
 
 /**
  * Returns a p-value for any test
@@ -94,6 +97,7 @@ export function tTest2(x, y, alpha = 0.05, tail = "both") {
 }
 
 /**********************************************
+ *
  * Functions for computing single statistics  *
  **********************************************/
 
@@ -610,7 +614,7 @@ export function dnorm(x, mu = 0, sigma = 1) {
       d[i] = A * Math.exp(frac * df * df);
    }
 
-   return d;
+   return x.length === 1 ? d[0] : d;
 }
 
 
@@ -633,7 +637,7 @@ export function pnorm(x, mu = 0, sigma = 1) {
       p[i] = 0.5 * (1 + erf((x[i] - mu) * frac))
    }
 
-   return p;
+   return p.length === 1 ? p[0] : p;
 }
 
 /**
@@ -738,11 +742,18 @@ export function dt(t, dof) {
  */
 export function pt(t, dof) {
 
+   if (dof === undefined || dof === null || dof < 1) {
+      throw Error("Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
+   }
+
    if (Array.isArray(t)) {
       return t.map(v => pt(v, dof));
    }
 
    // since distribution in symmetric we can use only left tail
+   if (t === 0) return 0.5;
+   if (t === -Infinity) return 0;
+   if (t === Infinity) return 1;
    if (t > 0) return (1 - pt(-t, dof));
 
    return integrate((x) => dt(x, dof), -Infinity, t);
@@ -1053,6 +1064,10 @@ export function scale(x, center = undefined, scale = undefined) {
  * @returns {number} result of integration
  */
 export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefined) {
+
+   if (typeof(a) !== "number" || typeof(b) !== "number") {
+      throw Error("Parameters 'a' and 'b' must be numbers.");
+   }
 
    if (b < a) {
       throw Error("Parameter 'b' must be larger 'a'.");
