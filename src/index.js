@@ -24,6 +24,75 @@ export function getPValue(pfun, crit, tail, params = []) {
 }
 
 
+/**
+ * Makes one-sample t-test for a mean
+ * @param {number[]} x - vector with sample values
+ * @param {number} mu - assumed mean value for population (H0)
+ * @param {number} alpha - significance level (used to compute confidence interval)
+ * @param {string} tail - which tail to use ("left", "right", or "both")
+ * @returns {Object} - a JSON with test results
+ */
+export function tTest1(x, mu = 0, alpha = 0.05, tail = "both") {
+
+   if (typeof(mu) !== "number") {
+      throw Error("Parameter 'mu' should be a number.");
+   }
+
+   const nx = x.length;
+   const mx = mean(x);
+
+   const effectObserved = mx - mu;
+   const se = sd(x) / Math.sqrt(nx);
+   const tValue = effectObserved / se;
+   const DoF = nx - 1
+   const errMargin = qt(1 - alpha/2, DoF) * se;
+
+   return {
+      test: "One sample t-test",
+      effectObserved: effectObserved,
+      se: se,
+      tValue: tValue,
+      alpha: alpha,
+      tail: tail,
+      DoF: DoF,
+      pValue: getPValue(pt, tValue, tail, [DoF]),
+      ci: [mx - errMargin, mx + errMargin]
+   };
+}
+
+/**
+ * Makes two-sample t-test for a difference of means assuming population variances equal
+ * @param {number[]} x - vector with sample 1 values
+ * @param {number[]} y - vector with sample 2 values
+ * @param {number} alpha - significance level (used to compute confidence interval)
+ * @param {string} tail - which tail to use ("left", "right", or "both")
+ * @returns {Object} - a JSON with test results
+ */
+export function tTest2(x, y, alpha = 0.05, tail = "both") {
+   const nx = x.length;
+   const mx = mean(x);
+   const my = mean(y);
+   const ny = y.length;
+
+   const effectObserved = mx - my;
+   const se = Math.sqrt( (sd(x)**2 / nx) + (sd(y)**2 / ny));
+   const tValue = effectObserved / se;
+   const DoF = (nx - 1) + (ny - 1);
+   const errMargin = qt(1 - alpha/2, DoF) * se;
+
+   return {
+      test: "Two sample t-test",
+      effectObserved: effectObserved,
+      se: se,
+      tValue: tValue,
+      alpha: alpha,
+      tail: tail,
+      DoF: DoF,
+      pValue: getPValue(pt, tValue, tail, [DoF]),
+      ci: [effectObserved - errMargin, effectObserved + errMargin]
+   };
+}
+
 /**********************************************
  * Functions for computing single statistics  *
  **********************************************/
