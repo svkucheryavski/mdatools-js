@@ -42,16 +42,17 @@ export function tTest1(x, mu = 0, alpha = 0.05, tail = "both") {
    }
 
    const nx = x.length;
-   const mx = mean(x);
 
-   const effectObserved = mx - mu;
+   const effectExpected = mu;
+   const effectObserved = mean(x);
    const se = sd(x) / Math.sqrt(nx);
-   const tValue = effectObserved / se;
+   const tValue = (effectObserved - effectExpected) / se;
    const DoF = nx - 1
    const errMargin = qt(1 - alpha/2, DoF) * se;
 
    return {
       test: "One sample t-test",
+      effectExpected: mu,
       effectObserved: effectObserved,
       se: se,
       tValue: tValue,
@@ -59,7 +60,7 @@ export function tTest1(x, mu = 0, alpha = 0.05, tail = "both") {
       tail: tail,
       DoF: DoF,
       pValue: getPValue(pt, tValue, tail, [DoF]),
-      ci: [mx - errMargin, mx + errMargin]
+      ci: [effectObserved - errMargin, effectObserved + errMargin]
    };
 }
 
@@ -77,14 +78,16 @@ export function tTest2(x, y, alpha = 0.05, tail = "both") {
    const my = mean(y);
    const ny = y.length;
 
+   const effectExpected = 0;
    const effectObserved = mx - my;
    const se = Math.sqrt( (sd(x)**2 / nx) + (sd(y)**2 / ny));
-   const tValue = effectObserved / se;
+   const tValue = (effectObserved - effectExpected) / se;
    const DoF = (nx - 1) + (ny - 1);
    const errMargin = qt(1 - alpha/2, DoF) * se;
 
    return {
       test: "Two sample t-test",
+      effectExpected: effectExpected,
       effectObserved: effectObserved,
       se: se,
       tValue: tValue,

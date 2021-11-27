@@ -95,7 +95,8 @@ describe('Tests for one sample t-test (tTest1).', function () {
       let res = tTest1([-3, -2, -1, 0, 1, 2], 2, 0.01, "both");
 
       // exact numbers
-      res.effectObserved.should.be.equal(-2.5);
+      res.effectExpected.should.be.equal(2.0);
+      res.effectObserved.should.be.equal(-0.5);
       res.alpha.should.be.equal(0.01);
       res.tail.should.be.equal("both");
       res.DoF.should.be.equal(5);
@@ -112,7 +113,8 @@ describe('Tests for one sample t-test (tTest1).', function () {
       res = tTest1([-3, -2, -1, 0, 1, 2], 2, 0.01, "left");
 
       // exact numbers
-      res.effectObserved.should.be.equal(-2.5);
+      res.effectExpected.should.be.equal(2.0);
+      res.effectObserved.should.be.equal(-0.5);
       res.alpha.should.be.equal(0.01);
       res.tail.should.be.equal("left");
       res.DoF.should.be.equal(5);
@@ -129,7 +131,8 @@ describe('Tests for one sample t-test (tTest1).', function () {
       res = tTest1([-3, -2, -1, 0, 1, 2], 2, 0.01, "right");
 
       // exact numbers
-      res.effectObserved.should.be.equal(-2.5);
+      res.effectExpected.should.be.equal(2.0);
+      res.effectObserved.should.be.equal(-0.5);
       res.alpha.should.be.equal(0.01);
       res.tail.should.be.equal("right");
       res.DoF.should.be.equal(5);
