@@ -1,3 +1,29 @@
+
+/**
+ * Returns a p-value for any test
+ * @param {function} pfun - reference to a CDF function (e.g. pnorm)
+ * @param {number} crit - critical value for the test (e.g. z-score or t-score)
+ * @param {string} tail - which tail to use ("left", "right", or "both")
+ * @param {Array} params - additional parameters to CDF function
+ * @returns {number} - a p-value for the test
+ */
+export function getPValue(pfun, crit, tail, params = []) {
+
+   if (tail === "left") {
+      return(pfun(crit, ...params));
+   }
+
+   if (tail === "right") {
+      return(1 - pfun(crit, ...params));
+   }
+
+   if (tail === "both") {
+      let p = pfun(crit, ...params);
+      return min([p, 1 - p]) * 2;
+   }
+}
+
+
 /**********************************************
  * Functions for computing single statistics  *
  **********************************************/
