@@ -52,7 +52,7 @@ Following functions compute and return either single statistic or a vector with 
 * `cumsum(x)` — computes cumulative sum of a vector of values.
 * `scale(x, center, scale)` — center and scale values from `x` (e.g. standardize).
 
-## Manipulations with values
+### Manipulations with values
 
 * `seq(a, b, n)` — creates a sequence of `n` values equally distanced in interval [a, b].
 * `rep(x, n)` — replicates values in a vector `x` `n` times (`n` can be a vector).
