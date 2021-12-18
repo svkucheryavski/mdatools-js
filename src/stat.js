@@ -366,7 +366,7 @@ export function range(x) {
  * @param {number} margin - margin in parts of one (e.g. 0.1 for 10% or 2 for 200%)
  * @returns{number[]} array with marginal range boundaries
  */
-export function mrange(x, margin) {
+export function mrange(x, margin = 0.05) {
    const mn = min(x);
    const mx = max(x);
    const d = mx - mn;

@@ -3,10 +3,10 @@
  ******************************************************************/
 
 // import of functions to test
-import {runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf} from '../src/index.js';
+import {runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf} from '../src/stat.js';
 
 // import dependencies
-import {seq, sum, sd, mean, min, max} from '../src/index.js';
+import {seq, sum, sd, mean, min, max} from '../src/stat.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();
@@ -66,8 +66,8 @@ describe('Tests for theoretical distribution functions.', function () {
       (sum(d3) * 12 * sigma/n).should.be.closeTo(1.0, 0.00001);
 
       // if values are far from mean density is 0
-      dnorm([mu - 6 * sigma], mu, sigma)[0].should.be.closeTo(0.0, 0.0000001);
-      dnorm([mu + 6 * sigma], mu, sigma)[0].should.be.closeTo(0.0, 0.0000001);
+      dnorm([mu - 6 * sigma], mu, sigma).should.be.closeTo(0.0, 0.0000001);
+      dnorm([mu + 6 * sigma], mu, sigma).should.be.closeTo(0.0, 0.0000001);
    });
 
 

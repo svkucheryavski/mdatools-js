@@ -1,6 +1,6 @@
-# Javascript library for statistic analysis and data manipulations
+# Javascript library for statistics and multivariate data analysis
 
-A simple library for statistic analysis and manipulations with single vector values. The library is currently under development, breaking changes may occur in the coming versions.
+A simple library with a set of most common methods for descriptive and inferential statistics as well as matrix operations and projection based methods for multivariate data analysis. The library is currently under development, breaking changes may occur in the coming versions.
 
 ## How to
 
@@ -18,7 +18,7 @@ const s = sd(x);
 console.log([m, s]);
 ```
 
-## List of functions
+## Descriptive and inferential statistics
 
 If nothing specific is written, then in all functions variables named `x` and `y` are expected to be vectors with numbers (`number[]`).
 
@@ -106,3 +106,15 @@ the observed effect and for both tails.
 * `beta(x, y)` — Beta function computed via approximation of Gamma function.
 * `ibeta(x, a, b)` — Standardized incomplete Beta function (a.k.a. I<sub>x</sub>(a, b)).
 
+
+## Matrix operations
+
+Coming soon.
+
+## Projection based methods
+
+Coming soon.
+
+## Datasets
+
+Coming soon.

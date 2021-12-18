@@ -3,10 +3,10 @@
  ******************************************************************/
 
 // import of functions to test
-import {min, max, sum, prod, mean, sd, skewness, kurtosis, cov, cor} from '../src/index.js';
+import {min, max, sum, prod, mean, sd, skewness, kurtosis, cov, cor} from '../src/stat.js';
 
 // import dependencies
-import {runif} from '../src/index.js';
+import {runif} from '../src/stat.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();
