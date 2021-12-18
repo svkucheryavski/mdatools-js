@@ -3,10 +3,10 @@
  ******************************************************************/
 
 // import of functions to test
-import {integrate, beta, ibeta, gamma} from '../src/stat.js';
+import {integrate, beta, ibeta, gamma} from '../stat/index.js';
 
 // import dependencies
-import {dnorm} from '../src/stat.js';
+import {dnorm} from '../stat/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();

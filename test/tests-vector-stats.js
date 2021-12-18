@@ -3,10 +3,10 @@
  ******************************************************************/
 
 // import of functions to test
-import {quantile, range, mrange, split, count, mids, diff, getOutliers, ppoints, rank, cumsum} from '../src/stat.js';
+import {quantile, range, mrange, split, count, mids, diff, getOutliers, ppoints, rank, cumsum} from '../stat/index.js';
 
 // import dependencies
-import {runif, seq, min, max} from '../src/stat.js';
+import {runif, seq, min, max} from '../stat/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();

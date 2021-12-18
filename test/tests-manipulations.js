@@ -3,10 +3,10 @@
  ******************************************************************/
 
 // import of functions to test
-import {seq, rep, sort, subset, expandGrid, shuffle, round, scale} from '../src/stat.js';
+import {seq, rep, sort, subset, expandGrid, shuffle, round, scale} from '../stat/index.js';
 
 // import dependencies
-import {runif, rnorm, mean, sd} from '../src/stat.js';
+import {runif, rnorm, mean, sd} from '../stat/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();

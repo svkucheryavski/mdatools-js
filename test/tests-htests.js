@@ -3,10 +3,10 @@
 //  ******************************************************************/
 
 // import of functions to test
-import {getPValue, tTest1, tTest2} from '../src/stat.js';
+import {getPValue, tTest1, tTest2} from '../stat/index.js';
 
 // import dependencies
-import {pnorm} from '../src/stat.js';
+import {pnorm} from '../stat/index.js';
 import {default as chai} from 'chai';
 
 const should = chai.should();
