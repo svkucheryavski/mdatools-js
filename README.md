@@ -5,7 +5,7 @@ A simple library with a set of most common methods for descriptive and inferenti
 ## How to
 
 ```javascript
-export {rnorm, mean, sd} from "stat-js";
+export {rnorm, mean, sd} from "mdatools/stat";
 
 // generate vector of n = 10 random numbers from N(µ = 5, σ = 2)
 const x = rnorm(10, 5, 2);
