@@ -1,6 +1,14 @@
 /**********************************************
- * Functions for statistical tests            *
+ * Functions for statistical tests and models *
  **********************************************/
+
+/**
+ * Returns a simple linear regression model
+ *
+ */
+export function lm(y, X) {
+
+}
 
 /**
  * Returns a p-value for any test
@@ -100,7 +108,6 @@ export function tTest2(x, y, alpha = 0.05, tail = "both") {
 }
 
 /**********************************************
- *
  * Functions for computing single statistics  *
  **********************************************/
 

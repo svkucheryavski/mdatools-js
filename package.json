@@ -1,10 +1,9 @@
 {
   "name": "mdatools",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "type": "module",
   "description": "Tools and methods for statistics and multivariate data analysis.",
-  "main": "src/index.js",
 
   "scripts": {
     "test": "mocha"

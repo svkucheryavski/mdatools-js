@@ -2,7 +2,13 @@
 
 A simple library with a set of most common methods for descriptive and inferential statistics as well as matrix operations and projection based methods for multivariate data analysis. The library is currently under development, breaking changes may occur in the coming versions.
 
-## How to
+## Descriptive and inferential statistics
+
+Functions can be imported from `'mdatools/stat'`.
+
+If nothing specific is written, then in all functions variables named `x` and `y` are expected to be vectors with numbers (`number[]`).
+
+### Quick example
 
 ```javascript
 export {rnorm, mean, sd} from "mdatools/stat";
@@ -17,10 +23,6 @@ const s = sd(x);
 // show both statistics
 console.log([m, s]);
 ```
-
-## Descriptive and inferential statistics
-
-If nothing specific is written, then in all functions variables named `x` and `y` are expected to be vectors with numbers (`number[]`).
 
 ### Computing statistics
 
@@ -95,8 +97,8 @@ as confidence interval and return everything as JSON. The two-sample t-test assu
 that population variances are equal. Confidence intervals always computed around
 the observed effect and for both tails.
 
-* `tTest1(x, mu = 0, alpha = 0.05, tail = "both")` - one sample t-test
-* `tTest2(x, y, alpha = 0.05, tail = "both")` - two sample t-test
+* `tTest1(x, mu = 0, alpha = 0.05, tail = "both")` — one sample t-test
+* `tTest2(x, y, alpha = 0.05, tail = "both")` — two sample t-test
 
 
 ### Additional functions (helpers)
@@ -109,12 +111,78 @@ the observed effect and for both tails.
 
 ## Matrix operations
 
+Functions can be imported from `'mdatools/matrix'`.
+
+The library operates with vectors (1D Array, e.g. `x = [1, 2, 3]`) and matrices (2D Arrays or Arrays of Arrays of equal length, e.g. `X = [[1, 2, 3], [4, 5, 6]]`). Any vector is considered as a column vector, so `x` from the example above will have a dimension of 1 column and 3 rows. You can think of a matrix as a vector of vectors, e.g. `X` from the example above will have a dimension of 2 columns and 3 rows.
+
+### Quick example
+
+```javascript
+export {crossprod, tomatrix} from "mdatools/matrix";
+
+// create a matrix with 2 columns and 3 rows manually
+const X = [[1, 2, 3], [4, 5, 6]];
+
+// create matrix with 2 columns and 3 rows from a vector (sequence)
+const Y = tomatrix(seq(1, 6), 3, 2);
+
+// compute X'Y
+const Z = crossprod(X, Y);
+
+// show the result
+// must be [ [ 14, 32 ], [ 32, 77 ] ]
+console.log(Z);
+```
+
+### Generation of matrices
+
+* `matrix(n, m, a)` — creates a matrix with `n` rows and `m` columns and fills it with a value `a`.
+* `zeros(n, m)` — creates a matrix with `n` rows and `m` columns and fills it with zeros.
+* `diag(x)` — creates a squared matrix and fills diagonal elements with values from vector `x`.
+* `eye(n)` — creates an identity matrix of size `n`.
+* `tomatrix(x, n, m)` — creates a matrix with `n` rows and `m` columns from a vector `x`.
+
+The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements as number of rows, it replicates the vector column wise, so every column of the matrix will have values from the vector. If `x` has the same number of elements as number of columns — it does replication row wise. Otherwise it expects `x` to have length `n * m` and simply reshape the values into a matrix (column wise).
+
+### Checking properties of vectors and matrices
+* `nrow(X)` — returns number of elements in a vector or number of rows in a matrix.
+* `ncol(X)` — returns 1 for a vector or number of columns in a matrix.
+* `ismatrix(X)` — returns true if `X` is a matrix (2D Array).
+* `isvector(X)` — returns true if `X` is a vector (1D Array).
+* `isarray(X)` — returns true if `X` is an Array (shortcut for `Array.isArray()`).
+
+
+### Simple operations with vectors
+* `vadd(x, y)` — element wise addition of two vectors, or a vector and a scalar.
+* `vmult(x, y)` — element wise multiplication of two vectors, or a vector and a scalar.
+* `vdiv(x, y)` — element wise division of two vectors, or a vector and a scalar.
+* `vapply(x, fun)` — applies function `fun` to every element of the vector (shortcut for `Array.map()`).
+* `vdot(x, y)` — computes a dot product of two vectors.
+
+
+### Simple operations with matrices
+* `transpose(X)` — transposition of a matrix or a vector.
+* `madd(X, Y)` — element wise sum of two matrices, a matrix and a scalar or a matrix and a vector.
+* `mmult(X, Y)` — element wise product of two matrices, a matrix and a scalar or a matrix and a vector.
+* `mdivide(X, Y)` — element wise division of two matrices, a matrix and a scalar or a matrix and a vector.
+* `mdot(X, Y)` — inner product of two matrices (as dot products of rows of `X` and columns of `Y`).
+* `crossprod(X, Y)` — computes inner product of X'Y.
+* `tcrossprod(X, Y)` — computes inner product of XY'.
+
+
+#### To do:
+* `mapply(X, dim, fun)` — applies function `fun` to every row (if `dim = 1`) or column (`dim = 2`), or every element (`dim = 0`) of `X`
+
+
+For element wise operations of a matrix and a vector, functions check how many elements the vector has. If vector has the same number of elements as number of rows in the matrix the operation will
+me carried out column wise. If vector has the same number of elements as number of columns in the matrix, the operation will be applied to every row of the matrix.
+
+
+
+## Decompositions
+
 Coming soon.
 
-## Projection based methods
-
-Coming soon.
-
-## Datasets
+## Models
 
 Coming soon.
