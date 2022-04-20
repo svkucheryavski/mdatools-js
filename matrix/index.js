@@ -1,4 +1,4 @@
-import {rep, seq, subset} from '../stat/index.js';
+import {rep, seq, subset, sum} from '../stat/index.js';
 
 /**********************************************
  * Functions for manipulations with vectors   *
@@ -10,6 +10,19 @@ const subtract = (a, b) => a - b;
 const times = (a, b) => a * b;
 const divide = (a, b) => a/b;
 
+/**
+ * Computes a Euclidean norm of a vector x
+ * @param {Array} x — a vector of values
+ * @returns a number (the norm)
+ */
+export function vnorm2(x) {
+
+   if (!isvector(x)) {
+      throw Error("Argument 'x' must be a vector.");
+   }
+
+   return Math.sqrt(sum(x.map(v => v**2)));
+}
 
 /**
  * Applies a function to each element of a vector

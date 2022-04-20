@@ -144,13 +144,13 @@ console.log(Z);
 
 The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements as number of rows, it replicates the vector column wise, so every column of the matrix will have values from the vector. If `x` has the same number of elements as number of columns — it does replication row wise. Otherwise it expects `x` to have length `n * m` and simply reshape the values into a matrix (column wise).
 
-### Checking properties of vectors and matrices
+### Checking or computing properties of vectors and matrices
 * `nrow(X)` — returns number of elements in a vector or number of rows in a matrix.
 * `ncol(X)` — returns 1 for a vector or number of columns in a matrix.
 * `ismatrix(X)` — returns true if `X` is a matrix (2D Array).
 * `isvector(X)` — returns true if `X` is a vector (1D Array).
 * `isarray(X)` — returns true if `X` is an Array (shortcut for `Array.isArray()`).
-
+* `vnorm2(x)` — computes 2-norm (Euclidean norm) of a vector.
 
 ### Simple operations with vectors
 * `vadd(x, y)` — element wise addition of two vectors, or a vector and a scalar.
@@ -158,7 +158,6 @@ The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements
 * `vdiv(x, y)` — element wise division of two vectors, or a vector and a scalar.
 * `vapply(x, fun)` — applies function `fun` to every element of the vector (shortcut for `Array.map()`).
 * `vdot(x, y)` — computes a dot product of two vectors.
-
 
 ### Simple operations with matrices
 * `transpose(X)` — transposition of a matrix or a vector.

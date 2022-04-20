@@ -3,7 +3,7 @@
  ******************************************************************/
 
 // import of functions to test
-import {vdot, isvector, vadd, vdiv, vmult, vapply} from '../matrix/index.js';
+import {vdot, isvector, vadd, vdiv, vmult, vapply, vnorm2} from '../matrix/index.js';
 
 // import dependencies
 import {default as chai} from 'chai';
@@ -13,6 +13,17 @@ const expect = chai.expect;
 
 /* Tests for operations with vectors */
 describe('Tests for operations with vectors.', function () {
+   it('vnorm2() works correctly.', function () {
+      const x1 = [1, 2, 3, 4];
+      const x2 = [1, -2, -3, 4];
+      const x3 = [0, 0, 0, 0];
+      const x4 = [1, 1];
+
+      expect(vnorm2(x1)).to.equal(Math.sqrt(30));
+      expect(vnorm2(x2)).to.equal(Math.sqrt(30));
+      expect(vnorm2(x3)).to.equal(0);
+      expect(vnorm2(x4)).to.equal(Math.sqrt(2));
+   });
 
    it('vapply() works correctly.', function () {
 

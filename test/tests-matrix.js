@@ -318,6 +318,4 @@ describe('Tests for generation of matrices and checking its properties.', functi
       expect(ismatrix([[1, 2, 3], [1, 2, 3], [4, 5, 6]])).to.equal(true)
    });
 
-
-
 });
