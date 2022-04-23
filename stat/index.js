@@ -948,8 +948,9 @@ export function rep(x, n) {
  * Create a subset of vectors based on a vector of indices
  * @param {number[]} x - a vector with values
  * @param {number[]} indices - a vector with element indices (first index is 1 not 0!)
+ * @param {string} method - what to do with values ("select" or "remove")
  */
-export function subset(x, indices) {
+export function subset(x, indices, method) {
 
    if (!Array.isArray(x)) x = [x];
    if (!Array.isArray(indices)) indices = [indices];
@@ -959,12 +960,21 @@ export function subset(x, indices) {
    }
 
    const n = indices.length;
-   let out = Array(n);
-   for (let i = 0; i < n; i++) {
-      out[i] = x[indices[i] - 1];
+
+   if (!method || method === "select") {
+      let out = Array(n);
+      for (let i = 0; i < n; i++) {
+         out[i] = x[indices[i] - 1];
+      }
+      return out;
    }
 
-   return out;
+   if (method === "remove") {
+      let out = [...x];
+      return out.filter((v, i) => !indices.includes(i + 1));
+   }
+
+   throw Error("Wrong value for argument 'method'.");
 }
 
 

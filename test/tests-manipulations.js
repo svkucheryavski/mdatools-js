@@ -86,15 +86,34 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(() => subset(x, 0)).to.throw(Error, "Parameter 'indices' must have values between 1 and 'x.length'.");
       expect(() => subset(x, 11)).to.throw(Error, "Parameter 'indices' must have values between 1 and 'x.length'.");
 
-      // index as a vector
-      expect(subset(x, [1])).to.eql([10]);
-      expect(subset(x, [3])).to.eql([30]);
+      // index as a vector - select
+      expect(subset(x, [ 1])).to.eql([ 10]);
+      expect(subset(x, [ 3])).to.eql([ 30]);
       expect(subset(x, [10])).to.eql([100]);
 
-      // index as a value
-      expect(subset(x, 1)).to.eql([10]);
-      expect(subset(x, 3)).to.eql([30]);
+      expect(subset(x, [ 1], "select")).to.eql([ 10]);
+      expect(subset(x, [ 3], "select")).to.eql([ 30]);
+      expect(subset(x, [10], "select")).to.eql([100]);
+
+      // index as a value - select
+      expect(subset(x,  1)).to.eql([ 10]);
+      expect(subset(x,  3)).to.eql([ 30]);
       expect(subset(x, 10)).to.eql([100]);
+
+      expect(subset(x,  1, "select")).to.eql([ 10]);
+      expect(subset(x,  3, "select")).to.eql([ 30]);
+      expect(subset(x, 10, "select")).to.eql([100]);
+
+      // index as a vector - remove
+      expect(subset(x, [ 1], "remove")).to.eql([20, 30, 40, 50, 60, 70, 80, 90, 100]);
+      expect(subset(x, [ 3], "remove")).to.eql([10, 20, 40, 50, 60, 70, 80, 90, 100]);
+      expect(subset(x, [10], "remove")).to.eql([10, 20, 30, 40, 50, 60, 70, 80,  90]);
+
+      // index as a value - select
+      expect(subset(x,  1, "remove")).to.eql([20, 30, 40, 50, 60, 70, 80, 90, 100]);
+      expect(subset(x,  3, "remove")).to.eql([10, 20, 40, 50, 60, 70, 80, 90, 100]);
+      expect(subset(x, 10, "remove")).to.eql([10, 20, 30, 40, 50, 60, 70, 80,  90]);
+
    });
 
 
@@ -105,10 +124,15 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(() => subset(x, [0, 1, 2])).to.throw(Error, "Parameter 'indices' must have values between 1 and 'x.length'.");
       expect(() => subset(x, [8, 9, 11])).to.throw(Error, "Parameter 'indices' must have values between 1 and 'x.length'.");
 
-      // index as a vector
+      // index as a vector - select
       expect(subset(x, [1, 2, 3])).to.eql([10, 20, 30]);
       expect(subset(x, [3, 7, 9])).to.eql([30, 70, 90]);
       expect(subset(x, [10, 9, 8, 7, 6, 1])).to.eql([100, 90, 80, 70, 60, 10]);
+
+      // index as a vector - remove
+      expect(subset(x, [1, 2, 3], "remove")).to.eql([40, 50, 60, 70, 80, 90, 100]);
+      expect(subset(x, [3, 7, 9], "remove")).to.eql([10, 20, 40, 50, 60, 80, 100]);
+      expect(subset(x, [10, 9, 8, 7, 6, 1], "remove")).to.eql([20, 30, 40, 50]);
    });
 
 
