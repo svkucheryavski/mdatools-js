@@ -955,6 +955,8 @@ export function subset(x, indices, method) {
    if (!Array.isArray(x)) x = [x];
    if (!Array.isArray(indices)) indices = [indices];
 
+   if (indices.length === 0) return [...x];
+
    if (max(indices) > x.length || min(indices) < 1) {
       throw new Error("Parameter 'indices' must have values between 1 and 'x.length'.");
    }

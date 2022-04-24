@@ -114,6 +114,9 @@ describe('Tests for functions for manipulation of values.', function () {
       expect(subset(x,  3, "remove")).to.eql([10, 20, 40, 50, 60, 70, 80, 90, 100]);
       expect(subset(x, 10, "remove")).to.eql([10, 20, 30, 40, 50, 60, 70, 80,  90]);
 
+      // index is empty vector
+      expect(subset(x, [])).to.eql(x);
+      expect(subset(x, [], "remove")).to.eql(x);
    });
 
 
