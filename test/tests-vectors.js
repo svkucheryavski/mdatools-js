@@ -13,6 +13,7 @@ const expect = chai.expect;
 
 /* Tests for operations with vectors */
 describe('Tests for operations with vectors.', function () {
+
    it('vnorm2() works correctly.', function () {
       const x1 = [1, 2, 3, 4];
       const x2 = [1, -2, -3, 4];
