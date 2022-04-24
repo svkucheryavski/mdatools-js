@@ -3,8 +3,8 @@
  ******************************************************************/
 
 // import of functions to test
-import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, eye} from '../matrix/index.js';
-import {tomatrix, crossprod, tcrossprod} from '../matrix/index.js';
+import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, eye, rbind, cbind} from '../matrix/index.js';
+import {tomatrix, crossprod, tcrossprod, msubset} from '../matrix/index.js';
 import {seq} from '../stat/index.js';
 
 // import dependencies
@@ -12,6 +12,161 @@ import {default as chai} from 'chai';
 
 const should = chai.should();
 const expect = chai.expect;
+
+/* Tests for operations with matrices */
+describe('Tests for manipulations with matrices.', function () {
+
+   it('msubset() works correctly.', function () {
+      const X = [[1, 2, 3, 4, 5], [11, 12, 13, 14, 15], [21, 22, 23, 24, 25]];
+
+
+      expect(() => msubset(X, [0, 1, 2] , [1])).to.throw(Error, "Wrong values for row indices.");
+      expect(() => msubset(X, [1, 1, 20], [1])).to.throw(Error, "Wrong values for row indices.");
+      expect(() => msubset(X, [1], [0, 1, 2] )).to.throw(Error, "Wrong values for column indices.");
+      expect(() => msubset(X, [1], [1, 1, 20])).to.throw(Error, "Wrong values for column indices.");
+
+      // colInd is empty
+      const X11a = msubset(X, [1, 2, 3], []);
+      expect(X11a).to.eql([[1, 2, 3], [11, 12, 13], [21, 22, 23]]);
+      const X11b = msubset(X, [1, 2, 3], [], "select");
+      expect(X11b).to.eql([[1, 2, 3], [11, 12, 13], [21, 22, 23]]);
+      const X11c = msubset(X, [1, 2, 3], [], "remove");
+      expect(X11c).to.eql([[4, 5], [14, 15], [24, 25]]);
+
+      // colInd is single number
+      const X12a = msubset(X, [1, 2, 3], 1);
+      expect(X12a).to.eql([[1, 2, 3]]);
+      const X12b = msubset(X, [1, 2, 3], [1]);
+      expect(X12b).to.eql([[1, 2, 3]]);
+      const X12c = msubset(X, [1, 2, 3], [1], "select");
+      expect(X12c).to.eql([[1, 2, 3]]);
+      const X12d = msubset(X, [1, 2, 3], [1], "remove");
+      expect(X12d).to.eql([[14, 15], [24, 25]]);
+
+      // both rowInd and colInd have several numbers
+      const X13a = msubset(X, [1, 2, 4], [1, 3]);
+      expect(X13a).to.eql([[1, 2, 4], [21, 22, 24]]);
+      const X13b = msubset(X, [1, 2, 4], [1, 3], "select");
+      expect(X13b).to.eql([[1, 2, 4], [21, 22, 24]]);
+      const X13c = msubset(X, [1, 2, 4], [1, 3], "remove");
+      expect(X13c).to.eql([[13, 15]]);
+
+      // rowInd is empty
+      const X21a = msubset(X, [], [1, 3]);
+      expect(X21a).to.eql([[1, 2, 3, 4, 5], [21, 22, 23, 24, 25]]);
+      const X21b = msubset(X, [], [1, 3], "select");
+      expect(X21b).to.eql([[1, 2, 3, 4, 5], [21, 22, 23, 24, 25]]);
+      const X21c = msubset(X, [], [1, 3], "remove");
+      expect(X21c).to.eql([[11, 12, 13, 14, 15]]);
+
+      // rowInd is single number
+      const X22a = msubset(X, [1], [1, 3]);
+      expect(X22a).to.eql([[1], [21]]);
+      const X22b = msubset(X, 1, [1, 3]);
+      expect(X22b).to.eql([[1], [21]]);
+      const X22c = msubset(X, 1, [1, 3], "select");
+      expect(X22c).to.eql([[1], [21]]);
+      const X22d = msubset(X, 1, [1, 3], "remove");
+      expect(X22d).to.eql([[12, 13, 14, 15]]);
+
+      // both rowInd and colInd have several numbers
+      const X23a = msubset(X, [1, 3], [1, 2]);
+      expect(X23a).to.eql([[1, 3], [11, 13]]);
+      const X23b = msubset(X, [1, 3], [1, 2], "select");
+      expect(X23b).to.eql([[1, 3], [11, 13]]);
+      const X23c = msubset(X, [1, 3], [1, 2], "remove");
+      expect(X23c).to.eql([[22, 24, 25]]);
+
+   });
+
+
+   it('cbind() works correctly.', function () {
+      const X = [[1, 2, 3, 4], [5, 6, 7, 8]];
+      const x = [1, 2, 3, 4];
+      const Y = [[11, 12, 13, 14], [15, 16, 17, 18], [19, 20, 21, 22]];
+      const y = [11, 12, 13, 14];
+      const E = [[1, 2, 3], [4, 5, 6]];
+      const e = [1, 2, 3];
+
+      expect(() => cbind(X, 2)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+      expect(() => cbind(x, 2)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+      expect(() => cbind(2, X)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+      expect(() => cbind(2, x)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+
+      expect(() => cbind(X, E)).to.throw(Error,  "Number of rows (or vector elements) in X and Y must be be the same.");
+      expect(() => cbind(x, E)).to.throw(Error,  "Number of rows (or vector elements) in X and Y must be be the same.");
+      expect(() => cbind(X, e)).to.throw(Error,  "Number of rows (or vector elements) in X and Y must be be the same.");
+      expect(() => cbind(x, e)).to.throw(Error,  "Number of rows (or vector elements) in X and Y must be be the same.");
+
+      // matrix and matrix
+      const XY = cbind(X, Y);
+      expect(nrow(XY)).to.equal(nrow(X));
+      expect(ncol(XY)).to.equal(ncol(X) + ncol(Y));
+      expect(XY).to.eql([[1, 2, 3, 4], [5, 6, 7, 8], [11, 12, 13, 14], [15, 16, 17, 18], [19, 20, 21, 22]]);
+
+      // vector and matrix
+      const xY = cbind(x, Y);
+      expect(nrow(xY)).to.equal(nrow(x));
+      expect(ncol(xY)).to.equal(ncol(x) + ncol(Y));
+      expect(xY).to.eql([[1, 2, 3, 4], [11, 12, 13, 14], [15, 16, 17, 18], [19, 20, 21, 22]]);
+
+      // matrix and vector
+      const Xy = cbind(X, y);
+      expect(nrow(Xy)).to.equal(nrow(X));
+      expect(ncol(Xy)).to.equal(ncol(X) + ncol(y));
+      expect(Xy).to.eql([[1, 2, 3, 4], [5, 6, 7, 8], [11, 12, 13, 14]]);
+
+      // vector and vector
+      const xy = cbind(x, y);
+      expect(nrow(xy)).to.equal(nrow(x));
+      expect(ncol(xy)).to.equal(ncol(x) + ncol(y));
+      expect(xy).to.eql([[1, 2, 3, 4], [11, 12, 13, 14]]);
+   });
+
+   it('rbind() works correctly.', function () {
+      const X = [[1, 2, 3, 4], [5, 6, 7, 8]];
+      const x = [1, 2];
+      const Y = [[11, 12], [15, 16]];
+      const y = [11, 12];
+      const E = [[1, 2, 3], [4, 5, 6], [1, 2, 3]];
+      const e = [1, 2, 3];
+
+      expect(() => rbind(X, 2)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+      expect(() => rbind(x, 2)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+      expect(() => rbind(2, X)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+      expect(() => rbind(2, x)).to.throw(Error, "Both 'X' and 'Y' must arrays (matrices or vectors).");
+
+      expect(() => rbind(X, E)).to.throw(Error,  "Number of columns (or vector elements) in X and Y must be be the same.");
+      expect(() => rbind(x, E)).to.throw(Error,  "Number of columns (or vector elements) in X and Y must be be the same.");
+      expect(() => rbind(X, e)).to.throw(Error,  "Number of columns (or vector elements) in X and Y must be be the same.");
+      expect(() => rbind(x, e)).to.throw(Error,  "Number of columns (or vector elements) in X and Y must be be the same.");
+
+      // matrix and matrix
+      const XY = rbind(X, Y);
+      expect(nrow(XY)).to.equal(nrow(X) + ncol(Y));
+      expect(ncol(XY)).to.equal(ncol(X));
+      expect(XY).to.eql([[1, 2, 3, 4, 11, 12], [5, 6, 7, 8, 15, 16]]);
+
+      // vector and matrix
+      const xY = rbind(x, Y);
+      expect(nrow(xY)).to.equal(1 + nrow(Y)); // because x will be transposed to row vector
+      expect(ncol(xY)).to.equal(nrow(x));
+      expect(xY).to.eql([[1, 11, 12], [2, 15, 16]]);
+
+      // matrix and vector
+      const Xy = rbind(X, y);
+      expect(nrow(Xy)).to.equal(nrow(X) + 1);
+      expect(ncol(Xy)).to.equal(ncol(X));
+      expect(Xy).to.eql([[1, 2, 3, 4, 11], [5, 6, 7, 8, 12]]);
+
+      // vector and vector
+      const xy = rbind(x, y);
+      expect(nrow(xy)).to.equal(2);
+      expect(ncol(xy)).to.equal(x.length);
+      expect(xy).to.eql([[1, 11], [2, 12]]);
+   });
+});
+
 
 /* Tests for operations with matrices */
 describe('Tests for operations with matrices.', function () {

@@ -1,4 +1,4 @@
-import {rep, seq, subset, sum} from '../stat/index.js';
+import {max, min, rep, seq, subset, sum} from '../stat/index.js';
 
 /**********************************************
  * Functions for manipulations with vectors   *
@@ -165,6 +165,86 @@ export function vdot(x, y) {
  **********************************************/
 
 
+export function cbind(X, Y) {
+
+   if (!isarray(X) || !isarray(Y)) {
+      throw Error("Both 'X' and 'Y' must arrays (matrices or vectors).");
+   }
+
+   if (isvector(X)) {
+      X = [X];
+   }
+
+   if (isvector(Y)) {
+      Y = [Y];
+   }
+
+   if (nrow(X) !== nrow(Y)) {
+      throw Error("Number of rows (or vector elements) in X and Y must be be the same.");
+   }
+
+   return X.concat(Y);
+}
+
+export function rbind(X, Y) {
+
+   if (!isarray(X) || !isarray(Y)) {
+      throw Error("Both 'X' and 'Y' must arrays (matrices or vectors).");
+   }
+
+   if (isvector(X)) {
+      X = transpose([X]);
+   }
+
+   if (isvector(Y)) {
+      Y = transpose([Y]);
+   }
+
+   if (ncol(X) !== ncol(Y)) {
+      throw Error("Number of columns (or vector elements) in X and Y must be be the same.");
+   }
+
+
+   return transpose(cbind(transpose(X), transpose(Y)));
+}
+
+/**
+ * Creates a subset of matrix X specified by row and column indices
+ *
+ * If all rows or all columns must be selected provide empty array, [], as indices.
+ *
+ * @param {Array} X — matrix with values
+ * @param {Array} rowInd — vector of row indices to select (starting from 1)
+ * @param {Array} colInd — vector of column indices to select (starting from 1)
+ * @param {string} method - what to do with values ("select" or "remove")
+ */
+export function msubset(X, rowInd, colInd, method) {
+
+   if (!Array.isArray(colInd)) {
+      colInd = [colInd];
+   }
+
+   if (colInd.length > 0 && (min(colInd) < 1 || max(colInd) > ncol(X))) {
+      throw Error("Wrong values for column indices.");
+   }
+
+   if (rowInd.length > 0 && (min(rowInd) < 1 || max(rowInd) > nrow(X))) {
+      throw Error("Wrong values for row indices.");
+   }
+
+   if (method === "remove" || colInd.length === 0) {
+      colInd = subset(seq(1, ncol(X)), colInd, "remove");
+   }
+
+   let Y = Array(colInd.length);
+   for (let c = 0; c < colInd.length; c++) {
+      Y[c] = subset(X[colInd[c] - 1], rowInd, method);
+   }
+
+   return Y;
+}
+
+
 /**
  * Computes XY' product
  *
@@ -173,7 +253,7 @@ export function vdot(x, y) {
  * @returns {Array} - result of the product
  */
 export function tcrossprod(X, Y) {
-   if (!ismatrix(X)  | !ismatrix(Y)) {
+   if (!ismatrix(X)  || !ismatrix(Y)) {
       throw Error("Both arguments must be matrices (2D Arrays).");
    }
 
@@ -189,7 +269,7 @@ export function tcrossprod(X, Y) {
  * @returns {Array} - result of the product
  */
 export function crossprod(X, Y) {
-   if (!ismatrix(X)  | !ismatrix(Y)) {
+   if (!ismatrix(X)  || !ismatrix(Y)) {
       throw Error("Both arguments must be matrices (2D Arrays).");
    }
 
