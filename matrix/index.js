@@ -207,6 +207,28 @@ export function rbind(X, Y) {
 
    return transpose(cbind(transpose(X), transpose(Y)));
 }
+/**
+ * Check row or column indices
+ * @param {Array|number} ind — vector or a value with indices
+ * @param {number} n — number of rows or columns in original matrix
+ * @param {number} fill — logical, if 'true' and 'ind' is empty, will generate values from 1 to n
+ * @returns array with indices
+ */
+function processIndices(ind, n, fill) {
+   if (!Array.isArray(ind)) {
+      ind = [ind];
+   }
+
+   if (ind.length > 0 && (min(ind) < 1 || max(ind) > n)) {
+      throw Error("Wrong values for indices.");
+   }
+
+   if (ind.length === 0 && fill) {
+      ind = seq(1, n);
+   }
+
+   return ind;
+}
 
 /**
  * Creates a subset of matrix X specified by row and column indices
@@ -220,17 +242,12 @@ export function rbind(X, Y) {
  */
 export function msubset(X, rowInd, colInd, method) {
 
-   if (!Array.isArray(colInd)) {
-      colInd = [colInd];
+   if (!ismatrix(X)) {
+      throw Error("Argument 'X' must be a matrix.");
    }
 
-   if (colInd.length > 0 && (min(colInd) < 1 || max(colInd) > ncol(X))) {
-      throw Error("Wrong values for column indices.");
-   }
-
-   if (rowInd.length > 0 && (min(rowInd) < 1 || max(rowInd) > nrow(X))) {
-      throw Error("Wrong values for row indices.");
-   }
+   colInd = processIndices(colInd, ncol(X), method === "select");
+   rowInd = processIndices(rowInd, nrow(X), false);
 
    if (method === "remove" || colInd.length === 0) {
       colInd = subset(seq(1, ncol(X)), colInd, "remove");
@@ -242,6 +259,44 @@ export function msubset(X, rowInd, colInd, method) {
    }
 
    return Y;
+}
+
+
+/**
+ * Replaces subset of values in matrix X, specified by row and column indices, with values from matrix Y
+ *
+ * If all rows or all columns must be taken provide empty array, [], as indices.
+ *
+ * @param {Array} X — matrix with values to be replaced
+ * @param {Array} Y — matrix with values used for replacement
+ * @param {Array} rowInd — vector of row indices to select (starting from 1)
+ * @param {Array} colInd — vector of column indices to select (starting from 1)
+ */
+export function mreplace(X, Y, rowInd, colInd) {
+
+   if (!ismatrix(X)) {
+      throw Error("Argument 'X' must be a matrix.");
+   }
+
+   rowInd = processIndices(rowInd, nrow(X), true);
+   colInd = processIndices(colInd, ncol(X), true);
+
+   if (rowInd.length !== nrow(Y)) {
+      throw Error("Number of values in 'rowInd' should match the number of rows in 'Y'.");
+   }
+
+   if (colInd.length !== ncol(Y)) {
+      throw Error("Number of values in 'colInd' should match the number of columns in 'Y'.");
+   }
+
+   let Z = msubset(X, [], []);
+   for (let c = 0; c < colInd.length; c++) {
+      for (let r = 0; r < rowInd.length; r++) {
+         Z[colInd[c] - 1][rowInd[r] - 1] = Y[c][r];
+      }
+   }
+
+   return Z;
 }
 
 

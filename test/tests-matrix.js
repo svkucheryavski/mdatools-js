@@ -4,7 +4,7 @@
 
 // import of functions to test
 import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, eye, rbind, cbind} from '../matrix/index.js';
-import {tomatrix, crossprod, tcrossprod, msubset} from '../matrix/index.js';
+import {tomatrix, crossprod, tcrossprod, msubset, mreplace} from '../matrix/index.js';
 import {seq} from '../stat/index.js';
 
 // import dependencies
@@ -15,15 +15,41 @@ const expect = chai.expect;
 
 /* Tests for operations with matrices */
 describe('Tests for manipulations with matrices.', function () {
+   it('mreplace() works correctly.', function () {
+      const X1 = eye(5);
+      const X2 = madd(zeros(3, 5), 1);
+      const X3 = madd(zeros(5, 3), 1);
+
+      const Y = [[1, 2, 3], [11, 12, 13], [21, 22, 23]];
+      const E = [[1, 2], [3, 4]];
+
+      expect(() => mreplace(X1, E, seq(2, 4), seq(2, 4))).
+         to.throw(Error, "Number of values in 'rowInd' should match the number of rows in 'Y'.");
+      expect(() => mreplace(X1, E, seq(2, 3), seq(2, 4))).
+         to.throw(Error, "Number of values in 'colInd' should match the number of columns in 'Y'.");
+      expect(() => mreplace(X1, Y, seq(2, 6), seq(2, 4))).
+         to.throw(Error, "Wrong values for indices.");
+      expect(() => mreplace(X1, Y, seq(2, 4), seq(2, 6))).
+         to.throw(Error, "Wrong values for indices.");
+
+      const Z1 = mreplace(X1, Y, seq(2, 4), seq(2, 4));
+      expect(Z1).to.eql([[1, 0, 0, 0, 0], [0, 1, 2, 3, 0], [0, 11, 12, 13, 0], [0, 21, 22, 23, 0], [0, 0, 0, 0, 1]]);
+
+      const Z2 = mreplace(X2, Y, [], seq(2, 4));
+      expect(Z2).to.eql([[1, 1, 1], [1, 2, 3], [11, 12, 13], [21, 22, 23], [1, 1, 1]]);
+
+      const Z3 = mreplace(X3, Y, seq(2, 4), []);
+      expect(Z3).to.eql([[1, 1, 2, 3, 1], [1, 11, 12, 13, 1], [1, 21, 22, 23, 1]]);
+   });
 
    it('msubset() works correctly.', function () {
       const X = [[1, 2, 3, 4, 5], [11, 12, 13, 14, 15], [21, 22, 23, 24, 25]];
 
 
-      expect(() => msubset(X, [0, 1, 2] , [1])).to.throw(Error, "Wrong values for row indices.");
-      expect(() => msubset(X, [1, 1, 20], [1])).to.throw(Error, "Wrong values for row indices.");
-      expect(() => msubset(X, [1], [0, 1, 2] )).to.throw(Error, "Wrong values for column indices.");
-      expect(() => msubset(X, [1], [1, 1, 20])).to.throw(Error, "Wrong values for column indices.");
+      expect(() => msubset(X, [0, 1, 2] , [1])).to.throw(Error, "Wrong values for indices.");
+      expect(() => msubset(X, [1, 1, 20], [1])).to.throw(Error, "Wrong values for indices.");
+      expect(() => msubset(X, [1], [0, 1, 2] )).to.throw(Error, "Wrong values for indices.");
+      expect(() => msubset(X, [1], [1, 1, 20])).to.throw(Error, "Wrong values for indices.");
 
       // colInd is empty
       const X11a = msubset(X, [1, 2, 3], []);
