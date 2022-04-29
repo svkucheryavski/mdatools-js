@@ -341,6 +341,7 @@ export function seq(min, max, n) {
    }
 
    if (n === undefined && Number.isInteger(min) && Number.isInteger(max)) {
+      if (max === min) return [max];
       n = max - min + 1;
    }
 
