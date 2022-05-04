@@ -59,7 +59,7 @@ Following functions compute and return either single statistic or a vector with 
 * `seq(a, b, n)` — creates a sequence of `n` values equally distanced in interval [a, b].
 * `rep(x, n)` — replicates values in a vector `x` `n` times (`n` can be a vector).
 * `sort(x, decreasing = false)` — sorts values in `x`.
-* `subset(x, ind)` — returns a subset of `x`, defined by vector of indices `ind`.
+* `subset(x, ind, method)` — returns a subset of `x`, by selecting values specified vector of indices `ind` (if `method="select"` or not specified) or by removing the values (if `method="remove"`).
 * `shuffle(x)` — shuffles values in `x` using Fisher–Yates algorithm.
 * `round(x, n)` — rounds `x` to `n` decimals.
 * `expandGrid(...args)` — generates all combinations of vector values (full factorial design).
@@ -147,10 +147,19 @@ The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements
 ### Checking or computing properties of vectors and matrices
 * `nrow(X)` — returns number of elements in a vector or number of rows in a matrix.
 * `ncol(X)` — returns 1 for a vector or number of columns in a matrix.
+* `vnorm2(x)` — computes 2-norm (Euclidean norm) of a vector.
 * `ismatrix(X)` — returns true if `X` is a matrix (2D Array).
 * `isvector(X)` — returns true if `X` is a vector (1D Array).
 * `isarray(X)` — returns true if `X` is an Array (shortcut for `Array.isArray()`).
-* `vnorm2(x)` — computes 2-norm (Euclidean norm) of a vector.
+* `issquaredmat(X)` — returns true if `X` is a squared matrix.
+* `islowertrianmat(X)` — returns true if `X` is a lower triangular matrix.
+* `isuppertrianmat(X)` — returns true if `X` is a lower triangular matrix.
+
+### Manipulations with matrices and vectors
+* `cbind(X, Y)` — binds (merge) `X` and `Y` column wise.
+* `rbind(X, Y)` — binds (merge) `X` and `Y` row wise.
+* `msubset(X, rowInd, colInd, method)` — subset matrix `X`by selecting or removing rows and columns.
+* `mreplace(X, Y, rowInd, colInd)` — replaces values in matrix `X` specified by row and column indices by values from matrix `Y`.
 
 ### Simple operations with vectors
 * `vadd(x, y)` — element wise addition of two vectors, or a vector and a scalar.
@@ -169,19 +178,15 @@ The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements
 * `tcrossprod(X, Y)` — computes inner product of XY'.
 
 
-#### To do:
-* `mapply(X, dim, fun)` — applies function `fun` to every row (if `dim = 1`) or column (`dim = 2`), or every element (`dim = 0`) of `X`
-
-
 For element wise operations of a matrix and a vector, functions check how many elements the vector has. If vector has the same number of elements as number of rows in the matrix the operation will
 me carried out column wise. If vector has the same number of elements as number of columns in the matrix, the operation will be applied to every row of the matrix.
 
 
-
 ## Decompositions
 
-Coming soon.
+Methods for computing decomposition of matrices and related methods (e.g. inverse).
 
-## Models
+* `qr(X)` — create QR decomposition of `X` using Householder reflections.
+* `inv(X)` — computes inverse of squared matrix `X` using QR decomposition.
 
-Coming soon.
+More methods are coming.
