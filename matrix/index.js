@@ -15,7 +15,7 @@ const divide = (a, b) => a/b;
  * @param {Array} x — a vector of values
  * @returns a number (the norm)
  */
-export function vnorm2(x) {
+export function norm2(x) {
 
    if (!isvector(x)) {
       throw Error("Argument 'x' must be a vector.");
@@ -308,6 +308,11 @@ export function mreplace(X, Y, rowInd, colInd) {
  * @returns {Array} - result of the product
  */
 export function tcrossprod(X, Y) {
+
+   if (!Y) {
+      Y = msubset(X, [], []);
+   }
+
    if (!ismatrix(X)  || !ismatrix(Y)) {
       throw Error("Both arguments must be matrices (2D Arrays).");
    }
@@ -324,6 +329,11 @@ export function tcrossprod(X, Y) {
  * @returns {Array} - result of the product
  */
 export function crossprod(X, Y) {
+
+   if (!Y) {
+      Y = msubset(X, [], []);
+   }
+
    if (!ismatrix(X)  || !ismatrix(Y)) {
       throw Error("Both arguments must be matrices (2D Arrays).");
    }
@@ -627,6 +637,44 @@ export function ismatrix(X) {
 
    // check that all columns/vectors have the same length
    if (!X.every(v => v.length == X[0].length)) return false;
+
+   return true;
+}
+
+/**
+ * Return true if matrix is squared
+ * @param {number[]} X - matrix to check (2D Array)
+ * @returns logical value
+ */
+export function issquaredmat(X) {
+   return nrow(X) === ncol(X);
+}
+
+
+/**
+ * Return true if matrix is lower triangular
+ * @param {number[]} X - matrix to check (2D Array)
+ * @returns logical value
+ */
+export function islowertrianmat(X) {
+   return isuppertrianmat(transpose(X));
+}
+
+
+/**
+ * Return true if matrix is upper triangular
+ * @param {number[]} X - matrix to check (2D Array)
+ * @returns logical value
+ */
+export function isuppertrianmat(X) {
+
+   if (!issquaredmat) return false;
+
+   const n = ncol(X);
+   for (let i = 0; i < n; i++)
+      for (let j = i + 1; j < n; j++)
+         if (Math.abs(X[i][j]) > 10**(-10) )
+            return false;
 
    return true;
 }
