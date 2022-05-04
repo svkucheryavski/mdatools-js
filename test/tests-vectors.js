@@ -3,7 +3,7 @@
  ******************************************************************/
 
 // import of functions to test
-import {vdot, isvector, vadd, vdiv, vmult, vapply, vnorm2} from '../matrix/index.js';
+import {vdot, isvector, vadd, vdiv, vmult, vapply, norm2} from '../matrix/index.js';
 
 // import dependencies
 import {default as chai} from 'chai';
@@ -20,10 +20,10 @@ describe('Tests for operations with vectors.', function () {
       const x3 = [0, 0, 0, 0];
       const x4 = [1, 1];
 
-      expect(vnorm2(x1)).to.equal(Math.sqrt(30));
-      expect(vnorm2(x2)).to.equal(Math.sqrt(30));
-      expect(vnorm2(x3)).to.equal(0);
-      expect(vnorm2(x4)).to.equal(Math.sqrt(2));
+      expect(norm2(x1)).to.equal(Math.sqrt(30));
+      expect(norm2(x2)).to.equal(Math.sqrt(30));
+      expect(norm2(x3)).to.equal(0);
+      expect(norm2(x4)).to.equal(Math.sqrt(2));
    });
 
    it('vapply() works correctly.', function () {
