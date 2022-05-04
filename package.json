@@ -1,10 +1,9 @@
 {
   "name": "mdatools",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": false,
   "type": "module",
   "description": "Tools and methods for statistics and multivariate data analysis.",
-
   "scripts": {
     "test": "mocha"
   },
@@ -23,6 +22,7 @@
   "homepage": "",
   "devDependencies": {
     "chai": "^4.3.4",
+    "chai-almost": "^1.0.1",
     "mocha": "^8.4.0"
   }
 }
