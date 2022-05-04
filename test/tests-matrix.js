@@ -5,6 +5,7 @@
 // import of functions to test
 import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, eye, rbind, cbind} from '../matrix/index.js';
 import {tomatrix, crossprod, tcrossprod, msubset, mreplace} from '../matrix/index.js';
+import {issquaredmat, islowertrianmat, isuppertrianmat} from '../matrix/index.js';
 import {seq} from '../stat/index.js';
 
 // import dependencies
@@ -497,6 +498,49 @@ describe('Tests for generation of matrices and checking its properties.', functi
       expect(ismatrix([[1, 2]])).to.equal(true)
       expect(ismatrix([[1]])).to.equal(true)
       expect(ismatrix([[1, 2, 3], [1, 2, 3], [4, 5, 6]])).to.equal(true)
+   });
+
+
+   it('issquared() works correctly.', function () {
+      const E1 = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]];
+      const E2 = [1, 2, 3, 4];
+      const X1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+      const X2 = [1];
+
+      expect(issquaredmat(E1)).to.equal(false);
+      expect(issquaredmat(transpose(E1))).to.equal(false);
+      expect(issquaredmat(E2)).to.equal(false);
+      expect(issquaredmat(transpose(E2))).to.equal(false);
+
+
+      expect(issquaredmat(X1)).to.equal(true);
+      expect(issquaredmat(transpose(X1))).to.equal(true);
+      expect(issquaredmat(X2)).to.equal(true);
+      expect(issquaredmat(transpose(X2))).to.equal(true);
+
+   });
+
+
+   it('islowertrianmat() works correctly.', function () {
+      const E1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+      const E2 = [[1, 0, 0], [4, 5, 0], [7, 8, 9]];
+      const X1 = transpose(E2);
+
+      expect(islowertrianmat(E1)).to.equal(false);
+      expect(islowertrianmat(transpose(E1))).to.equal(false);
+      expect(islowertrianmat(E2)).to.equal(false);
+      expect(islowertrianmat(X1)).to.equal(true);
+   });
+
+   it('isuppertrianmat() works correctly.', function () {
+      const X1 = [[1, 0, 0], [4, 5, 0], [7, 8, 9]];
+      const E1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
+      const E2 = transpose(X1);
+
+      expect(isuppertrianmat(E1)).to.equal(false);
+      expect(isuppertrianmat(transpose(E1))).to.equal(false);
+      expect(isuppertrianmat(E2)).to.equal(false);
+      expect(isuppertrianmat(X1)).to.equal(true);
    });
 
 });
