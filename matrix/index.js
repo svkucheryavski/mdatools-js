@@ -425,6 +425,21 @@ export function madd(X, Y) {
    return mop(X, Y, add);
 }
 
+/**
+ * Does element by element subtraction of two matrices, a matrix and a scalar or a matrix and a vector
+ *
+ * if second argument is a vector, function checks its dimension. If it has the same number of elements
+ * as number of rows in 'X' it will be applied to every column of 'X'. If it has the same number of
+ * elements as number of columns in 'X', it will be applied to every row.
+ *
+ * @param {Array} X - a matrix
+ * @param {Array|number} Y - a matrix, a vector or a scalar
+ * @returns {Array} - result of the subtraction
+ */
+export function msubtract(X, Y) {
+   return mop(X, Y, subtract);
+}
+
 
 /**
  * Does element by element multiplication of two matrices, a matrix and a scalar or a matrix and a vector

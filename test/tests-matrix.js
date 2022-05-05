@@ -4,7 +4,7 @@
 
 // import of functions to test
 import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, eye, rbind, cbind} from '../matrix/index.js';
-import {tomatrix, crossprod, tcrossprod, msubset, mreplace} from '../matrix/index.js';
+import {tomatrix, crossprod, tcrossprod, msubset, msubtract, mreplace} from '../matrix/index.js';
 import {issquaredmat, islowertrianmat, isuppertrianmat} from '../matrix/index.js';
 import {seq} from '../stat/index.js';
 
@@ -333,6 +333,54 @@ describe('Tests for operations with matrices.', function () {
       expect(resXz3).to.eql([[101, 102, 103], [204, 205, 206]]);
 
    });
+
+   it('msubtract() works correctly.', function () {
+
+      const X = [[1, 2, 3], [4, 5, 6]];
+      const Y = [[3, 2, 1], [6, 5, 4]];
+      const E = [[1, 2, 3, 4], [5, 6, 7, 8]];
+
+      const z1 = 5;
+      const z2 = [10, 20, 30];
+      const z3 = [100, 200];
+      const e = [1, 2, 3, 4];
+
+      // matrix and matrix
+      expect(() => msubtract(1, X)).to.throw(Error, "Argument 'X' must be a matrix (2D Array).");
+      expect(() => msubtract(X, E)).to.throw(Error, "Dimensions of 'X' and 'Y' mismatch.");
+
+      const resXY = msubtract(X, Y);
+      expect(nrow(resXY)).to.equal(nrow(X));
+      expect(ncol(resXY)).to.equal(ncol(X));
+      expect(resXY).to.eql([[-2, 0, 2], [-2, 0, 2]]);
+
+      const resYX = msubtract(Y, X);
+      expect(nrow(resYX)).to.equal(nrow(X));
+      expect(ncol(resYX)).to.equal(ncol(X));
+      expect(resYX).to.eql([[2, 0, -2], [2, 0, -2]]);
+
+      // matrix and scalar
+      const resXz1 = msubtract(X, z1);
+      expect(nrow(resXz1)).to.equal(nrow(X));
+      expect(ncol(resXz1)).to.equal(ncol(X));
+      expect(resXz1).to.eql([[-4, -3, -2], [-1, 0, 1]]);
+
+      // matrix and vector with the same number of elements as number of rows
+      expect(() => msubtract(X, e)).to.throw(Error, "Number of elements in 'x' does not match neither 'nrows' nor 'ncols'.");
+
+      const resXz2 = msubtract(X, z2);
+      expect(nrow(resXz2)).to.equal(nrow(X));
+      expect(ncol(resXz2)).to.equal(ncol(X));
+      expect(resXz2).to.eql([[-9, -18, -27], [-6, -15, -24]]);
+
+      // matrix and vector with the same number of elements as number of columns
+      const resXz3 = msubtract(X, z3);
+      expect(nrow(resXz3)).to.equal(nrow(X));
+      expect(ncol(resXz3)).to.equal(ncol(X));
+      expect(resXz3).to.eql([[-99, -98, -97], [-196, -195, -194]]);
+
+   });
+
 
    it('mmult() works correctly.', function () {
 
