@@ -3,7 +3,7 @@
  ******************************************************************/
 
 // import of functions to test
-import {vdot, isvector, vadd, vdiv, vmult, vapply, norm2} from '../matrix/index.js';
+import {vdot, isvector, vadd, vdiv, vmult, vapply, vsubtract, norm2} from '../matrix/index.js';
 
 // import dependencies
 import {default as chai} from 'chai';
@@ -146,6 +146,41 @@ describe('Tests for operations with vectors.', function () {
       expect(reszx.length).to.equal(x.length);
       expect(isvector(reszx)).to.be.true;
       expect(reszx).to.eql([6, 7, 8, 9]);
+   });
+
+
+   it('vsubtract() works correctly.', function () {
+
+      const x = [1, 2, 3, 4];
+      const y = [7, 5, 3, 1];
+      const e = [1, 2, 3]
+      const z = 5;
+
+      // vector and vector
+      expect(() => vsubtract(1, 1)).to.throw(Error, "One of the arguments must be a vector.");
+      expect(() => vsubtract(x, e)).to.throw(Error, "Dimensions of 'x' and 'y' mismatch.");
+
+      const resxy = vsubtract(x, y);
+      const resyx = vsubtract(y, x);
+
+      expect(isvector(resxy)).to.true;
+      expect(isvector(resyx)).to.true;
+      expect(resxy.length).to.equal(x.length);
+      expect(resxy).to.eql([-6, -3, 0, 3]);
+      expect(resyx.length).to.equal(x.length);
+      expect(resyx).to.eql([6, 3, 0, -3]);
+
+      // vector and number
+      const resxz = vsubtract(x, z);
+      expect(resxz.length).to.equal(x.length);
+      expect(isvector(resxz)).to.be.true;
+      expect(resxz).to.eql([-4, -3, -2, -1]);
+
+      // number and vector
+      const reszx = vsubtract(z, x);
+      expect(reszx.length).to.equal(x.length);
+      expect(isvector(reszx)).to.be.true;
+      expect(reszx).to.eql([4, 3, 2, 1]);
    });
 
    it('vdot() works correctly.', function () {

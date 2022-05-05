@@ -80,6 +80,19 @@ export function vadd(x, y) {
 
 
 /**
+ * Does element by element subtraction of two vectors, or a vector and a scalar
+ * (one of the arguments must be a vector)
+ *
+ * @param {Array|number} x - a vector or a scalar
+ * @param {Array|number} y - a vector or a scalar
+ * @returns {Array} - result of the subtraction
+ */
+export function vsubtract(x, y) {
+   return vop(x, y, subtract);
+}
+
+
+/**
  * Does element by element arithmetic operation for two vectors, or for a vector and a scalar
  * (one of the arguments must be a vector)
  *
