@@ -141,6 +141,7 @@ console.log(Z);
 * `diag(x)` — creates a squared matrix and fills diagonal elements with values from vector `x`.
 * `eye(n)` — creates an identity matrix of size `n`.
 * `tomatrix(x, n, m)` — creates a matrix with `n` rows and `m` columns from a vector `x`.
+* `getdiag(x)` — returns a vector with elements from main diagonal of matrix `x`.
 
 The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements as number of rows, it replicates the vector column wise, so every column of the matrix will have values from the vector. If `x` has the same number of elements as number of columns — it does replication row wise. Otherwise it expects `x` to have length `n * m` and simply reshape the values into a matrix (column wise).
 
@@ -163,6 +164,7 @@ The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements
 
 ### Simple operations with vectors
 * `vadd(x, y)` — element wise addition of two vectors, or a vector and a scalar.
+* `vsubtract(x, y)` — element wise subtraction of two vectors, or a vector and a scalar.
 * `vmult(x, y)` — element wise multiplication of two vectors, or a vector and a scalar.
 * `vdiv(x, y)` — element wise division of two vectors, or a vector and a scalar.
 * `vapply(x, fun)` — applies function `fun` to every element of the vector (shortcut for `Array.map()`).
@@ -171,6 +173,7 @@ The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements
 ### Simple operations with matrices
 * `transpose(X)` — transposition of a matrix or a vector.
 * `madd(X, Y)` — element wise sum of two matrices, a matrix and a scalar or a matrix and a vector.
+* `msubtract(X, Y)` — element wise difference of two matrices, a matrix and a scalar or a matrix and a vector.
 * `mmult(X, Y)` — element wise product of two matrices, a matrix and a scalar or a matrix and a vector.
 * `mdivide(X, Y)` — element wise division of two matrices, a matrix and a scalar or a matrix and a vector.
 * `mdot(X, Y)` — inner product of two matrices (as dot products of rows of `X` and columns of `Y`).
@@ -184,9 +187,21 @@ me carried out column wise. If vector has the same number of elements as number 
 
 ## Decompositions
 
+Functions can be imported from `'mdatools/decomp'`.
+
 Methods for computing decomposition of matrices and related methods (e.g. inverse).
 
 * `qr(X)` — create QR decomposition of `X` using Householder reflections.
 * `inv(X)` — computes inverse of squared matrix `X` using QR decomposition.
 
 More methods are coming.
+
+## Modelling
+
+Functions can be imported from `'mdatools/models'`.
+
+Methods for fitting various models. Every method returns a JSON with fitted model parameters, their inference (where it can be done), as well as performance statistics for a trained data.
+
+### Linear regression
+* `lmfit(X, y)` — linear regression model (simple or multiple).
+* `lmpredict(m, X)` — computes predictions using MLR model from `lmfit()` and vector or matrix with predictors.
