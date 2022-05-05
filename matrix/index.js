@@ -533,6 +533,24 @@ export function eye(n) {
 
 
 /**
+ * Returns the main diagonal of a matrix as a vector
+ * @param {Array} x - a vector with values
+ */
+export function getdiag(x) {
+   if (!ismatrix(x)) throw Error("Argument 'x' must be a matrix.");
+   if (!issquaredmat(x)) throw Error("Argument 'x' must be a squared matrix.");
+
+   const n = x.length;
+   let res = rep(0, n);
+   for (let i = 0; i < n; i++) {
+      res[i] = x[i][i];
+   }
+
+   return res;
+}
+
+
+/**
  * Creates a diagonal matrix filled with values from vector 'x'
  * @param {Array} x - a vector with values
  */
