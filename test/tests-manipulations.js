@@ -1,5 +1,5 @@
 /******************************************************************
- *  Tests for functions for manipulation of values                *
+ *  Tests for functions for manipulation with values              *
  ******************************************************************/
 
 // import of functions to test

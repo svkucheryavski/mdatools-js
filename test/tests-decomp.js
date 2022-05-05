@@ -1,5 +1,5 @@
 /******************************************************************
- *  Tests for vector functions                                    *
+ *  Tests for decomposition methods                               *
  ******************************************************************/
 
 // import of functions to test
@@ -14,8 +14,7 @@ const should = chai.should();
 const expect = chai.expect;
 
 chai.use(chaiAlmost(0.00001));
-describe('Tests for decompositions.', function () {
-
+describe('Tests for QR decomposition.', function () {
 
    it('qr() works correctly for squared matrix.', function () {
       const X = [[12, 6, -4], [-51, 167, 24], [4, -68, -41]];
@@ -46,6 +45,9 @@ describe('Tests for decompositions.', function () {
       });
    });
 
+});
+
+describe('Tests for matrix inversion.', function () {
 
    it('inv() works correctly.', function () {
 
@@ -65,5 +67,5 @@ describe('Tests for decompositions.', function () {
       const X3 = [[1, 2, 7, 3], [9, 11, 12, 3], [1, 9, 0, 2], [11, 9, 1, 8]]
       expect(mdot(X3, inv(X3))).to.be.deep.almost(eye(4))
 
-   })
+   });
 });

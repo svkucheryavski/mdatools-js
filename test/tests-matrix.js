@@ -4,7 +4,7 @@
 
 // import of functions to test
 import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, eye, rbind, cbind} from '../matrix/index.js';
-import {tomatrix, crossprod, tcrossprod, msubset, msubtract, mreplace} from '../matrix/index.js';
+import {crossprod, tcrossprod, msubset, msubtract, mreplace} from '../matrix/index.js';
 import {issquaredmat, islowertrianmat, isuppertrianmat} from '../matrix/index.js';
 import {seq} from '../stat/index.js';
 
