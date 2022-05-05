@@ -56,6 +56,7 @@ export function lmfit(X, y) {
    // return JSON with all results
    return {
       class: "lm",
+      data: {X: X, y: y},
       coeffs: {
          estimate: estimate,
          se: coeffse,
