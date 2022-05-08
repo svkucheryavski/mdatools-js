@@ -3,14 +3,6 @@
  **********************************************/
 
 /**
- * Returns a simple linear regression model
- *
- */
-export function lm(y, X) {
-
-}
-
-/**
  * Returns a p-value for any test
  * @param {function} pfun - reference to a CDF function (e.g. pnorm)
  * @param {number} crit - critical value for the test (e.g. z-score or t-score)
