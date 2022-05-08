@@ -1135,6 +1135,10 @@ export function integrate(f, a, b, acc = 0.000001, eps = 0.00001, oldfs = undefi
       q2 += v[i] * fs[i] * h;
    }
 
+   if (isNaN(q2) || isNaN(q4)) {
+      throw Error("Numerical integration ended up with NaN number.")
+   }
+
    let tol = acc + eps * Math.abs(q4);
    let err = Math.abs((q4 - q2)/3);
 
