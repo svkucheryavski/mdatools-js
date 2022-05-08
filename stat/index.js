@@ -1226,6 +1226,12 @@ export function gamma(z) {
  * @returns {number} value of the Beta function
  */
 export function beta(x, y) {
+
+   if (y > 100) {
+      // for large y we use slower integrate version
+      return integrate((u) => Math.pow(u, x - 1) / Math.pow(1 + u, x + y), 0, Infinity)
+   }
+
    return gamma(x) * gamma(y) / gamma(x + y);
 }
 
