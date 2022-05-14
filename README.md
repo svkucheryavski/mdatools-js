@@ -202,6 +202,8 @@ Functions can be imported from `'mdatools/models'`.
 
 Methods for fitting various models. Every method returns a JSON with fitted model parameters, their inference (where it can be done), as well as performance statistics for a trained data.
 
-### Linear regression
+### Regression
 * `lmfit(X, y)` — linear regression model (simple or multiple).
 * `lmpredict(m, X)` — computes predictions using MLR model from `lmfit()` and vector or matrix with predictors.
+* `polyfit(x, y, d)` — polynomial regression model (univariate).
+* `polypredict(m, x)` — computes predictions using polynomial model from `polyfit()`.

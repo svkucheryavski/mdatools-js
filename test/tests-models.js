@@ -3,16 +3,47 @@
  ******************************************************************/
 
 // import of functions to test
-import {lmfit, lmpredict, regstat} from '../models/index.js';
+import {lmfit, lmpredict, regstat, polyfit, polypredict} from '../models/index.js';
 
 // import dependencies
 import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
-import { lm } from '../stat/index.js';
 const should = chai.should();
 const expect = chai.expect;
 
 chai.use(chaiAlmost(0.001));
+
+describe('Tests for polynomial regression.', function () {
+
+   it('polyfit() works correctly.', function () {
+      const x = [1, 2, 3, 4, 5];
+      const y = [11, 14, 19, 26, 35];
+
+      expect(() => polyfit(x, y, 5)).to.throw(Error, "Polynomial degree 'd' must a positive value smaller than number of measurements.");
+      expect(() => polyfit([x, x], y, 1)).to.throw(Error, "Argument 'x' must be a vector.");
+
+      const m1 = polyfit(x, y, 3);
+
+      // check class and polynomial degree
+      m1.class.should.be.equal("pm");
+      m1.pdegree.should.be.equal(3);
+
+      // check coefficients and related statistics
+      m1.coeffs.estimate.length.should.be.equal(4);
+      expect(m1.coeffs.estimate).to.be.deep.almost([10, 0, 1, 0]);
+      expect(m1.coeffs.p).to.be.deep.almost([0, 0.912, 0, 0.931]);
+   });
+
+   it('polypredict() works correctly.', function () {
+      const x = [1, 2, 3, 4, 5];
+      const y = [11, 14, 19, 26, 35];
+      const m = polyfit(x, y, 3);
+
+      const yp = polypredict(m, x);
+      expect(yp).to.be.deep.almost(y);
+
+   });
+});
 
 describe('Tests for linear regression.', function () {
 

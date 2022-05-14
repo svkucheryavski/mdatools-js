@@ -1,7 +1,61 @@
-import {pf, pt, qt, rep, variance} from '../stat/index.js';
+import {pf, pt, qt, rep, variance, seq} from '../stat/index.js';
 import {nrow, mmult, ncol, mdot, vdot, vapply, transpose, crossprod, getdiag, vdiv,
    msubset, isvector, isarray, ismatrix, vsubtract} from '../matrix/index.js';
 import {inv} from '../decomp/index.js';
+
+/**
+ * For given vector 'x' and number 'd' returns matrix with power of x values from 1 to d as columns
+ * @param {number[]} x - vector with values
+ * @param {number} d - polynomial degree
+ * @returns a matrix with 'd' columns
+ */
+export function polymat(x, d) {
+
+   if (!isvector(x)) {
+      throw Error("Argument 'x' must be a vector.");
+   }
+
+   return d > 1 ? seq(1, d).map(p => x.map(v => v ** p)) : [x];
+}
+
+/**
+ * Fitting a univariate polynomial model
+ * @param {number[]} x - vector with predictors
+ * @param {number[]} y - vector with responses
+ * @param {number} d - polynomial degree
+ * @return JSON with model parameters and performance statistics
+ */
+export function polyfit(x, y, d) {
+
+   if (d < 1 || d >= x.length) {
+      throw Error("Polynomial degree 'd' must a positive value smaller than number of measurements.");
+   }
+
+   let model = lmfit(polymat(x, d), y);
+   model.pdegree = d;
+   model.class = "pm";
+
+   return model;
+}
+
+/**
+ * Predicts response values based on the fitted model and predictors
+ * @param {JSON} m - regression model (object returned by 'polyfit()')
+ * @param {number[]} x - vector with predictors
+ * @return vector with predicted response values
+ */
+export function polypredict(m, x) {
+
+   if (!isvector(x)) {
+      throw Error("Argument 'x' must be a vector.");
+   }
+
+   if (m.class !== "pm") {
+      throw Error("Argument 'm' must be object with polynomial model returned by method 'polyfit()'.");
+   }
+
+   return lmpredict(m, polymat(x, m.pdegree));
+}
 
 /**
  * Fitting a linear model (SLR or MLR)
@@ -82,7 +136,7 @@ export function lmpredict(m, X) {
       throw Error("Argument 'X' must be a matrix or a vector.");
    }
 
-   if (m.class !== "lm" || !m.coeffs.estimate || m.coeffs.estimate.length < 1) {
+   if (!(m.class === "lm" || m.class === "pm") || !m.coeffs.estimate || m.coeffs.estimate.length < 1) {
       throw Error("Argument 'm' must be object with MLR model returned by method 'lmfit()'.");
    }
 
