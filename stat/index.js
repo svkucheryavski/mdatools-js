@@ -874,10 +874,6 @@ export function pf(F, d1, d2) {
       throw new Error("All 3 parameters must be positive.");
    }
 
-   if (d2 < d1) {
-      throw new Error("Parameter 'd1' must be larger 'd2'.");
-   }
-
    if (Array.isArray(F)) {
       return F.map(v => pf(v, d1, d2));
    }
