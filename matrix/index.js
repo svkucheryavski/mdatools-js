@@ -25,6 +25,37 @@ export function norm2(x) {
 }
 
 /**
+ * Replaces subset of values in vector x, specified by indices, with values from vector y
+ *
+ * @param {Array} x — vector with values to be replaced
+ * @param {Array} y — vector with values used for replacement
+ * @param {Array} ind — vector of indices to select (starting from 1)
+ */
+export function vreplace(x, y, ind) {
+
+   if (!isvector(x)) {
+      throw Error("Argument 'x' must be a vector.");
+   }
+
+   if (!isvector(y)) {
+      throw Error("Argument 'y' must be a vector.");
+   }
+
+   ind = processIndices(ind, x.length, true);
+
+   if (ind.length !== y.length) {
+      throw Error("Number of values in 'ind' should match the number of elements in 'y'.");
+   }
+
+   let z = subset(x, []);
+   for (let i = 0; i < ind.length; i++) {
+      z[ind[i] - 1] = y[i];
+   }
+
+   return z;
+}
+
+/**
  * Applies a function to each element of a vector
  *
  * @param {Array} x - a vector

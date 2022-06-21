@@ -161,6 +161,7 @@ The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements
 * `rbind(X, Y)` — binds (merge) `X` and `Y` row wise.
 * `msubset(X, rowInd, colInd, method)` — subset matrix `X`by selecting or removing rows and columns.
 * `mreplace(X, Y, rowInd, colInd)` — replaces values in matrix `X` specified by row and column indices by values from matrix `Y`.
+* `vreplace(x, y, ind)` — replaces values in vector `x` specified by indices by values from vector `y`.
 
 ### Simple operations with vectors
 * `vadd(x, y)` — element wise addition of two vectors, or a vector and a scalar.

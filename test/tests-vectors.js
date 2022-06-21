@@ -3,7 +3,7 @@
  ******************************************************************/
 
 // import of functions to test
-import {vdot, isvector, vadd, vdiv, vmult, vapply, vsubtract, norm2} from '../matrix/index.js';
+import {vdot, isvector, vadd, vdiv, vmult, vapply, vsubtract, norm2, vreplace} from '../matrix/index.js';
 
 // import dependencies
 import {default as chai} from 'chai';
@@ -13,6 +13,27 @@ const expect = chai.expect;
 
 /* Tests for operations with vectors */
 describe('Tests for operations with vectors.', function () {
+
+   it('vreplace() works correctly', function() {
+      const x = [10, 20, 30, 40, 50];
+      const y = [14, 15, 11];
+      const ind1 = [4, 5, 1];
+      const ind2 = [3, 3, 3];
+      const inde1 = [1, 2, 3, 4, 5];
+      const inde2 = [1, 2, 55];
+
+      // vector plus vector
+      expect(() => vreplace(1, y)).to.throw(Error, "Argument 'x' must be a vector.");
+      expect(() => vreplace(x, 2)).to.throw(Error, "Argument 'y' must be a vector.");
+      expect(() => vreplace(x, y, inde1)).to.throw(Error, "Number of values in 'ind' should match the number of elements in 'y'.");
+      expect(() => vreplace(x, y, inde2)).to.throw(Error, "Wrong values for indices");
+
+      let res1 = vreplace(x, y, ind1);
+      expect(res1).to.eql([11, 20, 30, 14, 15]);
+
+      let res2 = vreplace(x, y, ind2);
+      expect(res2).to.eql([10, 20, 11, 40, 50]);
+   });
 
    it('vnorm2() works correctly.', function () {
       const x1 = [1, 2, 3, 4];

@@ -1,6 +1,6 @@
 {
   "name": "mdatools",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "private": false,
   "type": "module",
   "description": "Tools and methods for statistics and multivariate data analysis.",
