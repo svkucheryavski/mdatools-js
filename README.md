@@ -2,7 +2,7 @@
 
 A simple library with a set of most common methods for descriptive and inferential statistics as well as matrix operations and projection based methods for multivariate data analysis. The library is currently under development, breaking changes may occur in the coming versions.
 
-## Last release (0.6.0)
+## Last release (0.6.1)
 
 * `diag()` method, creating a diagonal matrix from vector was renamed to `diagm()`
 * `getdiag()` method, returning a vector with diagonal elements was renamed to `diag()`

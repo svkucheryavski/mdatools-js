@@ -1,5 +1,5 @@
 import {rep, min, subset, seq} from '../stat/index.js';
-import {nrow, ncol, eye, norm2, zeros, vadd, mdot, madd, transpose, msubset, mmult} from '../matrix/index.js';
+import {nrow, ncol, eye, norm2, zeros, vadd, mdot, madd, diag, diagm, transpose, msubset, mmult} from '../matrix/index.js';
 import { issquaredmat, islowertrianmat, isdiagmat, isuppertrianmat, mreplace, tcrossprod } from '../matrix/index.js';
 
 /**********************************************
@@ -63,7 +63,7 @@ export function inv(X) {
 
    if (isdiagmat(X)) {
       const n = ncol(X);
-      return matrix(diag(X).map(x => Math.abs(x) > Number.EPSILON ? 1 / x : x), n, n);
+      return diagm(diag(X).map(x => Math.abs(x) > Number.EPSILON ? 1 / x : x));
    }
 
    if (isuppertrianmat(X)) {

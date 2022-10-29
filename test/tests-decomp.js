@@ -4,7 +4,7 @@
 
 // import of functions to test
 import {qr, inv} from '../decomp/index.js';
-import {mdot, eye, nrow, tomatrix, transpose, tcrossprod} from '../matrix/index.js';
+import {mdot, eye, nrow, tomatrix, transpose, diagm, tcrossprod} from '../matrix/index.js';
 import {seq} from '../stat/index.js';
 
 // import dependencies
@@ -57,15 +57,18 @@ describe('Tests for matrix inversion.', function () {
 
       // lower triangular
       const X1 = [[1, 0, 0, 0], [2, 3, 0, 0], [4, 5, 6, 0], [7, 8, 9, 10]];
-      expect(mdot(X1, inv(X1))).to.be.deep.almost(eye(4))
+      expect(mdot(X1, inv(X1))).to.be.deep.almost(eye(4));
 
       // upper triangular
       const X2 = transpose(X1);
-      expect(mdot(X2, inv(X2))).to.be.deep.almost(eye(4))
+      expect(mdot(X2, inv(X2))).to.be.deep.almost(eye(4));
 
       // squared
-      const X3 = [[1, 2, 7, 3], [9, 11, 12, 3], [1, 9, 0, 2], [11, 9, 1, 8]]
-      expect(mdot(X3, inv(X3))).to.be.deep.almost(eye(4))
+      const X3 = [[1, 2, 7, 3], [9, 11, 12, 3], [1, 9, 0, 2], [11, 9, 1, 8]];
+      expect(mdot(X3, inv(X3))).to.be.deep.almost(eye(4));
 
+      // diagonal
+      const X4 = diagm([1, 2, 3, 4]);
+      expect(mdot(X3, inv(X3))).to.be.deep.almost(eye(4));
    });
 });
