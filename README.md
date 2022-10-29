@@ -2,6 +2,13 @@
 
 A simple library with a set of most common methods for descriptive and inferential statistics as well as matrix operations and projection based methods for multivariate data analysis. The library is currently under development, breaking changes may occur in the coming versions.
 
+## Last release (0.6.0)
+
+* `diag()` method, creating a diagonal matrix from vector was renamed to `diagm()`
+* `getdiag()` method, returning a vector with diagonal elements was renamed to `diag()`
+* improvements to `inv()` method
+* small bug fixes
+
 ## Descriptive and inferential statistics
 
 Functions can be imported from `'mdatools/stat'`.
@@ -138,10 +145,10 @@ console.log(Z);
 
 * `matrix(n, m, a)` — creates a matrix with `n` rows and `m` columns and fills it with a value `a`.
 * `zeros(n, m)` — creates a matrix with `n` rows and `m` columns and fills it with zeros.
-* `diag(x)` — creates a squared matrix and fills diagonal elements with values from vector `x`.
+* `diagm(x)` — creates a squared matrix and fills diagonal elements with values from vector `x`.
 * `eye(n)` — creates an identity matrix of size `n`.
 * `tomatrix(x, n, m)` — creates a matrix with `n` rows and `m` columns from a vector `x`.
-* `getdiag(x)` — returns a vector with elements from main diagonal of matrix `x`.
+* `diag(x)` — returns a vector with elements from main diagonal of matrix `x`.
 
 The `tomatrix(x, n, m)` works as follows. If `x` has the same number of elements as number of rows, it replicates the vector column wise, so every column of the matrix will have values from the vector. If `x` has the same number of elements as number of columns — it does replication row wise. Otherwise it expects `x` to have length `n * m` and simply reshape the values into a matrix (column wise).
 

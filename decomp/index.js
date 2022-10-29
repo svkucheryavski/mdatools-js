@@ -1,6 +1,6 @@
 import {rep, min, subset, seq} from '../stat/index.js';
 import {nrow, ncol, eye, norm2, zeros, vadd, mdot, madd, transpose, msubset, mmult} from '../matrix/index.js';
-import { issquaredmat, islowertrianmat, isuppertrianmat, mreplace, tcrossprod } from '../matrix/index.js';
+import { issquaredmat, islowertrianmat, isdiagmat, isuppertrianmat, mreplace, tcrossprod } from '../matrix/index.js';
 
 /**********************************************
  * Functions for decompositions of matrices   *
@@ -59,6 +59,11 @@ export function inv(X) {
 
    if (!issquaredmat(X)) {
       throw Error("Only squared matrices can be inverted.");
+   }
+
+   if (isdiagmat(X)) {
+      const n = ncol(X);
+      return matrix(diag(X).map(x => Math.abs(x) > Number.EPSILON ? 1 / x : x), n, n);
    }
 
    if (isuppertrianmat(X)) {

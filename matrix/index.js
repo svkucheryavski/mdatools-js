@@ -564,14 +564,15 @@ export function eye(n) {
 
 
 /**
- * Returns the main diagonal of a matrix as a vector
- * @param {Array} x - a vector with values
+ * Returns a vector with values from main diagonal of squared matrix 'x'
+ * @param {Array} x - a squared matrix
+ * @return vector with diagonal elements
  */
-export function getdiag(x) {
-   if (!ismatrix(x)) throw Error("Argument 'x' must be a matrix.");
+export function diag(x) {
+
    if (!issquaredmat(x)) throw Error("Argument 'x' must be a squared matrix.");
 
-   const n = x.length;
+   const n = nrow(x);
    let res = rep(0, n);
    for (let i = 0; i < n; i++) {
       res[i] = x[i][i];
@@ -580,12 +581,11 @@ export function getdiag(x) {
    return res;
 }
 
-
 /**
  * Creates a diagonal matrix filled with values from vector 'x'
  * @param {Array} x - a vector with values
  */
-export function diag(x) {
+export function diagm(x) {
    if (!isvector(x)) throw Error("Argument 'x' must be a vector.");
 
    const n = x.length;
@@ -724,7 +724,7 @@ export function ismatrix(X) {
  * @returns logical value
  */
 export function issquaredmat(X) {
-   return nrow(X) === ncol(X);
+   return ismatrix(X) && (nrow(X) === ncol(X));
 }
 
 
@@ -737,6 +737,26 @@ export function islowertrianmat(X) {
    return isuppertrianmat(transpose(X));
 }
 
+
+/**
+ * Return true if matrix is diagonal
+ * @param {number[]} X - matrix to check (2D Array)
+ * @returns logical value
+ */
+export function isdiagmat(X) {
+   if (!issquaredmat(X)) throw Error("Argument 'X' must be a squared matrix.");
+
+   const n = nrow(X);
+   if (nrow(X) != ncol(X)) return false;
+
+   for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+         if ((i !== j) && Math.abs(X[i][j]) > Number.EPSILON) return false;
+      }
+   }
+
+   return true;
+}
 
 /**
  * Return true if matrix is upper triangular

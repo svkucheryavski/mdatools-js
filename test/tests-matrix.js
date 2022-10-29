@@ -3,9 +3,9 @@
  ******************************************************************/
 
 // import of functions to test
-import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, eye, rbind, cbind} from '../matrix/index.js';
+import {transpose, nrow, ncol, zeros, mdot, ismatrix, mmult, madd, mdiv, diag, diagm, eye, rbind, cbind} from '../matrix/index.js';
 import {crossprod, tcrossprod, msubset, msubtract, mreplace} from '../matrix/index.js';
-import {issquaredmat, islowertrianmat, isuppertrianmat} from '../matrix/index.js';
+import {issquaredmat, islowertrianmat, isuppertrianmat, isdiagmat} from '../matrix/index.js';
 import {seq} from '../stat/index.js';
 
 // import dependencies
@@ -105,7 +105,6 @@ describe('Tests for manipulations with matrices.', function () {
       expect(X23c).to.eql([[22, 24, 25]]);
 
    });
-
 
    it('cbind() works correctly.', function () {
       const X = [[1, 2, 3, 4], [5, 6, 7, 8]];
@@ -289,7 +288,6 @@ describe('Tests for operations with matrices.', function () {
 
    });
 
-
    it('madd() works correctly.', function () {
 
       const X = [[1, 2, 3], [4, 5, 6]];
@@ -380,7 +378,6 @@ describe('Tests for operations with matrices.', function () {
       expect(resXz3).to.eql([[-99, -98, -97], [-196, -195, -194]]);
 
    });
-
 
    it('mmult() works correctly.', function () {
 
@@ -493,10 +490,26 @@ describe('Tests for generation of matrices and checking its properties.', functi
       expect(eye(3)).to.eql([[1, 0, 0], [0, 1, 0], [0, 0, 1]]);
    });
 
+   it('diagm() works correctly.', function() {
+      expect(() => diagm(1)).to.throw(Error, "Argument 'x' must be a vector.");
+      expect(() => diagm([[1, 2], [1, 2]])).to.throw(Error, "Argument 'x' must be a vector.");
+      expect(diagm([1, 2, 3])).to.eql([[1, 0, 0], [0, 2, 0], [0, 0, 3]]);
+   });
+
    it('diag() works correctly.', function() {
-      expect(() => diag(1)).to.throw(Error, "Argument 'x' must be a vector.");
-      expect(() => diag([[1, 2], [1, 2]])).to.throw(Error, "Argument 'x' must be a vector.");
-      expect(diag([1, 2, 3])).to.eql([[1, 0, 0], [0, 2, 0], [0, 0, 3]]);
+
+      const x1 = [1];
+      const x2 = [1, 2];
+      const X1 = [[1, 1, 1, 1], [2, 2, 2, 2]];
+      const X2 = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]];
+      const X3 = [[1]];
+
+      expect(() => diag(x1)).to.throw(Error, "Argument 'x' must be a squared matrix.");
+      expect(() => diag(x2)).to.throw(Error, "Argument 'x' must be a squared matrix.");
+      expect(() => diag(X1)).to.throw(Error, "Argument 'x' must be a squared matrix.");
+
+      expect(diag(X2)).to.eql([1, 6, 11, 16]);
+      expect(diag(X3)).to.eql([1]);
    });
 
    it('zeros() works correctly.', function () {
@@ -548,12 +561,11 @@ describe('Tests for generation of matrices and checking its properties.', functi
       expect(ismatrix([[1, 2, 3], [1, 2, 3], [4, 5, 6]])).to.equal(true)
    });
 
-
    it('issquared() works correctly.', function () {
       const E1 = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]];
       const E2 = [1, 2, 3, 4];
       const X1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];
-      const X2 = [1];
+      const X2 = [[1]];
 
       expect(issquaredmat(E1)).to.equal(false);
       expect(issquaredmat(transpose(E1))).to.equal(false);
@@ -567,7 +579,6 @@ describe('Tests for generation of matrices and checking its properties.', functi
       expect(issquaredmat(transpose(X2))).to.equal(true);
 
    });
-
 
    it('islowertrianmat() works correctly.', function () {
       const E1 = [[1, 2, 3], [4, 5, 6], [7, 8, 9]];

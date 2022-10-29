@@ -1,5 +1,5 @@
 import {pf, pt, qt, rep, variance, seq} from '../stat/index.js';
-import {nrow, mmult, ncol, mdot, vdot, vapply, transpose, crossprod, getdiag, vdiv,
+import {nrow, mmult, ncol, mdot, vdot, vapply, transpose, crossprod, vdiv, diag,
    msubset, isvector, isarray, ismatrix, vsubtract} from '../matrix/index.js';
 import {inv} from '../decomp/index.js';
 
@@ -101,7 +101,7 @@ export function lmfit(X, y) {
    const stat = regstat(y, fitted, ncol(X));
 
    // compute standard error and t-values for regression coefficients, H0: beta = 0
-   const coeffse = vapply(getdiag(mmult(R, stat.se**2)), Math.sqrt);
+   const coeffse = vapply(diag(mmult(R, stat.se**2)), Math.sqrt);
    const tstat = vdiv(estimate, coeffse);
 
    // compute critical t-value for confidence intervals
