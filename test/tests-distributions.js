@@ -1,268 +1,186 @@
-/******************************************************************
- *  Tests for functions for theoretical distributions             *
- ******************************************************************/
+// import dependencies
+import {default as chai} from 'chai';
+import {sum, sd, mean, min, max} from '../stat/index.js';
+import { vector, Vector } from '../arrays/index.js';
 
 // import of functions to test
-import {runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf} from '../stat/index.js';
-
-// import dependencies
-import {seq, sum, sd, mean, min, max} from '../stat/index.js';
-import {default as chai} from 'chai';
+import {gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf} from '../distributions/index.js';
 
 const should = chai.should();
 const expect = chai.expect;
 
+describe('Tests for helper functions.', function () {
+
+   it ('tests for "gamma" function.', function () {
+      expect(() => gamma(-1)).to.throw(Error, "gamma: the function only works with arguments > 0.");
+      expect(() => gamma(0)).to.throw(Error, "gamma: the function only works with arguments > 0.");
+      gamma(1).should.be.closeTo(1, 0.000001);
+      gamma(4).should.be.closeTo(6, 0.000001);
+      gamma(0.5).should.be.closeTo(1.772454, 0.000001);
+      gamma(1.5).should.be.closeTo(0.8862269, 0.000001);
+
+      expect(() => gamma(vector([1, 2, -1, 3]))).to.throw(Error, "gamma: the function only works with arguments > 0.");
+      expect(() => gamma(vector([1, 2, 0, 3]))).to.throw(Error, "gamma: the function only works with arguments > 0.");
+      const g = gamma(vector([1, 4, 0.5, 1.5]));
+      g.v[0].should.be.closeTo(1, 0.000001);
+      g.v[1].should.be.closeTo(6, 0.000001);
+      g.v[2].should.be.closeTo(1.772454, 0.000001);
+      g.v[3].should.be.closeTo(0.8862269, 0.000001);
+   });
+
+   it ('tests for "beta".', function () {
+      beta(1, 1).should.be.closeTo(1, 0.000001);
+      beta(0.5, 0.5).should.be.closeTo(3.141593, 0.000001);
+      beta(0.5, 1.5).should.be.closeTo(1.570796, 0.000001);
+   });
+
+});
+
 describe('Tests for theoretical distribution functions.', function () {
 
-   it('runif() works correctly (n = 1 000 000).', function () {
+   it ('tests for method "dunif".', function () {
+
+      const n = 1000000;
+
+      // standardized distribution for a = 0, b = 1
+      const x1 = Vector.seq(0, 1, 1/(n - 1));
+      const d1 = dunif(x1);
+
+      expect(d1.v).to.have.lengthOf(n);
+      d1.v[0].should.be.closeTo(1,   0.0000000001);
+      d1.v[n-1].should.be.closeTo(1, 0.0000000001);
+      d1.v[n/2].should.be.closeTo(1, 0.0000000001);
+
+      // distribution with mu = 10 and sigma = 10, for ± 3 sigma
+      const a = 10;
+      const b = 100;
+      const x2 = Vector.seq(a, b, (b - a) / (n - 1));
+      const d2 = dunif(x2, a, b);
+
+      expect(d2.v).to.have.lengthOf(n);
+      d2.v[0].should.be.closeTo(1 / (b - a),   0.00000001);
+      d2.v[n-1].should.be.closeTo(1 / (b - a), 0.00000001);
+      d2.v[n/2].should.be.closeTo(1 / (b - a), 0.00000001);
+      (sum(d2) * (b - a)/n).should.be.closeTo(1.0, 0.000001);
+
+      dunif(a - 0.0000001, a, b).should.be.closeTo(0.0, 0.0000001);
+      dunif(b + 0.0000001, a, b).should.be.closeTo(0.0, 0.0000001);
+   });
+
+   it('tests for method "punif".', function () {
+
+      const n = 1000000;
+
+      // standardized distribution for a = 0, b = 1
+      const x1 = Vector.seq(0, 1, 1 / (n - 1));
+      const p1 = punif(x1);
+
+      expect(p1.v).to.have.lengthOf(n);
+      p1.v[0].should.be.closeTo(0, 0.00001);
+      p1.v[n-1].should.be.closeTo(1, 0.00001);
+      p1.v[n/2].should.be.closeTo(0.5, 0.00001);
+
+      // outside the range
+      punif(-1).should.be.closeTo(0, 0.00001);
+      punif( 1).should.be.closeTo(1, 0.00001);
+
+      // distribution with mu = 10 and sigma = 10, for ± 3 sigma
+      const a = 10;
+      const b = 100;
+      const x2 = Vector.seq(a, b, (b - a) / (n - 1));
+      const p2 = punif(x2, a, b);
+
+      expect(p2.v).to.have.lengthOf(n);
+      punif(a - 1, a, b).should.be.closeTo(0.0, 0.00001);
+      punif(b + 1, a, b).should.be.closeTo(1.0, 0.00001);
+   });
+
+   it('tests for method "runif".', function () {
+
       const n = 1000000;
       const r1 = runif(n);
 
-      expect(r1).to.have.lengthOf(n)
+      expect(r1.v).to.have.lengthOf(n)
       expect(min(r1)).to.be.above(0);
       expect(max(r1)).to.be.below(1);
 
       const r2 = runif(n, 10, 20);
-      expect(r2).to.have.lengthOf(n)
+      expect(r2.v).to.have.lengthOf(n)
       expect(min(r2)).to.be.above(10);
       expect(max(r2)).to.be.below(20);
    });
 
-   it('rnorm() works correctly (n = 1 000 000).', function () {
-      const n = 1000000;
-      const r1 = rnorm(n);
-      expect(r1).to.have.lengthOf(n)
-      sd(r1).should.be.closeTo(1, 0.01);
-      mean(r1).should.be.closeTo(0, 0.01);
-      min(r1).should.be.above(-6);
-      max(r1).should.be.below(6);
-   });
+   it ('tests for method "dnorm".', function () {
 
-   it('dnorm() works correctly (n = 1 000 000).', function () {
       const n = 1000000;
 
       // standardized distribution for ± 3 sigma
-      const x1 = seq(-3, 3, n);
+      const x1 = Vector.seq(-3, 3, 6 / (n - 1));
       const d1 = dnorm(x1);
-      expect(d1).to.have.lengthOf(n);
-      d1[0].should.be.closeTo(0.004431848, 0.00000001);
-      d1[n-1].should.be.closeTo(0.004431848, 0.00000001);
-      d1[n/2].should.be.closeTo(0.3989423, 0.0000001);
+      expect(d1.v).to.have.lengthOf(n);
+      d1.v[0].should.be.closeTo(0.004431848, 0.00000001);
+      d1.v[n-1].should.be.closeTo(0.004431848, 0.00000001);
+      d1.v[n/2].should.be.closeTo(0.3989423, 0.0000001);
 
       // distribution with mu = 10 and sigma = 10, for ± 3 sigma
       const mu = 10;
       const sigma = 10
-      const x2 = seq(mu - 3 * sigma, mu + 3 * sigma, n);
+      const x2 = Vector.seq(mu - 3 * sigma, mu + 3 * sigma, 6 * sigma / (n - 1));
       const d2 = dnorm(x2, mu, sigma);
-      expect(d2).to.have.lengthOf(n);
-      d2[0].should.be.closeTo(0.0004431848, 0.00000001);
-      d2[n-1].should.be.closeTo(0.0004431848, 0.00000001);
-      d2[n/2].should.be.closeTo(0.03989423, 0.0000001);
+      expect(d2.v).to.have.lengthOf(n);
+      d2.v[0].should.be.closeTo(0.0004431848, 0.00000001);
+      d2.v[n-1].should.be.closeTo(0.0004431848, 0.00000001);
+      d2.v[n/2].should.be.closeTo(0.03989423, 0.0000001);
 
       // distribution with mu = 10 and sigma = 10, for ± 6 sigma should have area of one
-      const x3 = seq(mu - 6 * sigma, mu + 6 * sigma, n);
+      const x3 = Vector.seq(mu - 6 * sigma, mu + 6 * sigma, 12 * sigma / (n - 1));
       const d3 = dnorm(x3, mu, sigma);
-      expect(d3).to.have.lengthOf(n);
-      (sum(d3) * 12 * sigma/n).should.be.closeTo(1.0, 0.00001);
+      expect(d3.v).to.have.lengthOf(n);
+      (sum(d3) * 12 * sigma / n).should.be.closeTo(1.0, 0.00001);
 
       // if values are far from mean density is 0
-      dnorm([mu - 6 * sigma], mu, sigma).should.be.closeTo(0.0, 0.0000001);
-      dnorm([mu + 6 * sigma], mu, sigma).should.be.closeTo(0.0, 0.0000001);
+      dnorm(mu - 6 * sigma, mu, sigma).should.be.closeTo(0.0, 0.0000001);
+      dnorm(mu + 6 * sigma, mu, sigma).should.be.closeTo(0.0, 0.0000001);
    });
 
+   it ('tests for method "pnorm".', function () {
 
-   it('dunif() works correctly (n = 1 000 000).', function () {
-      const n = 1000000;
-
-      // standardized distribution for a = 0, b = 1
-      const x1 = seq(0, 1, n);
-      const d1 = dunif(x1);
-
-      expect(d1).to.have.lengthOf(n);
-      d1[0].should.be.closeTo(1,   0.0000000001);
-      d1[n-1].should.be.closeTo(1, 0.0000000001);
-      d1[n/2].should.be.closeTo(1, 0.0000000001);
-
-      // distribution with mu = 10 and sigma = 10, for ± 3 sigma
-      const a = 10;
-      const b = 100;
-      const x2 = seq(a, b, n);
-      const d2 = dunif(x2, a, b);
-
-      expect(d2).to.have.lengthOf(n);
-      d2[0].should.be.closeTo(1 / (b - a),   0.00000001);
-      d2[n-1].should.be.closeTo(1 / (b - a), 0.00000001);
-      d2[n/2].should.be.closeTo(1 / (b - a), 0.00000001);
-      (sum(d2) * (b - a)/n).should.be.closeTo(1.0, 0.000001);
-
-      dunif([a - 0.0000001], a, b)[0].should.be.closeTo(0.0, 0.0000001);
-      dunif([b + 0.0000001], a, b)[0].should.be.closeTo(0.0, 0.0000001);
-   });
-
-
-   it('dt() works correctly (n = 100 000).', function () {
-      const n = 100000;
-
-      //  distribution for DoF = 1
-      const x1 = seq(-5, 5, n);
-      const d1 = dt(x1, 1);
-      expect(d1).to.have.lengthOf(n);
-      d1[0].should.be.closeTo(0.01224269, 0.00000001);
-      d1[n-1].should.be.closeTo(0.01224269, 0.00000001);
-      d1[n/2].should.be.closeTo(0.31830989, 0.0000001);
-
-      //  distribution for DoF = 3
-      const x2 = seq(-5, 5, n);
-      const d2 = dt(x2, 3);
-      expect(d2).to.have.lengthOf(n);
-      d2[0].should.be.closeTo(0.004219354, 0.00000001);
-      d2[n-1].should.be.closeTo(0.004219354, 0.00000001);
-      d2[n/2].should.be.closeTo(0.3675526, 0.0000001);
-
-      //  distribution for DoF = 30
-      const x3 = seq(-3, 3, n);
-      const d3 = dt(x3, 30);
-      expect(d3).to.have.lengthOf(n);
-      d3[0].should.be.closeTo(0.006779063, 0.00000001);
-      d3[n-1].should.be.closeTo(0.006779063, 0.00000001);
-      d3[n/2].should.be.closeTo(0.3956322, 0.0000001);
-   });
-
-
-   it('df() works correctly (n = 10 000).', function () {
-      const n = 10000;
-
-      //  distribution for DoF = 1, 2
-      const F1 = seq(0.001, 10, n);
-      const d1 = df(F1, 1, 2);
-      expect(d1).to.have.lengthOf(n);
-      d1[0].should.be.closeTo(11.17196, 0.001);
-      d1[n-1].should.be.closeTo(0.007607258, 0.001);
-      d1[n/2].should.be.closeTo(0.02414726, 0.001);
-
-      //  distribution for DoF = 3, 10
-      const F2 = seq(0.001, 10, n);
-      const d2 = df(F2, 3, 10);
-      expect(d2).to.have.lengthOf(n);
-      d2[0].should.be.closeTo(0.07019374, 0.001);
-      d2[n-1].should.be.closeTo(0.0008585295, 0.001);
-      d2[n/2].should.be.closeTo(0.01288309, 0.001);
-
-   });
-
-   it('pnorm() works correctly (n = 1 000 000).', function () {
       const n = 1000000;
 
       // standardized distribution for ± 3 sigma
-      const x1 = seq(-3, 3, n);
+      const x1 = Vector.seq(-3, 3, 6 / (n - 1));
       const p1 = pnorm(x1);
 
-      expect(p1).to.have.lengthOf(n);
-      p1[  0].should.be.closeTo(0.00134996, 0.00001);
-      p1[n-1].should.be.closeTo(0.998650, 0.00001);
-      p1[n/2].should.be.closeTo(0.5, 0.00001);
+      expect(p1.v).to.have.lengthOf(n);
+      p1.v[  0].should.be.closeTo(0.00134996, 0.00001);
+      p1.v[n-1].should.be.closeTo(0.998650, 0.00001);
+      p1.v[n/2].should.be.closeTo(0.5, 0.00001);
 
      // distribution with mu = 10 and sigma = 10, for ± 3 sigma
       const mu = 10;
       const sigma = 10
-      const x2 = seq(mu - 3 * sigma, mu + 3 * sigma, n);
+      const x2 = Vector.seq(mu - 3 * sigma, mu + 3 * sigma, 6 * sigma / (n - 1));
       const p2 = pnorm(x2, mu, sigma);
-      expect(p2).to.have.lengthOf(n);
-      p2[  0].should.be.closeTo(0.001350, 0.000001);
-      p2[n-1].should.be.closeTo(0.998650, 0.000001);
-      p2[n/2].should.be.closeTo(0.5, 0.00001);
+      expect(p2.v).to.have.lengthOf(n);
+      p2.v[  0].should.be.closeTo(0.001350, 0.000001);
+      p2.v[n-1].should.be.closeTo(0.998650, 0.000001);
+      p2.v[n/2].should.be.closeTo(0.5, 0.00001);
 
    });
 
-   it('punif() works correctly (n = 1 000 000).', function () {
-      const n = 1000000;
+   it ('tests for method "qnorm".', function () {
 
-      // standardized distribution for a = 0, b = 1
-      const x1 = seq(0, 1, n);
-      const p1 = punif(x1);
-
-      expect(p1).to.have.lengthOf(n);
-      p1[0].should.be.closeTo(0, 0.00001);
-      p1[n-1].should.be.closeTo(1, 0.00001);
-      p1[n/2].should.be.closeTo(0.5, 0.00001);
-
-      // outside the range
-      punif([-1])[0].should.be.closeTo(0, 0.00001);
-      punif([ 1])[0].should.be.closeTo(1, 0.00001);
-
-      // distribution with mu = 10 and sigma = 10, for ± 3 sigma
-      const a = 10;
-      const b = 100;
-      const x2 = seq(a, b, n);
-      const p2 = punif(x2, a, b);
-
-      expect(p2).to.have.lengthOf(n);
-      punif([a - 10], a, b)[0].should.be.closeTo(0.0, 0.00001);
-      punif([b + 10], a, b)[0].should.be.closeTo(1.0, 0.00001);
-   });
-
-   it('pt() works correctly (n = 10 000).', function () {
-      const n = 10000;
-
-      //  distribution for DoF = 1
-      const t1 = seq(-5, 5, n);
-      const p1 = pt(t1, 1);
-      expect(p1).to.have.lengthOf(n);
-      p1[0].should.be.closeTo(0.06283296, 0.001);
-      p1[n-1].should.be.closeTo(0.937167, 0.001);
-      p1[n/2].should.be.closeTo(0.5, 0.001);
-
-      //  distribution for DoF = 3
-      const t2 = seq(-5, 5, n);
-      const p2 = pt(t2, 3);
-      expect(p2).to.have.lengthOf(n);
-      p2[0].should.be.closeTo(0.007696219, 0.001);
-      p2[n-1].should.be.closeTo(0.9923038, 0.001);
-      p2[n/2].should.be.closeTo(0.5, 0.001);
-
-      //  distribution for DoF = 30
-      const t3 = seq(-5, 5, n);
-      const p3 = pt(t3, 30);
-      expect(p3).to.have.lengthOf(n);
-      p3[0].should.be.closeTo(0.00001164834, 0.001);
-      p3[n-1].should.be.closeTo(0.9999884, 0.001);
-      p3[n/2].should.be.closeTo(0.5, 0.001);
-
-   });
-
-   it('pf() works correctly (n = 10 000).', function () {
-      const n = 10000;
-
-      //  distribution for DoF = 1, 2
-      const F1 = seq(0, 10, n);
-      const p1 = pf(F1, 1, 2);
-      expect(p1).to.have.lengthOf(n);
-      p1[0].should.be.closeTo(0, 0.001);
-      p1[n-1].should.be.closeTo(0.9128709, 0.001);
-      p1[n/2].should.be.closeTo(0.8451543, 0.001);
-
-      //  distribution for DoF = 3, 10
-      const F2 = seq(0, 10, n);
-      const p2 = pf(F2, 3, 10);
-      expect(p2).to.have.lengthOf(n);
-      p2[0].should.be.closeTo(0, 0.001);
-      p2[n-1].should.be.closeTo(0.9976484, 0.001);
-      p2[n/2].should.be.closeTo(0.9773861, 0.001);
-
-   });
-
-   it('qnorm() works correctly (n = 1 000 000).', function () {
       const n = 1000000;
 
       // border cases
       qnorm(0).should.be.equal(-Infinity);
       qnorm(1).should.be.equal(Infinity);
-      qnorm([0, 0, 1, 1]).should.be.eql([-Infinity, -Infinity, Infinity, Infinity]);
+      qnorm(vector([0, 0, 1, 1])).should.be.eql(vector([-Infinity, -Infinity, Infinity, Infinity]));
 
       // middle point and border cases
       qnorm(0.5).should.be.equal(0);
-      qnorm([0.5, 0.5]).should.be.eql([0, 0]);
-      qnorm([0, 0.5, 1]).should.be.eql([-Infinity, 0, Infinity]);
+      qnorm(vector([0.5, 0.5])).should.be.eql(vector([0, 0]));
+      qnorm(vector([0, 0.5, 1])).should.be.eql(vector([-Infinity, 0, Infinity]));
 
       // other cases
       qnorm(0.9999).should.be.closeTo( 3.719016, 0.00001);
@@ -282,29 +200,108 @@ describe('Tests for theoretical distribution functions.', function () {
       qnorm(0.025, 10, 2).should.be.closeTo( 6.080072, 0.00001);
 
       // errors
-      expect(() => qnorm(-0.0001)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
-      expect(() => qnorm( 1.0001)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
+      expect(() => qnorm(-0.0001)).to.throw(Error, 'Parameter "p" must be between 0 and 1.');
+      expect(() => qnorm( 1.0001)).to.throw(Error, 'Parameter "p" must be between 0 and 1.');
 
       // long vectors
-      const p = seq(0.0001, 0.9999, n);
+      const p = Vector.seq(0.0001, 0.9999, 0.9998 / (n - 1));
       const q = qnorm(p);
-      expect(q).to.have.lengthOf(n);
-      q[0].should.be.equal(qnorm(0.0001));
-      q[n-1].should.be.equal(qnorm(0.9999));
+      expect(q.v).to.have.lengthOf(n);
+      q.v[0].should.be.equal(qnorm(0.0001));
+      q.v[n-1].should.be.closeTo(qnorm(0.9999), 0.000000001);
    });
 
-   it('qt() works correctly (n = 1 000 000).', function () {
+   it('tests for method "rnorm".', function () {
+      const n = 1000000;
+
+      const r1 = rnorm(n);
+      expect(r1.v).to.have.lengthOf(n)
+      sd(r1).should.be.closeTo(1, 0.01);
+      mean(r1).should.be.closeTo(0, 0.01);
+      min(r1).should.be.above(-6);
+      max(r1).should.be.below(6);
+
+      const r2 = rnorm(n, 10, 5);
+      expect(r2.v).to.have.lengthOf(n)
+      sd(r2).should.be.closeTo(5, 0.01);
+      mean(r2).should.be.closeTo(10, 0.01);
+      min(r2).should.be.above(-20);
+      max(r2).should.be.below(40);
+   });
+
+   it ('tests for method "dt".', function () {
+
+      const n = 100000;
+
+      //  distribution for DoF = 1
+      const x1 = Vector.seq(-5, 5, 10/(n - 1));
+      const d1 = dt(x1, 1);
+      expect(d1.v).to.have.lengthOf(n);
+      d1.v[0].should.be.closeTo(0.01224269, 0.00000001);
+      d1.v[n-1].should.be.closeTo(0.01224269, 0.00000001);
+      d1.v[n/2].should.be.closeTo(0.31830989, 0.0000001);
+
+      //  distribution for DoF = 3
+      const x2 = Vector.seq(-5, 5, 10/(n - 1));
+      const d2 = dt(x2, 3);
+      expect(d2.v).to.have.lengthOf(n);
+      d2.v[0].should.be.closeTo(0.004219354, 0.00000001);
+      d2.v[n-1].should.be.closeTo(0.004219354, 0.00000001);
+      d2.v[n/2].should.be.closeTo(0.3675526, 0.0000001);
+
+      //  distribution for DoF = 30
+      const x3 = Vector.seq(-3, 3, 6/(n - 1));
+      const d3 = dt(x3, 30);
+      expect(d3.v).to.have.lengthOf(n);
+      d3.v[0].should.be.closeTo(0.006779063, 0.00000001);
+      d3.v[n-1].should.be.closeTo(0.006779063, 0.00000001);
+      d3.v[n/2].should.be.closeTo(0.3956322, 0.0000001);
+
+   });
+
+   it ('tests for mehtod "pt".', function () {
+
+      const n = 10000;
+
+      //  distribution for DoF = 1
+      const t1 = Vector.seq(-5, 5, 10 / (n - 1));
+      const p1 = pt(t1, 1);
+      expect(p1.v).to.have.lengthOf(n);
+      p1.v[0].should.be.closeTo(0.06283296, 0.001);
+      p1.v[n-1].should.be.closeTo(0.937167, 0.001);
+      p1.v[n/2].should.be.closeTo(0.5, 0.001);
+
+      //  distribution for DoF = 3
+      const t2 = Vector.seq(-5, 5, 10 / (n - 1));
+      const p2 = pt(t2, 3);
+      expect(p2.v).to.have.lengthOf(n);
+      p2.v[0].should.be.closeTo(0.007696219, 0.001);
+      p2.v[n-1].should.be.closeTo(0.9923038, 0.001);
+      p2.v[n/2].should.be.closeTo(0.5, 0.001);
+
+      //  distribution for DoF = 30
+      const t3 = Vector.seq(-5, 5, 10 / (n - 1));
+      const p3 = pt(t3, 30);
+      expect(p3.v).to.have.lengthOf(n);
+      p3.v[0].should.be.closeTo(0.00001164834, 0.001);
+      p3.v[n-1].should.be.closeTo(0.9999884, 0.001);
+      p3.v[n/2].should.be.closeTo(0.5, 0.001);
+
+   });
+
+   it ('tests for method "qt".', function () {
+
       const n = 1000000;
 
       // border cases
       qt(0, 1).should.be.equal(-Infinity);
       qt(1, 1).should.be.equal(Infinity);
-      qt([0, 0, 1, 1], 1).should.be.eql([-Infinity, -Infinity, Infinity, Infinity]);
+      qt(vector([0, 0, 1, 1]), 1).should.be.eql(vector([-Infinity, -Infinity, Infinity, Infinity]));
 
       // middle point and border cases
       qt(0.5, 1).should.be.equal(0);
-      qt([0.5, 0.5], 1).should.be.eql([0, 0]);
-      qt([0, 0.5, 1], 1).should.be.eql([-Infinity, 0, Infinity]);
+      qt(vector([0.5, 0.5]), 1).should.be.eql(vector([0, 0]));
+      qt(vector([0, 0.5, 1]), 1).should.be.eql(vector([-Infinity, 0, Infinity]));
 
       // other fixed cases
       const dof = [1, 2, 3, 4, 10, 30, 100];
@@ -346,18 +343,63 @@ describe('Tests for theoretical distribution functions.', function () {
       }
 
       // errors
-      expect(() => qt(-0.0001, 1)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
-      expect(() => qt( 1.0001, 1)).to.throw(Error, "Parameter 'p' must be between 0 and 1.");
-      expect(() => qt(0.2)).to.throw(Error, "Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
-      expect(() => qt(0.2, -1)).to.throw(Error, "Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
-      expect(() => qt(0.2, 0.5)).to.throw(Error, "Parameter 'dof' (degrees of freedom) must be an integer number >= 1.");
+      expect(() => qt(-0.0001, 1)).to.throw(Error, 'Parameter "p" must be between 0 and 1.');
+      expect(() => qt( 1.0001, 1)).to.throw(Error, 'Parameter "p" must be between 0 and 1.');
+      expect(() => qt(0.2)).to.throw(Error, 'Parameter "dof" (degrees of freedom) must be an integer number >= 1.');
+      expect(() => qt(0.2, -1)).to.throw(Error, 'Parameter "dof" (degrees of freedom) must be an integer number >= 1.');
+      expect(() => qt(0.2, 0.5)).to.throw(Error, 'Parameter "dof" (degrees of freedom) must be an integer number >= 1.');
 
       // long vectors
-      p = seq(0.0001, 0.9999, n);
+      p = Vector.seq(0.0001, 0.9999, 0.9998/(n - 1));
       const q = qt(p, 10);
-      expect(q).to.have.lengthOf(n);
-      q[0].should.be.equal(qt(0.0001, 10));
-      q[n-1].should.be.equal(qt(0.9999, 10));
+      expect(q.v).to.have.lengthOf(n);
+      q.v[0].should.be.equal(qt(0.0001, 10));
+      q.v[n - 1].should.be.equal(qt(0.9998999999999999, 10));
    });
+
+   it ('tests for method "df".', function () {
+
+      const n = 10000;
+
+      //  distribution for DoF = 1, 2
+      const F1 = Vector.seq(0.001, 10, 10/n);
+      const d1 = df(F1, 1, 2);
+      expect(d1.v).to.have.lengthOf(n);
+      d1.v[0].should.be.closeTo(11.17196, 0.001);
+      d1.v[n-1].should.be.closeTo(0.007607258, 0.001);
+      d1.v[n/2].should.be.closeTo(0.02414726, 0.001);
+
+      //  distribution for DoF = 3, 10
+      const F2 = Vector.seq(0.001, 10, 10/n);
+      const d2 = df(F2, 3, 10);
+      expect(d2.v).to.have.lengthOf(n);
+      d2.v[0].should.be.closeTo(0.07019374, 0.001);
+      d2.v[n-1].should.be.closeTo(0.0008585295, 0.001);
+      d2.v[n/2].should.be.closeTo(0.01288309, 0.001);
+
+   });
+
+   it ('tests for method "pf".', function () {
+
+      const n = 10000;
+
+      //  distribution for DoF = 1, 2
+      const F1 = Vector.seq(0, 10, 10/n);
+      const p1 = pf(F1, 1, 2);
+      expect(p1.v).to.have.lengthOf(n + 1);
+      p1.v[0].should.be.closeTo(0, 0.001);
+      p1.v[n-1].should.be.closeTo(0.9128709, 0.001);
+      p1.v[n/2].should.be.closeTo(0.8451543, 0.001);
+
+      //  distribution for DoF = 3, 10
+      const F2 = Vector.seq(0, 10, 10/n);
+      const p2 = pf(F2, 3, 10);
+      expect(p2.v).to.have.lengthOf(n + 1);
+      p2.v[0].should.be.closeTo(0, 0.001);
+      p2.v[n].should.be.closeTo(0.9976484, 0.001);
+      p2.v[n/2].should.be.closeTo(0.9773861, 0.001);
+
+   });
+
 });
 
