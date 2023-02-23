@@ -1271,14 +1271,22 @@ export class Vector {
    /**
     * Create a subset of a vector using vector with indices.
     *
-    * @param {Index} ind - vector with indices (must start from 1, not 0).
+    * @param {number|Array|Index} ind - single index or vector with indices (must start from 1, not 0).
     *
     * @returns {Vector} a subset.
     */
    subset(ind) {
 
+     if (typeof(ind) === 'number') {
+         ind = index([ind]);
+      }
+
+      if (Array.isArray(ind)) {
+         ind = index(ind);
+      }
+
       if (!isindex(ind)) {
-         throw Error('subset: parameter "ind" must be Index.');
+         throw Error('subset: parameter "ind" must be number, array of instance of class Index.');
       }
 
       const n = ind.length;
