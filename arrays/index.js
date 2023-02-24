@@ -1061,6 +1061,45 @@ export class Matrix {
       return new Matrix(out, nrows, ncols);
    }
 
+   /**
+    * Create a matrix by applying function to all possible pairs of values from two vectors.
+    *
+    * @param {Array|Vector} x - vector with values.
+    * @param {Array|Vector} y - vector with values.
+    * @param {function} fun - function of two arguments which returns a single value.
+    *
+    * @returns {Matrix}
+    */
+   static outer(x, y, fun) {
+
+      if (Array.isArray(x)) {
+         x = vector(x);
+      }
+
+      if (Array.isArray(y)) {
+         y = vector(y);
+      }
+
+      if (!isvector(x)) {
+         throw Error('Matrix.outer: parameter "x" must be a vector or an array with numbers.');
+      }
+
+      if (!isvector(y)) {
+         throw Error('Matrix.outer: parameter "y" must be a vector or an array with numbers.');
+      }
+
+      const out = Matrix.zeros(x.length, y.length);
+      for (let c = 0; c < y.length; c++) {
+         const yv = y.v[c]
+         const outc = out.getcolref(c + 1);
+         for (let r = 0; r < x.length; r++) {
+            outc[r] = fun(x.v[r], yv);
+         }
+      }
+
+      return out;
+   }
+
 
    /**
     * Parse string with data from a CSV file and create a matrix with values.

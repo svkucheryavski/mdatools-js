@@ -98,6 +98,7 @@ The simplest way to create an instance of `Matrix`  class is to use method `matr
 * `Matrix.randn(nrows, ncols, [mu=0], [sigma=1])` — creates a matrix filled with normally distributed random values.
 * `Matrix.eye(nrows, ncols)` — creates an identity matrix (can be rectangular).
 * `Matrix.diagm(x)` — creates a squared matrix with main diagonal filled with values from vector `x`.
+* `Matrix.outer(x, y, fun)` — creates a matrix by applying function `fun` to all possible pairs of values from vectors `x` and `y`.
 
 One can also create a matrix by reshaping a vector as shown below.
 

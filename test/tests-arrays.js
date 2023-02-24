@@ -1060,6 +1060,14 @@ describe('Tests of methods for class Index.', function () {
 
 describe('Tests of methods for generating vectors and matrices and static methods.', function () {
 
+   it('tests for method "outer"', function() {
+      const x = [-5, -3, 0, 3, 5];
+      const y = [10, 0, 10];
+      const Z = Matrix.outer(x, y, (x, y) => x**2 + y**2);
+
+      testMatrixStructure(Z, 5, 3, [125, 109, 100, 109, 125, 25, 9, 0, 9, 25, 125, 109, 100, 109, 125]);
+   });
+
    it('tests for method "parseCSV"', function() {
 
       // just values (sep = ",", dec = "."), no header
