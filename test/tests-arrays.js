@@ -828,6 +828,14 @@ describe('Tests of methods for class Matrix.', function () {
 
 describe('Tests of methods for class Vector.', function () {
 
+   it ('tests for method "filter"', function() {
+      const x1 = vector([-5, 1, -4, 2, -1, 3, -2, 4, 5, 0]);
+      testVectorStructure(x1.filter(v => v > 0), 5, [1, 2, 3, 4, 5]);
+      testVectorStructure(x1.filter(v => v < 0), 4, [-5, -4, -1, -2]);
+      testVectorStructure(x1.filter(v => v == 0), 1, [0]);
+      testVectorStructure(x1.filter(v => v == 10), 0, []);
+   });
+
    it ('tests for methods "shuffle" and "sort".', function() {
       const x1 = vector([10, -8.2, 3, 1, -15.3, 100]);
       const x1a = x1.sort();

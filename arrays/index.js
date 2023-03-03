@@ -1258,6 +1258,19 @@ export class Vector {
    }
 
 
+   filter(fun) {
+      const out = new Vector.valuesConstructor(this.length);
+      let n = 0;
+      for (let i = 0; i < this.length; i++) {
+         if (fun(this.v[i])) {
+            out[n] = this.v[i];
+            n = n + 1;
+         }
+      }
+
+      return new Vector(out.subarray(0, n));
+   }
+
    /**
     * Shuffles values in vector using Fisher–Yates algorithm.
     *
