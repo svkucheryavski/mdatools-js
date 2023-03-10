@@ -1712,6 +1712,45 @@ export class Index {
       return _seq(start, end, by, Index);
    }
 
+   /**
+    * Create a subset of a index using another vector with indices.
+    *
+    * @param {number|Array|Index} ind - single index or vector with indices (must start from 1, not 0).
+    *
+    * @returns {Index} a subset.
+    */
+   subset(ind) {
+
+     if (typeof(ind) === 'number') {
+         ind = index([ind]);
+      }
+
+      if (Array.isArray(ind)) {
+         ind = index(ind);
+      }
+
+      if (!isindex(ind)) {
+         throw Error('subset: parameter "ind" must be number, array of instance of class Index.');
+      }
+
+      const n = ind.length;
+      const out = new Index.valuesConstructor(n);
+
+      for (let i = 0; i < n; i++) {
+
+         if (ind.v[i] < 1) {
+            throw Error('subset: indices must start with 1 (not 0).');
+         }
+
+         if (ind.v[i] > this.length) {
+            throw Error('subset: index exceeds the length of the vector.');
+         }
+
+         out[i] = this.v[ind.v[i] - 1];
+      }
+
+      return new Index(out);
+   }
 }
 
 
