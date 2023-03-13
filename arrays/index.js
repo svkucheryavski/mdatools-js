@@ -1257,12 +1257,39 @@ export class Vector {
       this.length = values.length;
    }
 
+   /**
+    * Returns a vector of indices for values for which function ´fun´ returns true.
+    *
+    * @param {function} fun - function with two arguments (value and its index).
+    *
+    * @returns {Index} a vector of indices.
+    */
+   which(fun) {
+      const out = new Index.valuesConstructor(this.length);
+      let n = 0;
+      for (let i = 0; i < this.length; i++) {
+         if (fun(this.v[i], i)) {
+            out[n] = i + 1;
+            n = n + 1;
+         }
+      }
 
+      return new Index(out.subarray(0, n));
+   }
+
+
+   /**
+    * Returns a subset of values for which function ´fun´ returns true.
+    *
+    * @param {function} fun - function with two arguments (value and its index).
+    *
+    * @returns {Vector} a subset.
+    */
    filter(fun) {
       const out = new Vector.valuesConstructor(this.length);
       let n = 0;
       for (let i = 0; i < this.length; i++) {
-         if (fun(this.v[i])) {
+         if (fun(this.v[i], i)) {
             out[n] = this.v[i];
             n = n + 1;
          }
@@ -1270,6 +1297,7 @@ export class Vector {
 
       return new Vector(out.subarray(0, n));
    }
+
 
    /**
     * Shuffles values in vector using Fisher–Yates algorithm.
@@ -1329,12 +1357,12 @@ export class Vector {
     */
    subset(ind) {
 
-     if (typeof(ind) === 'number') {
+      if (typeof(ind) === 'number') {
          ind = index([ind]);
       }
 
       if (Array.isArray(ind)) {
-         ind = index(ind);
+         ind = typeof(ind[0]) === 'boolean' ? Index.bool2ind(ind) : index(ind);
       }
 
       if (!isindex(ind)) {
@@ -1648,6 +1676,29 @@ export class Index {
       this.length = values.length;
    }
 
+
+   /**
+    * Returns a subset of indices for which function ´fun´ returns true.
+    *
+    * @param {function} fun - function with two arguments (value and its index).
+    *
+    * @returns {Index} a subset.
+    */
+   filter(fun) {
+      const out = new Index.valuesConstructor(this.length);
+      let n = 0;
+      for (let i = 0; i < this.length; i++) {
+         if (fun(this.v[i], i)) {
+            out[n] = this.v[i];
+            n = n + 1;
+         }
+      }
+
+      return new Index(out.subarray(0, n));
+   }
+
+
+
    /**
     * Shuffle indices.
     *
@@ -1699,20 +1750,6 @@ export class Index {
    // Static methods //
 
    /**
-    * Generate sequence of indices.
-    *
-    * @param {number} start - first value.
-    * @param {number} end - last value.
-    * @param {number} [by=1] - increment between values.
-    *
-    * @returns {Index} object with sequence values.
-    *
-    */
-   static seq(start, end, by) {
-      return _seq(start, end, by, Index);
-   }
-
-   /**
     * Create a subset of a index using another vector with indices.
     *
     * @param {number|Array|Index} ind - single index or vector with indices (must start from 1, not 0).
@@ -1750,6 +1787,46 @@ export class Index {
       }
 
       return new Index(out);
+   }
+
+
+   /**
+    * Generate sequence of indices.
+    *
+    * @param {number} start - first value.
+    * @param {number} end - last value.
+    * @param {number} [by=1] - increment between values.
+    *
+    * @returns {Index} object with sequence values.
+    *
+    */
+   static seq(start, end, by) {
+      return _seq(start, end, by, Index);
+   }
+
+
+
+   /**
+    * Convert array of logical values to vector of indices.
+    *
+    * @param {Array} x - array of logical values.
+    *
+    * @returns {Index} vector of indices where x is true.
+    *
+    */
+   static bool2ind(x) {
+
+      let n = 0;
+      const out = new Index.valuesConstructor(x.length);
+
+      for (let i = 0; i < x.length; i++) {
+         if (x[i]) {
+            out[n] = i + 1;
+            n = n + 1;
+         }
+      }
+
+      return new Index(out.subarray(0, n));
    }
 }
 
