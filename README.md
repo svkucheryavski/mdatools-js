@@ -45,10 +45,12 @@ Two (or more) vectors with indices, e.g. `i1` and `i2` can be concatenated into 
 The simplest way to create an instance of `Vector` class is to use method `vector(x)` where `x` is a conventional JavaScript array, e.g. `vector([1.1, 2.2, 3.3])`. The values can also be generated using the following static methods:
 
 * `Vector.zeros(n)` — creates a vector of size `n` filled with zeros.
+* `Vector.fill(v, n)` — creates a vector of size `n` filled with value `v`.
 * `Vector.ones(n)` — creates a vector of size `n` filled with ones.
 * `Vector.rand(n, [a=0], [b=1])` — creates a vector of size `n` filled with random values uniformly distributed between `a` and `b`.
 * `Vector.randn(n, [mu=0], [sigma=1])` — creates a vector of size `n` filled with normally distributed random values.
 * `Vector.seq(start, end, by)` — creates a sequence of values, similar to the `seq` method for `Index` class.
+* `Vector.c(a, b, ...)` — concatenates any amount of numbers, arrays or/and vectors into a vector.
 
 The `Vector` object object also has class methods `rep(n)` and `repeach(n)` which work similar to the methods for `Index` objects.
 
@@ -93,6 +95,7 @@ Following methods do something with vector values, e.g. arithmetic operations, t
 The simplest way to create an instance of `Matrix`  class is to use method `matrix(x, nrows, ncols)` where `x` is a conventional JavaScript array, e.g. `matrix([1, 2, 3, 4], 2, 2)`. The values can also be generated using the following static methods:
 
 * `Matrix.zeros(nrows, ncols)` — creates a matrix filled with zeros.
+* `Matrix.fill(v, nrows, ncols)` — creates a matrix filled with value `v`.
 * `Matrix.ones(nrows, ncols)` — creates a matrix filled with ones.
 * `Matrix.rand(nrows, ncols, [a=0], [b=1])` — creates a matrix filled with random values uniformly distributed between `a` and `b`.
 * `Matrix.randn(nrows, ncols, [mu=0], [sigma=1])` — creates a matrix filled with normally distributed random values.

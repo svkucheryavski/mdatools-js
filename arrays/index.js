@@ -1048,6 +1048,20 @@ export class Matrix {
     *
     */
    static ones(nrows, ncols) {
+      return Matrix.fill(1, nrows, ncols);
+   }
+
+   /**
+    * Create a Matrix object filled with a manual value.
+    *
+    * @param {number} v - value to fill the matrix with.
+    * @param {number} nrows - number of rows.
+    * @param {number} ncols - number of columns.
+    *
+    * @returns {Matrix} the generated matrix.
+    *
+    */
+   static fill(v, nrows, ncols) {
 
       if (ncols === undefined) {
          ncols = nrows;
@@ -1055,11 +1069,12 @@ export class Matrix {
 
       const out = new Float64Array(nrows * ncols);
       for (let i = 0; i < out.length; i++) {
-         out[i] = 1;
+         out[i] = v;
       }
 
       return new Matrix(out, nrows, ncols);
    }
+
 
    /**
     * Create a matrix by applying function to all possible pairs of values from two vectors.
@@ -1430,6 +1445,7 @@ export class Vector {
       return new Vector(this.v.slice());
    }
 
+
    /**
     * Compute a dot product with another vector.
     *
@@ -1543,6 +1559,38 @@ export class Vector {
 
    // Static methods //
 
+
+   /**
+    * Concatenates numbers, arrays and vectors into a single vector.
+    *
+    * @param  {...any} args - numbers, arrays or/and vectors.
+    *
+    * @returns {Vector}
+    *
+    */
+   static c(...args) {
+
+      if (args.length === 1) return args[0];
+
+      const l = args.reduce( (acc, cur) => acc + (typeof(cur) === 'number' ? 1 : cur.length), 0);
+      const out = new Vector.valuesConstructor(l);
+
+      let start = 0;
+      for (const a of args) {
+
+         if (typeof(a) === 'number') {
+            out[start] = a;
+            start += 1;
+         } else {
+            out.set(isvector(a) ? a.v : new Vector.valuesConstructor(a), start);
+            start += typeof(a) === 'number' ? 1 : a.length;
+         }
+      }
+
+      return new Vector(out);
+   }
+
+
    /**
     * Generate sequence of values.
     *
@@ -1604,16 +1652,30 @@ export class Vector {
    /**
     * Create a Vector object filled with ones.
     *
-    * @param {number} n - length of the vector
+    * @param {number} n - length of the vector.
     *
     * @returns {Vector} the generated matrix.
     *
     */
    static ones(n) {
+      return Vector.fill(1, n);
+   }
+
+
+  /**
+    * Create a Vector object filled with a repeated value.
+    *
+    * @param {number} v - value to fill the vector with.
+    * @param {number} n - length of the vector.
+    *
+    * @returns {Vector} the generated matrix.
+    *
+    */
+   static fill(v, n) {
 
       const out = new Float64Array(n);
       for (let i = 0; i < out.length; i++) {
-         out[i] = 1;
+         out[i] = v;
       }
 
       return new Vector(out);

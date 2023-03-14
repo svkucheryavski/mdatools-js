@@ -1068,6 +1068,34 @@ describe('Tests of methods for class Index.', function () {
 
 describe('Tests of methods for generating vectors and matrices and static methods.', function () {
 
+   it ('tests for static method "c"', function() {
+      const x1 = Vector.c(1, [3, 4, 5], vector([20, 30, 50]), 55);
+      testVectorStructure(x1, 8, [1, 3, 4, 5, 20, 30, 50, 55]);
+
+      const x2 = Vector.c(vector([20, 30, 50]), 1, 10, [3, 4, 5], 55);
+      testVectorStructure(x2, 9, [20, 30, 50, 1, 10, 3, 4, 5, 55]);
+
+   });
+
+   it ('tests for method "fill"', function() {
+
+      // vector
+      const x1 = Vector.fill(4, 3);
+      testVectorStructure(x1, 3, [4, 4, 4]);
+
+      const x2 = Vector.fill(-0.5, 1);
+      testVectorStructure(x2, 1, [-0.5]);
+
+      // matrix
+      const X1 = Matrix.fill(4, 3, 4);
+      testMatrixStructure(X1, 3, 4, [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]);
+
+      const X2 = Matrix.fill(-0.5, 1, 1);
+      testMatrixStructure(X2, 1, 1, [-0.5]);
+
+
+   });
+
    it('tests for method "outer"', function() {
       const x = [-5, -3, 0, 3, 5];
       const y = [10, 0, 10];
