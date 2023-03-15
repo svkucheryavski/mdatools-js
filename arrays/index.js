@@ -1364,6 +1364,54 @@ export class Vector {
 
 
    /**
+    * Replace values of vectors specified by 'ind' with values from another vector.
+    *
+    * @param {Vector} - vector with values to use as replacement.
+    * @param {number | Array | Index} ind - indices (as number or vector of indices).
+    *
+    * @description Indices must start from 1. Empty array ([]) tells function to use
+    * all elements. Length of vector 'x' should correspond to the
+    * number of indices.
+    *
+    * Function does not create a new vector but changes the current one.
+    *
+    * @returns {Vector} the vector with replaced values.
+    *
+    */
+   replace (x, ind) {
+
+      if (typeof(ind) === 'number') {
+         ind = [ind];
+      }
+
+      if (ind.length === 0) {
+         ind = Index.seq(1, this.length);
+      }
+
+      if (!isindex(ind)) {
+         ind = index(ind);
+      }
+
+      const n = ind.length;
+
+      if (min(ind) < 1 || max(ind) > this.length) {
+         throw Error('Vector.replace: indices do not match the lenght of the vector.');
+      }
+
+      if (x.length !== n) {
+         throw Error('Vector.replace: length of "x" does not match the indices.');
+      }
+
+      for (let i = 0; i < ind.length; i++) {
+         const r = ind.v[i];
+         this.v[r - 1] = x.v[i];
+      }
+
+      return this;
+   }
+
+
+   /**
     * Create a subset of a vector using vector with indices.
     *
     * @param {number|Array|Index} ind - single index or vector with indices (must start from 1, not 0).
