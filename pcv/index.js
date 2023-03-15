@@ -357,10 +357,9 @@ export function cv2obs(cv, k) {
       throw Error('cv2obs: parameter "cv" must be instance of Index.');
    }
 
-   const ind = Index.seq(1, cv.length);
    return [
-      new Index(ind.v.filter(v => cv.v[v - 1] != k)),
-      new Index(ind.v.filter(v => cv.v[v - 1] == k))
+      cv.which(v => v !== k),
+      cv.which(v => v === k)
    ];
 }
 
