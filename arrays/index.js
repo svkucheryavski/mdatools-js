@@ -1641,11 +1641,11 @@ export class Vector {
     *
     * @param {number} n - length of the vector
     *
-    * @returns {Vector} the generated matrix.
+    * @returns {Vector} the generated vector.
     *
     */
    static zeros(n) {
-      return new Vector(new Float64Array(n));
+      return new Vector(new Vector.valuesConstructor(n));
    }
 
 
@@ -1654,7 +1654,7 @@ export class Vector {
     *
     * @param {number} n - length of the vector.
     *
-    * @returns {Vector} the generated matrix.
+    * @returns {Vector} the generated vector.
     *
     */
    static ones(n) {
@@ -1668,12 +1668,12 @@ export class Vector {
     * @param {number} v - value to fill the vector with.
     * @param {number} n - length of the vector.
     *
-    * @returns {Vector} the generated matrix.
+    * @returns {Vector} the generated vector.
     *
     */
    static fill(v, n) {
 
-      const out = new Float64Array(n);
+      const out = new Vector.valuesConstructor(n);
       for (let i = 0; i < out.length; i++) {
          out[i] = v;
       }
@@ -1809,8 +1809,6 @@ export class Index {
       return _repeach(this, n);
    }
 
-   // Static methods //
-
    /**
     * Create a subset of a index using another vector with indices.
     *
@@ -1853,6 +1851,42 @@ export class Index {
 
 
    /**
+    * Create a subset of a vector of indices which are located between positions 'start' and 'end' (both included).
+    *
+    * @param {number} start - index of value to start (must start from 1, not 0).
+    * @param {number} end - index of value to end.
+    *
+    * @returns {Index} a subset.
+    */
+   slice(start, end) {
+
+      if (start === null) {
+         start = 1;
+      }
+
+      if (end === null || end === undefined) {
+         end = this.length;
+      }
+
+      if (start < 1) {
+         throw Error('slice: indices must start with 1 (not 0).');
+      }
+
+      if (end > this.length) {
+         throw Error('slice: index exceeds the length of the vector.');
+      }
+
+      if (end < start) {
+         throw Error('slice: "end" must not be smaller than "start".');
+      }
+
+      return new Index(this.v.slice(start - 1, end));
+   }
+
+
+   // Static methods //
+
+   /**
     * Generate sequence of indices.
     *
     * @param {number} start - first value.
@@ -1866,6 +1900,38 @@ export class Index {
       return _seq(start, end, by, Index);
    }
 
+
+   /**
+    * Create an Index object filled with ones.
+    *
+    * @param {number} n - length of the vector.
+    *
+    * @returns {Index} the generated vector of indices.
+    *
+    */
+   static ones(n) {
+      return Index.fill(1, n);
+   }
+
+
+  /**
+    * Create an Index object filled with a repeated value.
+    *
+    * @param {number} v - value to fill the index vector with (must be integer).
+    * @param {number} n - length of the vector.
+    *
+    * @returns {Vector} the generated vector of indices.
+    *
+    */
+   static fill(v, n) {
+
+      const out = new Index.valuesConstructor(n);
+      for (let i = 0; i < out.length; i++) {
+         out[i] = v;
+      }
+
+      return new Index(out);
+   }
 
 
    /**

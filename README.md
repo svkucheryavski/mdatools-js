@@ -29,6 +29,11 @@ const ind1 = Index.seq(1, 5); // returns index([1, 2, 3, 4, 5])
 const ind2 = Index.seq(2, 10, 2); // returns index([2, 4, 6, 8, 10])
 ```
 
+There are also two additional static methods for creating index vectors:
+
+* `Index.fill(v, n)` — creates an index vector of size `n` filled with integer value `v`.
+* `Index.ones(n)` — creates an index vector of size `n` filled with ones.
+
 Values of any index vector can be replicated using class methods (here `ind` is an instance of class `Index`):
 
 * `ind.rep(n)` — replicates the index vector `n` times.
