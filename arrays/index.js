@@ -1788,6 +1788,27 @@ export class Index {
 
 
    /**
+    * Returns a vector of indices for values for which function ´fun´ returns true.
+    *
+    * @param {function} fun - function with two arguments (value and its index).
+    *
+    * @returns {Index} a vector of indices.
+    */
+   which(fun) {
+      const out = new Index.valuesConstructor(this.length);
+      let n = 0;
+      for (let i = 0; i < this.length; i++) {
+         if (fun(this.v[i], i)) {
+            out[n] = i + 1;
+            n = n + 1;
+         }
+      }
+
+      return new Index(out.subarray(0, n));
+   }
+
+
+   /**
     * Returns a subset of indices for which function ´fun´ returns true.
     *
     * @param {function} fun - function with two arguments (value and its index).
