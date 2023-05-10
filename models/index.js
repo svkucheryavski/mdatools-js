@@ -312,7 +312,8 @@ export function pcafit(X, ncomp, center, scale) {
       h0: h0,
       Nq: Nq,
       Nh: Nh,
-      ncomp: ncomp
+      ncomp: ncomp,
+      results: {'cal': calres}
    }
 }
 
