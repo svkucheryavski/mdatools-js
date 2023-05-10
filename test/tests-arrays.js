@@ -6,7 +6,7 @@ import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 
 // import classes and related methods
-import { index, isindex, Index, ismatrix, matrix, Matrix, isvector, vector, Vector } from '../arrays/index.js';
+import { MDAData, index, isindex, Index, ismatrix, matrix, Matrix, isvector, vector, Vector } from '../arrays/index.js';
 
 // import non-class methods
 import { tcrossprod, crossprod, rbind, cbind, c, reshape } from '../arrays/index.js';
@@ -14,6 +14,21 @@ import { tcrossprod, crossprod, rbind, cbind, c, reshape } from '../arrays/index
 // set up test settings
 const expect = chai.expect;
 chai.use(chaiAlmost(0.00001));
+
+// function to test a matrix structure
+function testMDStructure(X, nr, nc, values) {
+   expect(X.constructor).equal(Matrix);
+   expect(X.v.constructor).equal(Float64Array);
+   expect(X.v.length).equal(nr * nc);
+   expect(X.nrows).equal(nr);
+   expect(X.ncols).equal(nc);
+   expect(ismatrix(X)).to.be.true;
+   expect(isvector(X)).to.be.false;
+
+   if (values) {
+      expect(X.v).to.deep.equal(new Float64Array(values));
+   }
+}
 
 
 // function to test a matrix structure
@@ -1413,6 +1428,75 @@ describe('Tests of methods for generating vectors and matrices and static method
 });
 
 describe('Tests of constructors.', function () {
+
+   it('tests for constructor "MDAData"', function () {
+
+      // test for throwing errors
+      expect(() => new MDAData({}, 'data', {}, {})).to.throw(Error);
+      expect(() => new MDAData(matrix([], 0, 0), 'data', {}, {})).to.throw(Error);
+
+      // test if all parameters except values are empty
+      const values = matrix([1, 2, 3, 4], 2, 2);
+      const mda1 = new MDAData(values, 'data', null, null);
+      expect(mda1.rowAttrs.axisValues).to.deep.equal(vector([1, 2]));
+      expect(mda1.rowAttrs.axisName).to.equal('Objects');
+      expect(mda1.rowAttrs.labels).to.deep.equal(['O1', 'O2']);
+      expect(mda1.rowAttrs.axisLabels).to.deep.equal(['O1', 'O2']);
+      expect(mda1.colAttrs.axisValues).to.deep.equal(vector([1, 2]));
+      expect(mda1.colAttrs.axisName).to.equal('Variables');
+      expect(mda1.colAttrs.labels).to.deep.equal(['X1', 'X2']);
+      expect(mda1.colAttrs.axisLabels).to.deep.equal(['X1', 'X2']);
+
+      // test if some of the attributes are provided
+      const rowAttrs = {
+        axisValues: vector([10, 20]),
+        axisName: 'Rows',
+        labels: ['R1', 'R2'],
+        axisLabels: ['Row 1', 'Row 2']
+      };
+      const colAttrs = {
+        axisValues: vector([100, 200]),
+        axisName: 'Cols',
+        labels: ['C1', 'C2'],
+        axisLabels: ['Col 1', 'Col 2']
+      };
+
+      const mda2 = new MDAData(values, 'data', rowAttrs, colAttrs);
+      expect(mda2.rowAttrs.axisValues).to.deep.equal(vector([10, 20]));
+      expect(mda2.rowAttrs.axisName).to.equal('Rows');
+      expect(mda2.rowAttrs.labels).to.deep.equal(['R1', 'R2']);
+      expect(mda2.rowAttrs.axisLabels).to.deep.equal(['Row 1', 'Row 2']);
+      expect(mda2.colAttrs.axisValues).to.deep.equal(vector([100, 200]));
+      expect(mda2.colAttrs.axisName).to.equal('Cols');
+      expect(mda2.colAttrs.labels).to.deep.equal(['C1', 'C2']);
+      expect(mda2.colAttrs.axisLabels).to.deep.equal(['Col 1', 'Col 2']);
+
+
+      // if provided attributes are invalid default ones must be used
+      const rowAttrsErr = {
+        axisValues: [10],
+        axisName: '',
+        labels: 'invalid',
+        axisLabels: {}
+      };
+      const colAttrsErr = {
+        axisValues: null,
+        axisName: 'Vars',
+        labels: [],
+        axisLabels: 123
+      };
+
+      const mda3 = new MDAData(values, 'data', rowAttrs, colAttrs);
+      expect(mda1.rowAttrs.axisValues).to.deep.equal(vector([1, 2]));
+      expect(mda1.rowAttrs.axisName).to.equal('Objects');
+      expect(mda1.rowAttrs.labels).to.deep.equal(['O1', 'O2']);
+      expect(mda1.rowAttrs.axisLabels).to.deep.equal(['O1', 'O2']);
+      expect(mda1.colAttrs.axisValues).to.deep.equal(vector([1, 2]));
+      expect(mda1.colAttrs.axisName).to.equal('Variables');
+      expect(mda1.colAttrs.labels).to.deep.equal(['X1', 'X2']);
+      expect(mda1.colAttrs.axisLabels).to.deep.equal(['X1', 'X2']);
+
+   });
 
    it('tests for constructor "Index"', function () {
       const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
