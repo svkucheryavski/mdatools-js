@@ -4,7 +4,7 @@ import {sum, sd, mean, min, max} from '../stat/index.js';
 import { vector, Vector } from '../arrays/index.js';
 
 // import of functions to test
-import {gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf} from '../distributions/index.js';
+import {gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf, qchisq} from '../distributions/index.js';
 
 const should = chai.should();
 const expect = chai.expect;
@@ -399,6 +399,34 @@ describe('Tests for theoretical distribution functions.', function () {
       p2.v[n].should.be.closeTo(0.9976484, 0.001);
       p2.v[n/2].should.be.closeTo(0.9773861, 0.001);
 
+   });
+
+   it ('tests for method "qchisq".', function () {
+
+      // single value
+      const p1 = 0.05
+      qchisq(p1, 0).should.be.equal(0);
+      qchisq(p1, 5).should.be.closeTo(1.15, 0.01);
+      qchisq(p1, 10).should.be.closeTo(3.94, 0.01);
+      qchisq(p1, 100).should.be.closeTo(77.93, 0.01);
+
+      const p2 = 0.01
+      qchisq(p2, 0).should.be.equal(0);
+      qchisq(p2, 5).should.be.closeTo(0.55, 0.02);
+      qchisq(p2, 10).should.be.closeTo(2.56, 0.02);
+      qchisq(p2, 100).should.be.closeTo(70.07, 0.02);
+
+      // vector with values
+      const p3 = vector([0.01, 0.05]);
+      const q3 = qchisq(p3, 5)
+      q3.v[0].should.be.closeTo(0.55, 0.02);
+      q3.v[1].should.be.closeTo(1.15, 0.02);
+
+      // array with values
+      const p4 = [0.01, 0.05];
+      const q4 = qchisq(p3, 5)
+      q4.v[0].should.be.closeTo(0.55, 0.02);
+      q4.v[1].should.be.closeTo(1.15, 0.02);
    });
 
 });

@@ -393,6 +393,39 @@ export function pf(F, d1, d2) {
 
 
 /**
+ * Inverse cumulative distribution (quantile) function for chi-square distribution.
+ *
+ * @param {number|Vector|Array} p - probability or vector/array with probabilities.
+ * @param {number} dof - degrees of freedom.
+ *
+ * @description a modified Severo-Zelen approximation is applied (https://doi.org/10.2307/2347163)
+ *
+ * @returns {number|Vector} computed quantiles.
+ *
+ */
+export function qchisq(p, dof) {
+
+   if (Array.isArray(p)) {
+      return qchisq(vector(p), dof);
+   }
+
+   const f0 = (9 * dof + 16)
+   const f1 = 2 / (9 * dof);
+   const f2 = 1 / (486 * dof * dof);
+   const f3 = Math.sqrt(2 * dof);
+
+   function f(z) {
+      if (dof === 0) return 0;
+      const h = ( f0 * (z * z * z - 3 * z) - 24 * (z * z - 1) * dof ) * f2
+      return dof * Math.pow(1 - f1 + (z - h) * Math.sqrt(f1), 3)
+   }
+
+   const z = qnorm(p);
+   return isvector(z) ? z.apply(f) : f(z)
+}
+
+
+/**
  * Incomplete Betta function (approximation via numeric integration).
  *
  * @param {number} x - first argument.
