@@ -2,8 +2,32 @@
 /*    Methods for computing statistics           */
 /*************************************************/
 
-import { isnumber, isindex, isvector, vector, Vector } from '../arrays/index.js';
+import { isnumber, isindex, isvector, vector, Vector, _sort } from '../arrays/index.js';
 
+
+/**
+ * Compute median of vector values.
+ *
+ * @param {Array|Vector} x - vector with values.
+ *
+ * @returns {number} median of x.
+ *
+ */
+export function median(x) {
+   return quantile(x, 0.5)
+}
+
+/**
+ * Compute inter-quartile range for vector of values.
+ *
+ * @param {Array|Vector} x - vector with values.
+ *
+ * @returns {number} IQR of x (Q3 - Q1).
+ *
+ */
+export function iqr(x) {
+   return quantile(x, 0.75) - quantile(x, 0.25);
+}
 
 
 /**
@@ -16,16 +40,15 @@ import { isnumber, isindex, isvector, vector, Vector } from '../arrays/index.js'
  */
 export function quantile(x, p) {
 
-   if (!isvector(x)) {
-      throw Error("quantile: parameter 'x' must be an instance of Vector class.");
+   if (isvector(x)) {
+      return quantile(x.v, p);
    }
-
-   x = x.sort();
-   const n = x.length;
 
    if (isvector(p)) {
-      p = p.v;
+      return quantile(x, p.v);
    }
+
+   const n = x.length;
 
    if (!Array.isArray(p)) p = [p];
 
@@ -40,7 +63,8 @@ export function quantile(x, p) {
       return x[n1 - 1] + (x[n2 - 1] - x[n1 - 1]) * (h - Math.floor(h));
    }
 
-   const out =  p.map(v => q(x.v, v));
+   const xs = _sort(x);
+   const out =  p.map(v => q(xs, v));
    return p.length == 1 ? out[0] : vector(out);
 }
 

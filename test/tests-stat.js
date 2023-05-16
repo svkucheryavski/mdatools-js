@@ -10,7 +10,8 @@ import { isvector, vector, Vector } from '../arrays/index.js';
 // import methods to test
 import {
    norm2, quantile, count, mids, split, diff, ppoints, cumsum,
-   cor, cov, skewness, kurtosis, rank, mean, sd, sum, prod, min, minind, max,  maxind
+   cor, cov, skewness, kurtosis, rank, mean, sd, sum, prod, min, minind, max,  maxind,
+   median, iqr
 } from '../stat/index.js';
 
 // set up test settings
@@ -62,6 +63,16 @@ describe('Tests of stat methods.', function () {
    // large random vector
    const yp = Vector.rand(1000000, 10, 20);
 
+   it('tests for method "iqr".', function () {
+      iqr(xp).should.be.a('number');
+      iqr(xp).should.equal(quantile(xp, 0.75) - quantile(xp, 0.25));
+   });
+
+   it('tests for method "median".', function () {
+      median(xp).should.be.a('number');
+      median(xp).should.equal(quantile(xp, 0.5));
+      median(yp).should.equal(quantile(yp, 0.5));
+   });
 
    it('tests for method "norm2".', function () {
       const x1 = vector([1, 2, 3, 4]);
