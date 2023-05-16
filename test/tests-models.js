@@ -178,10 +178,10 @@ describe('Tests for modelling methods.', function () {
       expect(m1.C).to.be.deep.almost.equal(C1);
       expect(m1.yeigenvals).to.be.deep.almost.equal(yeigenvals1);
       expect(m1.xeigenvals).to.be.deep.almost.equal(xeigenvals1);
-      expect(m1.Nq).to.be.deep.almost.equal(Nq1);
-      expect(m1.Nh).to.be.deep.almost.equal(Nh1);
-      expect(m1.q0).to.be.deep.almost.equal(q01);
-      expect(m1.h0).to.be.deep.almost.equal(h01);
+      expect(m1.qParams['moments'][1]).to.be.deep.almost.equal(Nq1);
+      expect(m1.hParams['moments'][1]).to.be.deep.almost.equal(Nh1);
+      expect(m1.qParams['moments'][0]).to.be.deep.almost.equal(q01);
+      expect(m1.hParams['moments'][0]).to.be.deep.almost.equal(h01);
    });
 
    it ('tests for method "simpls"', function () {
@@ -389,19 +389,37 @@ describe('Tests for modelling methods.', function () {
       ], 4, 4).t();
 
       const eigenvals3 = vector([2.594793132, 0.714955083, 0.682758553, 0.007493231]);
-      const h03 = vector([0.875000, 1.750000,  2.625000,  3.500000]);
-      const q03 = vector([1.229556, 0.6039703, 0.006556578, 0.0]);
-      const Nh3 = vector([6.0, 6.0, 12.0, 16.0]);
-      const Nq3 = vector([4.0, 3.0, 1.0, 4.0]);
+
+      // moments based
+      const h03m = vector([0.875000, 1.750000,  2.625000,  3.500000]);
+      const q03m = vector([1.229556, 0.6039703, 0.006556578, 0.0]);
+      const Nh3m = vector([6.0, 6.0, 12.0, 16.0]);
+      const Nq3m = vector([4.0, 3.0, 1.0, 4.0]);
+
+      // robust based
+      const h03r = vector([1.041937, 1.484588, 2.282291, 3.934952]);
+      const q03r = vector([0.977954, 0.671042, 0.005573, 0.0]);
+      const Nh3r = vector([13.0, 19.0, 20.0, 11.0]);
+      const Nq3r = vector([11.0, 5.0, 2.0, 7.0]);
 
       const m3 = pcafit(X3, 4, true, true);
 
       expect(m3.P.apply(Math.abs, 0)).to.be.deep.almost.equal(P3.apply(Math.abs, 0));
       expect(m3.eigenvals).to.be.deep.almost.equal(eigenvals3);
-      expect(m3.h0).to.be.deep.almost.equal(h03);
-      expect(m3.q0).to.be.deep.almost.equal(q03);
-      expect(m3.Nh).to.be.deep.almost.equal(Nh3);
-      expect(m3.Nq.slice(1, 3)).to.be.deep.almost.equal(Nq3.slice(1, 3));
+
+
+      expect(m3.qParams['moments'][1].slice(1, 3)).to.be.deep.almost.equal(Nq3m.slice(1, 3));
+      expect(m3.hParams['moments'][1]).to.be.deep.almost.equal(Nh3m);
+      expect(m3.hParams['moments'][0]).to.be.deep.almost.equal(h03m);
+      expect(m3.qParams['moments'][0]).to.be.deep.almost.equal(q03m);
+
+      chai.use(chaiAlmost(0.01));
+      expect(m3.qParams['robust'][1].slice(1, 3)).to.be.deep.almost.equal(Nq3r.slice(1, 3));
+      expect(m3.hParams['robust'][1]).to.be.deep.almost.equal(Nh3r);
+      expect(m3.hParams['robust'][0]).to.be.deep.almost.equal(h03r);
+      expect(m3.qParams['robust'][0]).to.be.deep.almost.equal(q03r);
+      chai.use(chaiAlmost(0.001));
+
    });
 
    it ('tests for method "pcapredict"', function () {

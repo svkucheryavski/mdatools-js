@@ -1,6 +1,6 @@
 import { rsvd } from '../decomp/index.js';
-import { pf, pt, qt } from '../distributions/index.js';
-import { norm2, variance, mean, sd, ssq } from '../stat/index.js';
+import { pf, pt, qt, qchisq } from '../distributions/index.js';
+import { norm2, variance, median, iqr, mean, sd, ssq } from '../stat/index.js';
 import { scale as prep_scale, unscale as prep_unscale } from '../prep/index.js';
 import { _dot, cbind, tcrossprod, crossprod, reshape, ismatrix, Index, Matrix, vector, isvector, Vector, MDAData } from '../arrays/index.js';
 
@@ -54,8 +54,8 @@ export function plsfit(X, Y, ncomp, center, scale) {
    const pcares = pcagetmainres(Xp, m.T, m.P, m.xeigenvals);
 
    // compute parameters for distances
-   const [h0, Nh] = getDistParams(pcares.H);
-   const [q0, Nq] = getDistParams(pcares.Q);
+   const hParams = getDistParams(pcares.H);
+   const qParams = getDistParams(pcares.Q);
 
    // compute Y-loadings
 
@@ -81,10 +81,8 @@ export function plsfit(X, Y, ncomp, center, scale) {
       yeigenvals: m.yeigenvals,
 
       // distances
-      q0: q0,
-      h0: h0,
-      Nq: Nq,
-      Nh: Nh,
+      qParams: qParams,
+      hParams: hParams,
    };
 }
 
@@ -193,8 +191,8 @@ export function pcrfit(X, Y, ncomp, center, scale) {
    const calres = pcagetmainres(Xp, m.U.dot(Matrix.diagm(m.s)), m.V, eigenvals);
 
    // compute parameters for distances
-   const [h0, Nh] = getDistParams(calres.H);
-   const [q0, Nq] = getDistParams(calres.Q);
+   const hParams = getDistParams(calres.H);
+   const qParams = getDistParams(calres.Q);
 
    // compute Y-loadings
    const C = Matrix.zeros(1, ncomp);
@@ -215,10 +213,8 @@ export function pcrfit(X, Y, ncomp, center, scale) {
       scale: scale,
       mX: mX,
       sX: sX,
-      q0: q0,
-      h0: h0,
-      Nq: Nq,
-      Nh: Nh,
+      qParams: qParams,
+      hParams: hParams,
 
       // PCR part
       ncomp: ncomp,
@@ -297,11 +293,11 @@ export function pcafit(data, ncomp, center, scale) {
          axisName: 'Variables'
       };
 
-      const objLabels = Array(data.ncols).fill().map((e, i) => 'O' + (i + 1));
+      const objLabels = Array(data.nrows).fill().map((e, i) => 'O' + (i + 1));
       objAttrs = {
          labels: objLabels,
          axisLabels: objLabels,
-         axisValues: Vector.seq(1, data.ncols),
+         axisValues: Vector.seq(1, data.nrows),
          axisName: 'Objects'
       };
    }
@@ -321,8 +317,8 @@ export function pcafit(data, ncomp, center, scale) {
    const calres = pcagetmainres(Xp, m.U.dot(Matrix.diagm(m.s)), m.V, eigenvals, objAttrs);
 
    // compute mean values for distances
-   const [h0, Nh] = getDistParams(calres.H);
-   const [q0, Nq] = getDistParams(calres.Q);
+   const hParams = getDistParams(calres.H);
+   const qParams = getDistParams(calres.Q);
 
    // return the model object
    return {
@@ -333,10 +329,8 @@ export function pcafit(data, ncomp, center, scale) {
       scale: scale,
       mX: mX,
       sX: sX,
-      q0: q0,
-      h0: h0,
-      Nq: Nq,
-      Nh: Nh,
+      qParams: qParams,
+      hParams: hParams,
       ncomp: ncomp,
       varAttrs: varAttrs,
       compAttrs: calres.compAttrs,
@@ -356,17 +350,30 @@ export function pcafit(data, ncomp, center, scale) {
 export function getDistParams(U) {
 
    const ncomp = U.ncols;
-   const u0 = U.apply(mean, 2);
-   const su = U.apply(sd, 2);
+   const u0m = Vector.zeros(ncomp)
+   const u0r = Vector.zeros(ncomp)
+   const Num = Vector.zeros(ncomp)
+   const Nur = Vector.zeros(ncomp)
 
    const Nu = Vector.zeros(ncomp);
    for (let i = 0; i < ncomp; i++) {
-      const f = u0.v[i] / su.v[i];
-      const N = Math.round(2 * f * f);
-      Nu.v[i] = N < 1 ? 1 : N > 250 ? 250 : N;
+      const u = U.getcolref(i + 1);
+
+      // moments
+      u0m.v[i] = mean(u);
+      const fm = u0m.v[i] / sd(u);
+      const Nm = Math.round(2 * fm * fm);
+      Num.v[i] = Nm < 1 ? 1 : Nm > 250 ? 250 : Nm;
+
+      // robust
+      const M = median(u);
+      const S = iqr(u);
+      const Nr = Math.round(Math.exp(Math.pow(1.380948 * Math.log(2.68631 * M / S), 1.185785)));
+      u0r.v[i] = 0.5 * Nr * (M / qchisq(0.5, Nr) + S / (qchisq(0.75, Nr) - qchisq(0.25, Nr)))
+      Nur.v[i] = Nr;
    }
 
-   return [u0, Nu];
+   return {'moments': [u0m, Num], 'robust': [u0r, Nur]};
 }
 
 
@@ -453,6 +460,21 @@ export function pcagetmainres(Xp, T, P, eigenvals, objAttrs) {
 }
 
 
+export function getpcafulldistance(h, q, model, ncomp, limType) {
+   const [h0, Nh] = model.hParams[limType];
+   const [q0, Nq] = model.qParams[limType];
+   const fh = Nh.v[ncomp - 1] / h0.v[ncomp - 1];
+   const fq = Nq.v[ncomp - 1] / q0.v[ncomp - 1];
+
+   const f = Vector.zeros(h.length);
+   for (let r = 0; r <= f.length; r++) {
+         f.v[r] = h.v[r] * fh + q.v[r] * fq;
+   }
+
+   return f;
+}
+
+
 /**
  * Project new data to a PCA model and create object with main outcomes.
  *
@@ -472,11 +494,11 @@ export function pcapredict(m, data, name) {
    } else if (ismatrix(data)) {
       Xp = prep_scale(data, m.mX, m.sX);
 
-      const objLabels = Array(data.ncols).fill().map((e, i) => 'O' + (i + 1));
+      const objLabels = Array(data.nrows).fill().map((e, i) => 'O' + (i + 1));
       objAttrs = {
          labels: objLabels,
          axisLabels: objLabels,
-         axisValues: Vector.seq(1, data.ncols),
+         axisValues: Vector.seq(1, data.nrows),
          axisName: 'Objects'
       };
    }
