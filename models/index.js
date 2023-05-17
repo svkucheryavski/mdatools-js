@@ -373,7 +373,7 @@ export function getDistParams(U) {
       Nur.v[i] = Nr;
    }
 
-   return {'moments': [u0m, Num], 'robust': [u0r, Nur]};
+   return {'classic': [u0m, Num], 'robust': [u0r, Nur]};
 }
 
 
@@ -460,11 +460,9 @@ export function pcagetmainres(Xp, T, P, eigenvals, objAttrs) {
 }
 
 
-export function getpcafulldistance(h, q, model, ncomp, limType) {
-   const [h0, Nh] = model.hParams[limType];
-   const [q0, Nq] = model.qParams[limType];
-   const fh = Nh.v[ncomp - 1] / h0.v[ncomp - 1];
-   const fq = Nq.v[ncomp - 1] / q0.v[ncomp - 1];
+export function getfulldistance(h, q, h0, q0, Nh, Nq) {
+   const fh = Nh / h0;
+   const fq = Nq / q0;
 
    const f = Vector.zeros(h.length);
    for (let r = 0; r <= f.length; r++) {
