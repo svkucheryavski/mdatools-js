@@ -6,7 +6,7 @@ import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 
 // import classes and related methods
-import { MDAData, index, isindex, Index, ismatrix, matrix, Matrix, isvector, vector, Vector } from '../arrays/index.js';
+import { Dataset, index, isindex, Index, ismatrix, matrix, Matrix, isvector, vector, Vector } from '../arrays/index.js';
 
 // import non-class methods
 import { tcrossprod, crossprod, rbind, cbind, c, reshape } from '../arrays/index.js';
@@ -14,21 +14,6 @@ import { tcrossprod, crossprod, rbind, cbind, c, reshape } from '../arrays/index
 // set up test settings
 const expect = chai.expect;
 chai.use(chaiAlmost(0.00001));
-
-// function to test a matrix structure
-function testMDStructure(X, nr, nc, values) {
-   expect(X.constructor).equal(Matrix);
-   expect(X.v.constructor).equal(Float64Array);
-   expect(X.v.length).equal(nr * nc);
-   expect(X.nrows).equal(nr);
-   expect(X.ncols).equal(nc);
-   expect(ismatrix(X)).to.be.true;
-   expect(isvector(X)).to.be.false;
-
-   if (values) {
-      expect(X.v).to.deep.equal(new Float64Array(values));
-   }
-}
 
 
 // function to test a matrix structure
@@ -1429,15 +1414,15 @@ describe('Tests of methods for generating vectors and matrices and static method
 
 describe('Tests of constructors.', function () {
 
-   it('tests for constructor "MDAData"', function () {
+   it('tests for constructor "Dataset"', function () {
 
       // test for throwing errors
-      expect(() => new MDAData({}, 'data', {}, {})).to.throw(Error);
-      expect(() => new MDAData(matrix([], 0, 0), 'data', {}, {})).to.throw(Error);
+      expect(() => new Dataset({}, 'data', {}, {})).to.throw(Error);
+      expect(() => new Dataset(matrix([], 0, 0), 'data', {}, {})).to.throw(Error);
 
       // test if all parameters except values are empty
       const values = matrix([1, 2, 3, 4], 2, 2);
-      const mda1 = new MDAData(values, 'data', null, null);
+      const mda1 = new Dataset(values, 'data', null, null);
       expect(mda1.rowAttrs.axisValues).to.deep.equal(vector([1, 2]));
       expect(mda1.rowAttrs.axisName).to.equal('Objects');
       expect(mda1.rowAttrs.labels).to.deep.equal(['O1', 'O2']);
@@ -1461,7 +1446,7 @@ describe('Tests of constructors.', function () {
         axisLabels: ['Col 1', 'Col 2']
       };
 
-      const mda2 = new MDAData(values, 'data', rowAttrs, colAttrs);
+      const mda2 = new Dataset(values, 'data', rowAttrs, colAttrs);
       expect(mda2.rowAttrs.axisValues).to.deep.equal(vector([10, 20]));
       expect(mda2.rowAttrs.axisName).to.equal('Rows');
       expect(mda2.rowAttrs.labels).to.deep.equal(['R1', 'R2']);
@@ -1486,7 +1471,7 @@ describe('Tests of constructors.', function () {
         axisLabels: 123
       };
 
-      const mda3 = new MDAData(values, 'data', rowAttrs, colAttrs);
+      const mda3 = new Dataset(values, 'data', rowAttrs, colAttrs);
       expect(mda1.rowAttrs.axisValues).to.deep.equal(vector([1, 2]));
       expect(mda1.rowAttrs.axisName).to.equal('Objects');
       expect(mda1.rowAttrs.labels).to.deep.equal(['O1', 'O2']);

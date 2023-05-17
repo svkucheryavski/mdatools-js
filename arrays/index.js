@@ -2029,18 +2029,18 @@ export class Index {
 
 
 /** Class representing a dataset */
-export class MDAData {
+export class Dataset {
 
 
    /**
-    * Constructor for an MDA object.
+    * Constructor for a Dataset object.
     *
     * @param {Matrix} values - matrix with data values.
     * @param {string} name - name of the dataset.
     * @param {Object} rowAttrs - JSON with rows attributes (labels, axis name, axis values and vector with excluded items).
     * @param {Object} colAttrs - JSON with columns attributes (same as for rows).
     *
-    * @description  MDAData is a wrapper for Matrix objects letting them have additional attributes,
+    * @description  Dataset is a wrapper for Matrix objects letting them have additional attributes,
     * for plotting and other functionalities. The attributes are first of all associated with rows and columns.
     *
     * The attributes consist of:
@@ -2049,7 +2049,7 @@ export class MDAData {
     * - axisValues (vector with numbers associated with rows or columns, e.g. time, wavelength, etc.)
     * - axisName (name of axis if axisValues are used for one of the axis, e.g. in line or bar plots.)
     *
-    * @returns {MDAData} an MDADaya object (see description).
+    * @returns {Dataset} Dataset object (see description).
     * @constructor
     *
     */
