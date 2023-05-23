@@ -15,7 +15,7 @@ The values are represented using instances of the following classes:
 * `Vector` is a class for representing sequence of values. The values are stored inside the class instances as `Float64Array`.
 * `Matrix` is a class for representing numerical matrices (2D Arrays). The values are stored inside the class instances as `Float64Array`.
 * `Index` is a class for representing vectors of indices — integer numbers specifying positions of values in vectors and matrices. The values are stored inside the class instances as `Int32Array`.
-* `MDAData` is a class for representing a dataset, which can be considered as a matrix with additional attributes for rows and columns.
+* `Dataset` is a class for representing a dataset, which can be considered as a matrix with additional attributes for rows and columns.
 
 These classes and their methods can be imported from `'mdatools/arrays'` module.
 

@@ -2,7 +2,7 @@ import { rsvd } from '../decomp/index.js';
 import { pf, pt, qt, qchisq } from '../distributions/index.js';
 import { norm2, variance, median, iqr, mean, sd, ssq } from '../stat/index.js';
 import { scale as prep_scale, unscale as prep_unscale } from '../prep/index.js';
-import { _dot, cbind, tcrossprod, crossprod, reshape, ismatrix, Index, Matrix, vector, isvector, Vector, MDAData } from '../arrays/index.js';
+import { _dot, cbind, tcrossprod, crossprod, reshape, ismatrix, Index, Matrix, vector, isvector, Vector, Dataset } from '../arrays/index.js';
 
 
 /**
@@ -278,7 +278,7 @@ export function pcafit(data, ncomp, center, scale) {
    }
 
    let X, varAttrs, objAttrs;
-   if (data.constructor === MDAData) {
+   if (data.constructor === Dataset) {
       X = data.values;
       varAttrs = data.colAttrs;
       objAttrs = data.rowAttrs;
@@ -333,6 +333,7 @@ export function pcafit(data, ncomp, center, scale) {
       hParams: hParams,
       ncomp: ncomp,
       varAttrs: varAttrs,
+      nCalObj: Xp.nrows,
       compAttrs: calres.compAttrs,
       results: {'cal': calres}
    }
@@ -486,7 +487,7 @@ export function getfulldistance(h, q, h0, q0, Nh, Nq) {
 export function pcapredict(m, data, name) {
 
    let Xp, objAttrs;
-   if (data.constructor === MDAData) {
+   if (data.constructor === Dataset) {
       Xp = prep_scale(data.values, m.mX, m.sX);
       objAttrs = data.rowAttrs;
    } else if (ismatrix(data)) {
