@@ -178,10 +178,10 @@ describe('Tests for modelling methods.', function () {
       expect(m1.C).to.be.deep.almost.equal(C1);
       expect(m1.yeigenvals).to.be.deep.almost.equal(yeigenvals1);
       expect(m1.xeigenvals).to.be.deep.almost.equal(xeigenvals1);
-      expect(m1.qParams['moments'][1]).to.be.deep.almost.equal(Nq1);
-      expect(m1.hParams['moments'][1]).to.be.deep.almost.equal(Nh1);
-      expect(m1.qParams['moments'][0]).to.be.deep.almost.equal(q01);
-      expect(m1.hParams['moments'][0]).to.be.deep.almost.equal(h01);
+      expect(m1.qParams['classic'][1]).to.be.deep.almost.equal(Nq1);
+      expect(m1.hParams['classic'][1]).to.be.deep.almost.equal(Nh1);
+      expect(m1.qParams['classic'][0]).to.be.deep.almost.equal(q01);
+      expect(m1.hParams['classic'][0]).to.be.deep.almost.equal(h01);
    });
 
    it ('tests for method "simpls"', function () {
@@ -407,11 +407,10 @@ describe('Tests for modelling methods.', function () {
       expect(m3.P.apply(Math.abs, 0)).to.be.deep.almost.equal(P3.apply(Math.abs, 0));
       expect(m3.eigenvals).to.be.deep.almost.equal(eigenvals3);
 
-
-      expect(m3.qParams['moments'][1].slice(1, 3)).to.be.deep.almost.equal(Nq3m.slice(1, 3));
-      expect(m3.hParams['moments'][1]).to.be.deep.almost.equal(Nh3m);
-      expect(m3.hParams['moments'][0]).to.be.deep.almost.equal(h03m);
-      expect(m3.qParams['moments'][0]).to.be.deep.almost.equal(q03m);
+      expect(m3.qParams['classic'][1].slice(1, 3)).to.be.deep.almost.equal(Nq3m.slice(1, 3));
+      expect(m3.hParams['classic'][1]).to.be.deep.almost.equal(Nh3m);
+      expect(m3.hParams['classic'][0]).to.be.deep.almost.equal(h03m);
+      expect(m3.qParams['classic'][0]).to.be.deep.almost.equal(q03m);
 
       chai.use(chaiAlmost(0.01));
       expect(m3.qParams['robust'][1].slice(1, 3)).to.be.deep.almost.equal(Nq3r.slice(1, 3));
