@@ -6,7 +6,8 @@ import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 
 // import classes and related methods
-import { Dataset, index, isindex, Index, ismatrix, matrix, Matrix, isvector, vector, Vector } from '../arrays/index.js';
+import { Factor, factor, Dataset, index, isindex, Index, ismatrix, matrix,
+   Matrix, isvector, vector, Vector } from '../arrays/index.js';
 
 // import non-class methods
 import { tcrossprod, crossprod, rbind, cbind, c, reshape } from '../arrays/index.js';
@@ -1066,6 +1067,28 @@ describe('Tests of methods for class Index.', function () {
 
 });
 
+describe('Tests of methods for class Factor.', function () {
+
+   it ('tests for methods "which".', function() {
+      const x1 = [1, 2, 3, 3, 2, 1, 1, 2, 3, 3, 2, 1];
+      const f1 = factor(x1);
+      testIndexStructure(f1.which('1'), 4, [1, 6, 7, 12]);
+      testIndexStructure(f1.which('3'), 4, [3, 4, 9, 10]);
+
+      const x2 = ['red', 'blue', 'green', 'blue', 'green', 'red', 'red', 'blue'];
+      const f2 = factor(x2);
+      testIndexStructure(f2.which('blue'), 3, [2, 4, 8]);
+      testIndexStructure(f2.which('red'), 3, [1, 6, 7]);
+
+      const x3 = ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red'];
+      const f3 = factor(x3);
+      testIndexStructure(f3.which('red'), 9, [1, 2, 3, 4, 5, 6, 7, 8, 9]);
+      testIndexStructure(f3.which('blue'), 0, []);
+   });
+
+});
+
+
 describe('Tests of methods for generating vectors and matrices and static methods.', function () {
 
    it ('tests for static method "c"', function() {
@@ -1518,6 +1541,36 @@ describe('Tests of constructors.', function () {
       // nc = 1
       const X4 = matrix(values, 12, 1);
       testMatrixStructure(X4, 12, 1, values);
+   });
+
+   it('tests for constructor "Factor"', function () {
+
+      const x1 = [1, 2, 3, 3, 2, 1, 1, 2, 3, 3, 2, 1];
+      const f1 = factor(x1);
+      expect(f1.length).to.be.equal(x1.length)
+      expect(f1.nlevels).to.be.equal(3)
+      expect(f1.labels).to.be.deep.equal(['1', '2', '3']);
+      expect(f1.values).to.be.deep.equal(
+         new Factor.valuesConstructor([0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0])
+      );
+
+      const x2 = ['red', 'blue', 'green', 'blue', 'green', 'red', 'red', 'blue'];
+      const f2 = factor(x2);
+      expect(f2.length).to.be.equal(x2.length)
+      expect(f2.nlevels).to.be.equal(3)
+      expect(f2.labels).to.be.deep.equal(['red', 'blue', 'green']);
+      expect(f2.values).to.be.deep.equal(
+         new Factor.valuesConstructor([0, 1, 2, 1, 2, 0, 0, 1])
+      );
+
+      const x3 = ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red'];
+      const f3 = factor(x3);
+      expect(f3.length).to.be.equal(x3.length)
+      expect(f3.nlevels).to.be.equal(1)
+      expect(f3.labels).to.be.deep.equal(['red']);
+      expect(f3.values).to.be.deep.equal(
+         new Factor.valuesConstructor([0, 0, 0, 0, 0, 0, 0, 0, 0])
+      );
    });
 
 });

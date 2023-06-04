@@ -301,6 +301,7 @@ export class Matrix {
       this.ncols = ncols;
    }
 
+
    /**
     * Compute inverse of the matrix.
     *
@@ -1829,7 +1830,6 @@ export class Index {
    }
 
 
-
    /**
     * Shuffle indices.
     *
@@ -2081,11 +2081,11 @@ export class Dataset {
       }
 
       if (!ismatrix(values)) {
-         throw Error('MDAData: parameter "values" must be an instance of Matrix class.')
+         throw Error('Dataset: parameter "values" must be an instance of Matrix class.')
       }
 
       if (values.nrows < 1 || values.ncols < 1) {
-         throw Error('MDAData: parameter "values" must have at least one row and one column.')
+         throw Error('Dataset: parameter "values" must have at least one row and one column.')
       }
 
       this.values = values;
@@ -2093,6 +2093,88 @@ export class Dataset {
       this.rowAttrs = processAttributes(rowAttrs, values.nrows, "Objects", "O");
       this.colAttrs = processAttributes(colAttrs, values.ncols, "Variables", "X");
    }
+}
+
+
+/** Class representing a factor — vector with categorical variables */
+export class Factor {
+
+   static valuesConstructor = Uint8Array;
+
+   /**
+    * Constructor for a Factor object.
+    *
+    * @param {Uint8Array} values - vector with indices for each category item.
+    * @param {Array} labels - array with labels for each category.
+    *
+    * @returns {Factor} class object (see description).
+    * @constructor
+    *
+    */
+   constructor(values, labels) {
+
+      if (values.constructor !== Factor.valuesConstructor) {
+         throw Error('Factor: wrong class for parameter "values".')
+      }
+
+      if (values.nrows < 1 || values.ncols < 1) {
+         throw Error('Factor: parameter "values" must have at least one row and one column.')
+      }
+
+      this.values = values;
+      this.labels = labels.map(v => v.toString());
+      this.length = values.length;
+      this.nlevels = this.labels.length;
+   }
+
+   /**
+    * Return vector of indices corresponding to location of a particular category.
+    *
+    * @param {string} value - name (label) of the category to find.
+    *
+    * @returns {Index} vector with indices (starts from 1).
+    */
+   which(value) {
+      const ind = this.labels.findIndex((v, i) => v === value);
+      const out = new Index.valuesConstructor(this.length);
+      let k = 0;
+      for (let i = 0; i < this.length; i++) {
+         if (this.values[i] === ind) {
+            out[k] = i + 1;
+            k += 1;
+         }
+      }
+
+      return new Index(out.slice(0, k))
+   }
+}
+
+/**
+ * Create a factor object from Array with values.
+ *
+ * @param {Array} x - array with values.
+ *
+ * @return {Factor} returns instance of Factor object.
+ *
+ */
+export function factor(x) {
+   const n = x.length;
+   const values = new Factor.valuesConstructor(n);
+   const labels = [];
+
+   for (let i = 0; i < n; i++) {
+      const j = labels.findIndex(v => v === x[i]);
+      if (j < 0) {
+         // value is new
+         labels.push(x[i])
+         values[i] = labels.length - 1;
+      } else {
+         // value already present
+         values[i] = j;
+      }
+   }
+
+   return new Factor(values, labels)
 }
 
 
