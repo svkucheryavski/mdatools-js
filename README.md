@@ -272,7 +272,7 @@ Methods can be imported from `'mdatools/distributions'` module.
 * `dunif(x, a, b)`, `punif(x, a, b)`, `runif(x, a, b)` — PDF, CDF, and random numbers generator for uniform distribution. Default values for the paramaters are `a=0`, `b=1`.
 * `dt(t, dof)`, `pt(x, mu, sigma)`, `qt(p, mu, sigma)` — PDF, CDF, abd ICDF for Student's t-distribution.
 * `df(F, dof1, dof2)`, `pf(F, dof1, dof2)` — PDF and CDF for F-distribution.
-* `qchisq(p, dof)` — ICDF function for chi-square distribution.
+* `pchisq(x, dof)`, `qchisq(p, dof)` — CDF and ICDF function for chi-square distribution.
 
 There are also a set of helper functions used to compute the values for the distributions, which can be useful:
 

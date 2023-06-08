@@ -393,6 +393,32 @@ export function pf(F, d1, d2) {
 
 
 /**
+ * Cumulative distribution function for chi-square distribution.
+ *
+ * @param {number|Vector|Array} x - chi-square value.
+ * @param {number} dof - degrees of freedom.
+ *
+ * @returns {number|Vector} computed probabilities.
+ *
+ */
+export function pchisq(x, dof) {
+
+   if (Array.isArray(x)) {
+      return qchisq(vector(x), dof);
+   }
+
+
+   function F(x) {
+      if (x === 0) return 0;
+      if (dof === 0) return 1;
+      return igamma(x/2, dof/2) / gamma(dof/2)
+   }
+
+   return isvector(x) ? x.apply(F) : F(x)
+}
+
+
+/**
  * Inverse cumulative distribution (quantile) function for chi-square distribution.
  *
  * @param {number|Vector|Array} p - probability or vector/array with probabilities.
@@ -490,6 +516,34 @@ export function gamma(z) {
    const t = z + p.length - 0.5;
    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
 }
+
+
+
+/**
+ * Lower incomplete gamma function (approximation)
+ *
+ * @param {number} x - first argument (one value).
+ * @param {number} a - second argument (one value).
+ *
+ * @returns {number} value of the lower incomplete gamma function.
+ *
+ */
+export function igamma(x, a) {
+
+   const epsilon = 1e-18; // Desired accuracy
+   const maxIterations = 10000; // Maximum number of iterations
+
+   let sum = 0;
+
+   for (let k = 0; k < maxIterations; k++) {
+      const s = Math.pow(x, k) / gamma(a + k + 1);
+      if (isNaN(s) || s < epsilon) break;
+      sum += s
+   }
+
+   return Math.pow(x, a) * gamma(a) * Math.exp(-x) * sum;
+}
+
 
 
 /**

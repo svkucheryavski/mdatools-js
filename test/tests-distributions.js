@@ -1,15 +1,27 @@
 // import dependencies
 import {default as chai} from 'chai';
 import {sum, sd, mean, min, max} from '../stat/index.js';
-import { vector, Vector } from '../arrays/index.js';
+import { isvector, vector, Vector } from '../arrays/index.js';
 
 // import of functions to test
-import {gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf, qchisq} from '../distributions/index.js';
+import {igamma, gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf, pchisq, qchisq} from '../distributions/index.js';
 
 const should = chai.should();
 const expect = chai.expect;
 
 describe('Tests for helper functions.', function () {
+
+   it ('tests for "igamma" function.', function () {
+      igamma(1, 1).should.be.closeTo(0.632120, 0.00001)
+      igamma(1, 2).should.be.closeTo(0.264241, 0.00001)
+      igamma(2, 1).should.be.closeTo(0.864665, 0.00001)
+      igamma(2, 2).should.be.closeTo(0.593994, 0.00001)
+
+      igamma( 5,  5).should.be.closeTo(13.42816, 0.00001)
+      igamma( 5, 10).should.be.closeTo(11549.765, 0.001)
+      igamma(10,  5).should.be.closeTo(23.29793, 0.00001)
+      igamma(10, 10).should.be.closeTo(196706.465212, 0.00001)
+   });
 
    it ('tests for "gamma" function.', function () {
       expect(() => gamma(-1)).to.throw(Error, "gamma: the function only works with arguments > 0.");
@@ -399,6 +411,40 @@ describe('Tests for theoretical distribution functions.', function () {
       p2.v[n].should.be.closeTo(0.9976484, 0.001);
       p2.v[n/2].should.be.closeTo(0.9773861, 0.001);
 
+   });
+
+   it ('tests for method "pchisq".', function () {
+
+      // single value
+      const x1 = 10
+      pchisq(x1,   0).should.be.equal(1);
+      pchisq(x1,   1).should.be.closeTo(0.9984346, 0.0001);
+      pchisq(x1,   5).should.be.closeTo(0.9247648, 0.0001);
+      pchisq(x1,  10).should.be.closeTo(0.5595067, 0.0001);
+      pchisq(x1, 100).should.be.closeTo(0.0000000, 0.0001);
+
+      const x2 = 0
+      pchisq(x2, 0).should.be.equal(0);
+      pchisq(x2, 5).should.be.equal(0);
+      pchisq(x2, 10).should.be.equal(0);
+      pchisq(x2, 100).should.be.equal(0);
+
+      const x3 = 3.16
+      pchisq(x3,   0).should.be.equal(1);
+      pchisq(x3,   1).should.be.closeTo(0.9245368, 0.0001);
+      pchisq(x3,   5).should.be.closeTo(0.3246659, 0.0001);
+      pchisq(x3,  10).should.be.closeTo(0.0225961, 0.0001);
+      pchisq(x3, 100).should.be.closeTo(0.0000000, 0.0001);
+
+      // vector with values
+      const x4 = vector([10, 0, 3.16]);
+      const p4 = pchisq(x4, 5)
+
+      expect(isvector(p4)).to.be.true;
+      p4.length.should.be.equal(3)
+      p4.v[0].should.be.closeTo(0.9247648, 0.0001);
+      p4.v[1].should.be.closeTo(0.0000000, 0.0001);
+      p4.v[2].should.be.closeTo(0.3246659, 0.0001);
    });
 
    it ('tests for method "qchisq".', function () {
