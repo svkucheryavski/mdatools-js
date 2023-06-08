@@ -15,7 +15,7 @@ The values are represented using instances of the following classes:
 * `Vector` is a class for representing sequence of values. The values are stored inside the class instances as `Float64Array`.
 * `Matrix` is a class for representing numerical matrices (2D Arrays). The values are stored inside the class instances as `Float64Array`.
 * `Index` is a class for representing vectors of indices — integer numbers specifying positions of values in vectors and matrices. The values are stored inside the class instances as `Int32Array`.
-* `Dataset` is a class for representing a dataset, which can be considered as a matrix with additional attributes for rows and columns.
+* `Factor` is a class for representing categorical variable, which is turned to array of labels for the categories (as strings) and array of indices (as `Uint8Array`).
 
 These classes and their methods can be imported from `'mdatools/arrays'` module.
 
@@ -94,6 +94,21 @@ Following methods do something with vector values, e.g. arithmetic operations, t
 * `x.dot(y)` — takes a dot (inner) product of two vectors (results in a number).
 * `x.sort([decreasing=false])` — sorts values in `x`.
 * `x.shuffle()` — shuffles values in `x` using Fisher–Yates algorithm.
+
+### Class Factor
+
+Factors are vectors representing categorical variables. To create an instance of `Factor` use method `factor()` and provide it an array of categories as strings:
+
+```javascript
+import {factor} from 'mdatools/arrays';
+
+const f = factor(["red", "green", "red", "green", "red", "green", "blue]);
+```
+
+Factor has following class methods:
+
+* `f.which(label)` — returns indices (as instance of `Index` class) of all entries of given label inside the factor.
+
 
 
 ### Methods for class Matrix
