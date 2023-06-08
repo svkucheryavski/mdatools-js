@@ -558,7 +558,10 @@ export function getDistParams(U) {
       // robust
       const M = median(u);
       const S = iqr(u);
-      const Nr = Math.round(Math.exp(Math.pow(1.380948 * Math.log(2.68631 * M / S), 1.185785)));
+      const RM = S / M;
+      const Nr =  RM > 2.685592117 ? 1 :
+                  (RM < 0.194565995 ? 100 :
+                  Math.round(Math.exp(Math.pow(1.380948 * Math.log(2.68631 / RM), 1.185785))));
       u0r.v[i] = 0.5 * Nr * (M / qchisq(0.5, Nr) + S / (qchisq(0.75, Nr) - qchisq(0.25, Nr)))
       Nur.v[i] = Nr;
    }
