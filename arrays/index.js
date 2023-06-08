@@ -2096,57 +2096,17 @@ export class Dataset {
 }
 
 
-/** Class representing a factor — vector with categorical variables */
-export class Factor {
 
-   static valuesConstructor = Uint8Array;
-
-   /**
-    * Constructor for a Factor object.
-    *
-    * @param {Uint8Array} values - vector with indices for each category item.
-    * @param {Array} labels - array with labels for each category.
-    *
-    * @returns {Factor} class object (see description).
-    * @constructor
-    *
-    */
-   constructor(values, labels) {
-
-      if (values.constructor !== Factor.valuesConstructor) {
-         throw Error('Factor: wrong class for parameter "values".')
-      }
-
-      if (values.nrows < 1 || values.ncols < 1) {
-         throw Error('Factor: parameter "values" must have at least one row and one column.')
-      }
-
-      this.values = values;
-      this.labels = labels.map(v => v.toString());
-      this.length = values.length;
-      this.nlevels = this.labels.length;
-   }
-
-   /**
-    * Return vector of indices corresponding to location of a particular category.
-    *
-    * @param {string} value - name (label) of the category to find.
-    *
-    * @returns {Index} vector with indices (starts from 1).
-    */
-   which(value) {
-      const ind = this.labels.findIndex((v, i) => v === value);
-      const out = new Index.valuesConstructor(this.length);
-      let k = 0;
-      for (let i = 0; i < this.length; i++) {
-         if (this.values[i] === ind) {
-            out[k] = i + 1;
-            k += 1;
-         }
-      }
-
-      return new Index(out.slice(0, k))
-   }
+/**
+ * Return 'true' of 'x' is an Factor object, 'false' otherwise.
+ *
+ * @param {any} x - any object or variable.
+ *
+ * @returns {boolean}
+ *
+ */
+export function isfactor(x) {
+   return x.constructor === Factor;
 }
 
 /**
@@ -2176,6 +2136,65 @@ export function factor(x) {
 
    return new Factor(values, labels)
 }
+
+
+/** Class representing a factor — vector with categorical variables */
+export class Factor {
+
+   static valuesConstructor = Uint8Array;
+
+   /**
+    * Constructor for a Factor object.
+    *
+    * @param {Uint8Array} values - vector with indices for each category item.
+    * @param {Array} labels - array with labels for each category.
+    *
+    * @returns {Factor} class object (see description).
+    * @constructor
+    *
+    */
+   constructor(values, labels) {
+
+      if (values.constructor !== Factor.valuesConstructor) {
+         throw Error('Factor: wrong class for parameter "values".')
+      }
+
+      if (values.nrows < 1 || values.ncols < 1) {
+         throw Error('Factor: parameter "values" must have at least one row and one column.')
+      }
+
+      if (!labels || !Array.isArray(labels)) {
+         throw Error('Factor: parameter "labels" must be an array.')
+      }
+
+      this.v = values;
+      this.length = values.length;
+      this.labels = labels.map(v => v.toString());
+      this.nlevels = this.labels.length;
+   }
+
+   /**
+    * Return vector of indices corresponding to location of a particular category.
+    *
+    * @param {string} value - name (label) of the category to find.
+    *
+    * @returns {Index} vector with indices (starts from 1).
+    */
+   which(value) {
+      const ind = this.labels.findIndex((v, i) => v === value);
+      const out = new Index.valuesConstructor(this.length);
+      let k = 0;
+      for (let i = 0; i < this.length; i++) {
+         if (this.v[i] === ind) {
+            out[k] = i + 1;
+            k += 1;
+         }
+      }
+
+      return new Index(out.slice(0, k))
+   }
+}
+
 
 
 /***********************************************/

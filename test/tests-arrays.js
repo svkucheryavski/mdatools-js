@@ -6,7 +6,7 @@ import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 
 // import classes and related methods
-import { Factor, factor, Dataset, index, isindex, Index, ismatrix, matrix,
+import { Factor, isfactor, factor, Dataset, index, isindex, Index, ismatrix, matrix,
    Matrix, isvector, vector, Vector } from '../arrays/index.js';
 
 // import non-class methods
@@ -56,6 +56,26 @@ function testIndexStructure(x, length, values) {
 
    if (values) {
       expect(x.v).to.deep.equal(new Index.valuesConstructor(values));
+   }
+}
+
+// function to test an factor structure
+function testFactorStructure(x, length, values, labels) {
+   expect(x.constructor).equal(Factor);
+   expect(x.v.constructor).equal(Factor.valuesConstructor);
+   expect(x.v.length).equal(length);
+   expect(ismatrix(x)).to.be.false;
+   expect(isvector(x)).to.be.false;
+   expect(isindex(x)).to.be.false;
+   expect(isfactor(x)).to.be.true;
+
+   if (labels) {
+      expect(x.labels).to.deep.equal(labels);
+      expect(x.nlevels).equal(labels.length);
+   }
+
+   if (values) {
+      expect(x.v).to.deep.equal(new Factor.valuesConstructor(values));
    }
 }
 
@@ -1088,7 +1108,6 @@ describe('Tests of methods for class Factor.', function () {
 
 });
 
-
 describe('Tests of methods for generating vectors and matrices and static methods.', function () {
 
    it ('tests for static method "c"', function() {
@@ -1547,30 +1566,15 @@ describe('Tests of constructors.', function () {
 
       const x1 = [1, 2, 3, 3, 2, 1, 1, 2, 3, 3, 2, 1];
       const f1 = factor(x1);
-      expect(f1.length).to.be.equal(x1.length)
-      expect(f1.nlevels).to.be.equal(3)
-      expect(f1.labels).to.be.deep.equal(['1', '2', '3']);
-      expect(f1.values).to.be.deep.equal(
-         new Factor.valuesConstructor([0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0])
-      );
+      testFactorStructure(f1, 12, [0, 1, 2, 2, 1, 0, 0, 1, 2, 2, 1, 0], ['1', '2', '3']);
 
       const x2 = ['red', 'blue', 'green', 'blue', 'green', 'red', 'red', 'blue'];
       const f2 = factor(x2);
-      expect(f2.length).to.be.equal(x2.length)
-      expect(f2.nlevels).to.be.equal(3)
-      expect(f2.labels).to.be.deep.equal(['red', 'blue', 'green']);
-      expect(f2.values).to.be.deep.equal(
-         new Factor.valuesConstructor([0, 1, 2, 1, 2, 0, 0, 1])
-      );
+      testFactorStructure(f2, 8, [0, 1, 2, 1, 2, 0, 0, 1], ['red', 'blue', 'green']);
 
       const x3 = ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red'];
       const f3 = factor(x3);
-      expect(f3.length).to.be.equal(x3.length)
-      expect(f3.nlevels).to.be.equal(1)
-      expect(f3.labels).to.be.deep.equal(['red']);
-      expect(f3.values).to.be.deep.equal(
-         new Factor.valuesConstructor([0, 0, 0, 0, 0, 0, 0, 0, 0])
-      );
+      testFactorStructure(f3, 9, [0, 0, 0, 0, 0, 0, 0, 0, 0], ['red']);
    });
 
 });
