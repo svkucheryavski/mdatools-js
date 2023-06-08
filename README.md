@@ -272,6 +272,7 @@ Methods can be imported from `'mdatools/distributions'` module.
 * `dunif(x, a, b)`, `punif(x, a, b)`, `runif(x, a, b)` — PDF, CDF, and random numbers generator for uniform distribution. Default values for the paramaters are `a=0`, `b=1`.
 * `dt(t, dof)`, `pt(x, mu, sigma)`, `qt(p, mu, sigma)` — PDF, CDF, abd ICDF for Student's t-distribution.
 * `df(F, dof1, dof2)`, `pf(F, dof1, dof2)` — PDF and CDF for F-distribution.
+* `qchisq(p, dof)` — ICDF function for chi-square distribution.
 
 There are also a set of helper functions used to compute the values for the distributions, which can be useful:
 
@@ -349,6 +350,13 @@ Methods for fitting various models. Every method returns a JSON with fitted mode
 
 * `pcafit(X, ncomp)` — fits PCA model with given number of components.
 * `pcapredict(m, X)` — projects data from `X` to the PCA model and computes main outcomes (scores, distances, variance, etc.).
+
+## DD-SIMCA classification
+
+DD-SIMCA classification is done based on PCA model with additional parameters.
+
+* `getsimcaparams(className, alpha, limType)` — creates an object with SIMCA parameters, necessary for classification.
+* `simcapredict(m, params, X, [cRef])` — classifies rows of data matrix `X` using PCA model `m` and DD-SIMCA parameters `params`. If factor with reference classes, `cRef` is provided, the method also computes classification statistics and adds it to he outcome.
 
 ### Principal components regression
 
