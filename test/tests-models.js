@@ -5,21 +5,147 @@
 // import dependencies
 import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
-import { cbind, vector, matrix, tcrossprod, Vector, Matrix } from '../arrays/index.js';
+import { factor, cbind, vector, matrix, tcrossprod, Vector, Matrix } from '../arrays/index.js';
 import { variance, mean, sd, sum } from '../stat/index.js';
 import { svd } from '../decomp/index.js';
 import { scale as prep_scale } from '../prep/index.js';
 
 // import of functions to test
-import {simpls, plsfit, plspredict, splitregdata, pcrfit, pcrpredict, pcafit, pcapredict, lmfit,
-   lmpredict, regstat, polyfit, polypredict} from '../models/index.js';
+import {simcapredict, getclassres, simpls, plsfit, plspredict, splitregdata, pcrfit, pcrpredict, pcafit, pcapredict, lmfit,
+   lmpredict, regstat, polyfit, polypredict, getsimcaparams} from '../models/index.js';
 
 // set up test settings
 const expect = chai.expect;
 const should = chai.should();
 chai.use(chaiAlmost(0.001));
 
-describe('Tests for modelling methods.', function () {
+function testClassResObject(x, cPred, cRef, className, stat) {
+
+   expect(x.class.includes('classres'));
+   expect(x.cPred).to.be.deep.equal(cPred);
+   expect(x.className).to.be.equal(className);
+
+   if (cRef) {
+      expect(x.cRef).to.be.deep.equal(cRef);
+      expect(x.TP).to.be.deep.equal(vector(stat[0]));
+      expect(x.FP).to.be.deep.equal(vector(stat[1]));
+      expect(x.TN).to.be.deep.equal(vector(stat[2]));
+      expect(x.FN).to.be.deep.equal(vector(stat[3]));
+      expect(x.sensitivity).to.be.deep.equal(vector(stat[4]));
+      expect(x.specificity).to.be.deep.equal(vector(stat[5]));
+      expect(x.accuracy).to.be.deep.equal(vector(stat[6]));
+   } else {
+      expect(x.cRef === undefined).to.be.true;
+      expect(x.TP === undefined).to.be.true;
+      expect(x.FP === undefined).to.be.true;
+      expect(x.TN === undefined).to.be.true;
+      expect(x.FP === undefined).to.be.true;
+      expect(x.sensitivity === undefined).to.be.true;
+      expect(x.specificity === undefined).to.be.true;
+      expect(x.accuracy === undefined).to.be.true;
+   }
+}
+
+describe('Tests for classification methods.', function () {
+
+   it ('tests for method "getclassres" - one predicted item.', function () {
+
+      // perfect case
+      const cp1 = [factor(['none', 'red', 'none', 'red', 'none', 'red', 'none', 'red'])];
+      const cr1 = factor(['blue', 'red', 'blue', 'red', 'blue', 'red', 'green', 'red']);
+      const r1a = getclassres(cp1, 'red', cr1);
+      const r1b = getclassres(cp1, 'red');
+      testClassResObject(r1a, cp1, cr1, 'red', [[4], [0], [4], [0], [1], [1], [1]])
+      testClassResObject(r1b, cp1, null, 'red')
+
+      // one false negative
+      const cp2 =[factor(['none', 'red', 'none', 'none', 'none', 'red', 'none', 'red'])];
+      const cr2 = factor(['blue', 'red', 'green', 'red', 'blue', 'red', 'green', 'red']);
+      const r2a = getclassres(cp2, 'red', cr2);
+      const r2b = getclassres(cp2, 'red');
+      testClassResObject(r2a, cp2, cr2, 'red', [[3], [0], [4], [1], [0.75], [1], [0.875]])
+      testClassResObject(r2b, cp2, null, 'red')
+
+      // one false positive
+      const cp3 = [factor(['red', 'red', 'none', 'red', 'none', 'red', 'none', 'red'])];
+      const cr3 = factor(['blue', 'red', 'blue', 'red', 'blue', 'red', 'green', 'red']);
+      const r3a = getclassres(cp3, 'red', cr3);
+      const r3b = getclassres(cp3, 'red');
+      testClassResObject(r3a, cp3, cr3, 'red', [[4], [1], [3], [0], [1], [0.75], [0.875]])
+      testClassResObject(r3b, cp3, null, 'red')
+
+      // everything is wrong
+      const cp4 = [factor(['red', 'none', 'red', 'none', 'red', 'none', 'red', 'none'])];
+      const cr4 = factor(['blue', 'red', 'blue', 'red', 'blue', 'red', 'green', 'red']);
+      const r4a = getclassres(cp4, 'red', cr4);
+      const r4b = getclassres(cp4, 'red');
+      testClassResObject(r4a, cp4, cr4, 'red', [[0], [4], [0], [4], [0], [0], [0]])
+      testClassResObject(r4b, cp4, null, 'red')
+
+      // no class items in predictions (all none)
+      const cp5 = [factor(['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'])];
+      const cr5 = factor(['blue', 'red', 'blue', 'red', 'blue', 'red', 'green', 'red']);
+      const r5a = getclassres(cp5, 'red', cr5);
+      const r5b = getclassres(cp5, 'red');
+      testClassResObject(r5a, cp5, cr5, 'red', [[0], [0], [4], [4], [0], [1], [0.5]])
+      testClassResObject(r5b, cp5, null, 'red')
+
+      // no class items in references
+      const cp6 = [factor(['red', 'none', 'red', 'none', 'red', 'none', 'red', 'none'])];
+      const cr6 = factor(['blue', 'green', 'blue', 'green', 'blue', 'green', 'green', 'blue']);
+      const r6a = getclassres(cp6, 'red', cr6);
+      const r6b = getclassres(cp6, 'red');
+      testClassResObject(r6a, cp6, cr6, 'red', [[0], [4], [4], [0], [NaN], [0.5], [0.5]])
+      testClassResObject(r6b, cp6, null, 'red')
+
+      // only class items in references
+      const cp7 = [factor(['red', 'none', 'red', 'none', 'red', 'none', 'red', 'none'])];
+      const cr7 = factor(['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red']);
+      const r7a = getclassres(cp7, 'red', cr7);
+      const r7b = getclassres(cp7, 'red');
+      testClassResObject(r7a, cp7, cr7, 'red', [[4], [0], [0], [4], [0.5], [NaN], [0.5]])
+      testClassResObject(r7b, cp7, null, 'red')
+
+   });
+
+   it ('tests for method "getclassres" - several predicted items.', function () {
+
+      // perfect case
+      const cp1 = [
+         factor(['none', 'red', 'none', 'red', 'none', 'red', 'none', 'red']),
+         factor(['none', 'red', 'none', 'none', 'none', 'red', 'none', 'red']),
+         factor(['red', 'none', 'red', 'none', 'red', 'none', 'red', 'none']),
+         factor(['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'])
+      ];
+      const cr1 = factor(['blue', 'red', 'blue', 'red', 'blue', 'red', 'green', 'red']);
+      const r1a = getclassres(cp1, 'red', cr1);
+      const r1b = getclassres(cp1, 'red');
+      testClassResObject(r1a, cp1, cr1, 'red', [
+         [4, 3, 0, 0],
+         [0, 0, 4, 0],
+         [4, 4, 0, 4],
+         [0, 1, 4, 4],
+         [1, 0.75, 0, 0],
+         [1, 1, 0, 1],
+         [1, 0.875, 0, 0.5]
+      ])
+      testClassResObject(r1b, cp1, null, 'red')
+   });
+});
+
+describe('Tests for SIMCA methods.', function () {
+
+   it ('tests for method "simcapredict".', function () {
+      const X1 = Matrix.rand(50, 10);
+      const X2 = Matrix.rand(20, 10);
+      const mpca = pcafit(X1, 10);
+      const params = getsimcaparams('red', 0.05, 'classic');
+      const c = simcapredict(mpca, params, X2)
+   });
+
+});
+
+describe('Tests for PLS methods.', function () {
 
    it ('tests for method "pldpredict"', function () {
       // common dataset for all tests
@@ -263,6 +389,9 @@ describe('Tests for modelling methods.', function () {
       expect(sum(Yp.subtract(tcrossprod(m2.T, m2.C)).apply(v => v * v, 0).v) / sum(Yp.apply(v => v * v, 0).v) < 0.05).to.been.true;
 
    });
+});
+
+describe('Tests for PCR methods.', function () {
 
    it ('tests for method "pcrfit"', function () {
 
@@ -341,6 +470,10 @@ describe('Tests for modelling methods.', function () {
       expect(r2.cumexpvar).to.be.deep.almost.equal(r1.cumexpvar);
 
    });
+
+});
+
+describe('Tests for PCA methods.', function () {
 
    it ('tests for method "pcafit"', function () {
 
@@ -545,6 +678,10 @@ describe('Tests for modelling methods.', function () {
 
    });
 
+});
+
+describe('Tests for polynomial regression methods.', function () {
+
    it ('tests for method "polyfit".', function () {
 
       const x = vector([1, 2, 3, 4, 5]);
@@ -573,6 +710,10 @@ describe('Tests for modelling methods.', function () {
       const yp = polypredict(m, x);
       expect(yp).to.be.deep.almost(y);
    });
+
+});
+
+describe('Tests for lm (MLR) methods.', function () {
 
    it ('tests for method "lmfit".', function () {
 

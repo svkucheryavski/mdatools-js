@@ -2,8 +2,193 @@ import { rsvd } from '../decomp/index.js';
 import { pf, pt, qt, qchisq } from '../distributions/index.js';
 import { norm2, variance, median, iqr, mean, sd, ssq } from '../stat/index.js';
 import { scale as prep_scale, unscale as prep_unscale } from '../prep/index.js';
-import { _dot, cbind, tcrossprod, crossprod, reshape, ismatrix, Index, Matrix, vector, isvector, Vector, Dataset } from '../arrays/index.js';
+import { _dot, isfactor, factor, cbind, tcrossprod, crossprod, reshape, ismatrix, Index,
+   Matrix, vector, isvector, Vector, Dataset } from '../arrays/index.js';
 
+/**
+ * Check if an object has a proper class.
+ *
+ * @param {JSON} obj - JSON wiht object (e.g. model or results).
+ * @param {string} className - expected name of the class.
+ *
+ * @return {boolean} true or false.
+ *
+ */
+export function isa(obj, className) {
+   return obj && obj.class && Array.isArray(obj.class) && obj.class.includes(className);
+}
+
+
+
+export function getclassres(cPred, className, cRef) {
+
+   // check inputs
+   if (!cPred || !Array.isArray(cPred) || cPred.length < 1 || !cPred.every(isfactor)) {
+      throw new Error('getclassres: parameter "cPred" must be array of factors.');
+   }
+
+   if (!className || typeof(className) !== 'string' || className == '' || className == 'none') {
+      throw new Error('getclassres: wrong value for "className" parameter (must me a string).');
+   }
+
+   if (cRef && !isfactor(cRef)) {
+      throw new Error('getclassres: parameter "cRef" must be a factor (or undefined).');
+   }
+
+   // if reference values are not provided return results without statistics
+   if (!cRef) {
+      return {
+         class: ['classres'],
+         className: className,
+         cPred: cPred,
+         cRef: cRef
+      }
+   }
+
+   // find index of class in factor with reference class names
+   const refInd = cRef.labels.findIndex(v => v === className);
+   const ncomp = cPred.length;
+
+   // prepare variables for statistics
+   const TP = Vector.zeros(ncomp);
+   const FP = Vector.zeros(ncomp);
+   const TN = Vector.zeros(ncomp);
+   const FN = Vector.zeros(ncomp);
+   const sensitivity = Vector.zeros(ncomp);
+   const specificity = Vector.zeros(ncomp);
+   const accuracy = Vector.zeros(ncomp);
+
+   // loop over components
+   for (let a = 1; a <= ncomp; a++) {
+
+      const predInd = cPred[a - 1].labels.findIndex(v => v === className);
+      let TPa = 0, TNa = 0, FPa = 0, FNa = 0;
+      for (let i = 0; i < cRef.length; i++) {
+         if (cPred[a - 1].v[i] === predInd && cRef.v[i] === refInd) TPa += 1;
+         if (cPred[a - 1].v[i] !== predInd && cRef.v[i] !== refInd) TNa += 1;
+         if (cPred[a - 1].v[i] === predInd && cRef.v[i] !== refInd) FPa += 1;
+         if (cPred[a - 1].v[i] !== predInd && cRef.v[i] === refInd) FNa += 1;
+      }
+
+      sensitivity.v[a - 1] =  TPa / (TPa + FNa);
+      specificity.v[a - 1] =  TNa / (TNa + FPa);
+      accuracy.v[a - 1] =  (TPa + TNa) / (TNa + TPa + FNa + FPa);
+      TP.v[a - 1] = TPa;
+      TN.v[a - 1] = TNa;
+      FP.v[a - 1] = FPa;
+      FN.v[a - 1] = FNa;
+
+   }
+
+   return {
+      class: ['classres'],
+      className: className,
+      cPred: cPred,
+      cRef: cRef,
+      TP: TP,
+      FN: FN,
+      TN: TN,
+      FP: FP,
+      sensitivity: sensitivity,
+      specificity: specificity,
+      accuracy: accuracy
+   }
+}
+
+
+export function getsimcaparams(className, alpha, limType) {
+
+   const validLimTypes = ['classic', 'robust'];
+
+   if (!alpha) alpha = 0.05;
+   if (!limType) limType = 'classic';
+
+   if (!className || typeof(className) !== 'string' || className == '' || className == 'none') {
+      throw new Error('simcamodel: wrong value for "className" parameter (must me a string).');
+   }
+
+   if (isNaN(alpha) || alpha < 0 || alpha > 1) {
+      throw new Error('simcamodel: wrong value for "alpha" parameter.');
+   }
+
+   if (typeof(limType) !== 'string' || !validLimTypes.includes(limType)) {
+      throw new Error('simcamodel: wrong value for "limType" parameter (must be either "classic" or "robust").');
+   }
+
+   return {
+      class: ['simcaparams'],
+      className: className,
+      alpha: alpha,
+      limType: limType
+   }
+}
+
+export function simcapredict(m, params, X, cRef) {
+
+   // check inputs
+   if (!isa(m, 'pcamodel')) {
+      throw new Error('simcapredict: parameter "m" must be an object with PCA model.');
+   }
+
+   if (!isa(params, 'simcaparams')) {
+      throw new Error('simcapredict: parameter "params" must be an object from "simcaparams" method.');
+   }
+
+   if (!ismatrix(X)) {
+      throw new Error('simcapredict: parameter "X" must be instance of Matrix class.');
+   }
+
+   if (cRef && !factor(cRef)) {
+      throw new Error('simcapredict: parameter "cRef" must be instance of Factor class.');
+   }
+
+   if (cRef && cRef.length !== X.nrows) {
+      throw new Error('simcapredict: parameter "cRef" must have the same number of values as rows in "X".');
+   }
+
+
+   // project data to PCA model
+   const pcares = pcapredict(m, X);
+
+   // prepare array for predictions
+   const cPred = new Array(m.ncomp);
+
+   // get parameters for the distances
+   const Nq = m.qParams[params.limType][1].v;
+   const q0 = m.qParams[params.limType][0].v;
+   const h0 = m.hParams[params.limType][0].v;
+   const Nh = m.hParams[params.limType][1].v;
+
+   // loop over components
+   for (let a = 1; a <= m.ncomp; a++) {
+
+      const h0a = h0[a - 1];
+      const q0a = q0[a - 1];
+      const Nha = Nh[a - 1];
+      const Nqa = Nq[a - 1];
+
+      const ha = pcares.H.getcolref(a);
+      const qa = pcares.Q.getcolref(a);
+      const cpa = new Array(X.nrows);
+
+      // compute critical value for FD
+      const fCrit = qchisq(1 - params.alpha, Nqa + Nha);
+
+      // loop over rows to make predictions
+      for (let i = 0; i < X.nrows; i++) {
+         const fa  = ha[i] / h0a * Nha + qa[i] / q0a * Nqa;
+         cpa[i] = fa <= fCrit ? params.className : "none";
+      }
+
+      cPred[a - 1] = factor(cpa);
+   }
+
+   return {
+      class: ['simcares'],
+      pcares: pcares,
+      classres: getclassres(cPred, params.className, cRef)
+   }
+}
 
 /**
  * Fit Partial Least Squares Regression model.
@@ -304,6 +489,10 @@ export function pcafit(data, ncomp, center, scale) {
 
    if (!ncomp) {
       ncomp = Math.min(X.ncols, X.nrows - 1);
+   }
+
+   if (ncomp < 0 || ncomp > X.ncols || ncomp > X.nrows - 1) {
+      throw new Error('pcafit: wrong value for "ncomp" parameter.');
    }
 
    // center and scale the training set
