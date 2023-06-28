@@ -692,6 +692,8 @@ export function pcapredict(m, data, name) {
          axisValues: Vector.seq(1, data.nrows),
          axisName: 'Objects'
       };
+   } else {
+      throw new Error('pcapredict: parameter "data" must be a dataset or a matrix.');
    }
 
    let res = pcagetmainres(Xp, Xp.dot(m.P), m.P, m.eigenvals, objAttrs);
