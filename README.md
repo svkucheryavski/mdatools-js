@@ -351,7 +351,7 @@ Methods for fitting various models. Every method returns a JSON with fitted mode
 * `pcafit(X, ncomp)` — fits PCA model with given number of components.
 * `pcapredict(m, X)` — projects data from `X` to the PCA model and computes main outcomes (scores, distances, variance, etc.).
 
-## DD-SIMCA classification
+### DD-SIMCA classification
 
 DD-SIMCA classification is done based on PCA model with additional parameters.
 
