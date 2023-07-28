@@ -3,10 +3,9 @@
 /****************************************************************/
 
 // import  methods
-import { Matrix, tcrossprod, crossprod } from '../arrays/index.js';
-import { bidiag, rsvd, svd, qr, lu } from '../decomp/index.js';
-import { pcafit, pcapredict, plsfit, plspredict, pcrfit, pcrpredict } from '../models/index.js';
-import { pcvpca, pcvpcr, pcvpls } from '../pcv/index.js';
+import { Matrix, tcrossprod, crossprod } from '../src/arrays/index.js';
+import { bidiag, rsvd, svd, qr, lu } from '../src/decomp/index.js';
+import { pcafit, pcapredict, plsfit, plspredict, pcrfit, pcrpredict } from '../src/models/index.js';
 
 function measure(f, msg = '') {
    const start = Date.now();
@@ -52,12 +51,9 @@ console.log('---------------------------------------------------');
 
 const mpca = measure( () => pcafit(X4, 20), 'pcafit');
 measure( () => pcapredict(mpca, X4), 'pcapredict');
-measure( () => pcvpca(X4, mpca, 20, {type: 'ven', nseg: 10}), 'pcvpca');
 const mpcr = measure( () => pcrfit(X4, Y4, 20), 'pcrfit');
 measure( () => pcrpredict(mpcr, X4), 'pcrpredict');
-measure( () => pcvpcr(X4, Y4, mpcr, 20, {type: 'ven', nseg: 10}), 'pcvpcr');
 const mpls = measure( () => plsfit(X4, Y4, 20), 'plsfit');
 measure( () => plspredict(mpls, X4, Y4), 'plspredict');
-measure( () => pcvpls(X4, Y4, mpls, 20, {type: 'ven', nseg: 10}), 'pcvpls');
 
 console.log('');

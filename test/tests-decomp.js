@@ -18,10 +18,11 @@
 // import dependencies
 import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
-import { crossprod, tcrossprod, reshape, isvector, vector, Vector, ismatrix, matrix, Matrix, Index } from '../arrays/index.js';
+import { crossprod, tcrossprod, reshape, isvector, vector, Vector,
+   ismatrix, matrix, Matrix, Index } from '../src/arrays/index.js';
 
 // import methods to test
-import { rsvd, qr, lu, svd, vsweep, rot, bidiag, householder } from '../decomp/index.js';
+import { rsvd, qr, lu, svd, rot, bidiag, householder } from '../src/decomp/index.js';
 
 // set up test settings
 const expect = chai.expect;

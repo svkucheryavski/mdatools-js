@@ -4,11 +4,11 @@
 
 // import dependencies
 import {default as chai} from 'chai';
-import {pnorm} from '../distributions/index.js';
-import {vector} from '../arrays/index.js';
+import {pnorm} from '../src/distributions/index.js';
+import {vector} from '../src/arrays/index.js';
 
 // import of functions to test
-import {getpvalue, ttest, ttest2} from '../tests/index.js';
+import {getpvalue, ttest, ttest2} from '../src/tests/index.js';
 
 const should = chai.should();
 const expect = chai.expect;

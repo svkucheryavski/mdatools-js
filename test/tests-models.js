@@ -5,14 +5,14 @@
 // import dependencies
 import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
-import { factor, cbind, vector, matrix, tcrossprod, Vector, Matrix } from '../arrays/index.js';
-import { variance, mean, sd, sum } from '../stat/index.js';
-import { svd } from '../decomp/index.js';
-import { scale as prep_scale } from '../prep/index.js';
+import { factor, cbind, vector, matrix, tcrossprod, Vector, Matrix } from '../src/arrays/index.js';
+import { variance, mean, sd, sum } from '../src/stat/index.js';
+import { svd } from '../src/decomp/index.js';
+import { scale as prep_scale } from '../src/prep/index.js';
 
 // import of functions to test
 import {simcapredict, getclassres, simpls, plsfit, plspredict, splitregdata, pcrfit, pcrpredict, pcafit, pcapredict, lmfit,
-   lmpredict, regstat, polyfit, polypredict, getsimcaparams} from '../models/index.js';
+   lmpredict, polyfit, polypredict, getsimcaparams} from '../src/models/index.js';
 
 // set up test settings
 const expect = chai.expect;

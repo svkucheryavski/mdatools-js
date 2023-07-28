@@ -5,14 +5,14 @@
 // import dependencies
 import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
-import { isvector, vector, Vector } from '../arrays/index.js';
+import { isvector, vector, Vector } from '../src/arrays/index.js';
 
 // import methods to test
 import {
    norm2, quantile, count, mids, split, diff, ppoints, cumsum,
-   cor, cov, skewness, kurtosis, rank, mean, sd, sum, prod, min, minind, max,  maxind,
+   cor, cov, skewness, kurtosis, rank, mean, sd, sum, prod, min, minind, max, maxind,
    median, iqr
-} from '../stat/index.js';
+} from '../src/stat/index.js';
 
 // set up test settings
 const should = chai.should();

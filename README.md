@@ -4,7 +4,7 @@ A simple library with implementation of most common methods for descriptive and 
 
 ## What is new
 
-<span style="color:crimson">Version **1.0.1** introduces many breaking changes as the library was almost fully re-written from the scratch. If you used a pre-release version (0.6.1), do not upgrade.</span>
+<span style="color:crimson">Version **1.x.x** introduces many breaking changes as the library was almost fully re-written from the scratch. If you used a pre-release version (0.6.1), do not upgrade.</span>
 
 The documentation below has been also re-written to match the new version.
 

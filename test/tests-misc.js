@@ -5,11 +5,11 @@
 // import dependencies
 import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
-import { vector } from '../arrays/index.js';
-import { quantile } from '../stat/index.js';
+import { vector } from '../src/arrays/index.js';
+import { quantile } from '../src/stat/index.js';
 
 // import methods to test
-import { closestind, getoutliers, expandgrid, integrate, round } from '../misc/index.js';
+import { closestind, getoutliers, expandgrid, integrate, round } from '../src/misc/index.js';
 
 // set up test settings
 const should = chai.should();

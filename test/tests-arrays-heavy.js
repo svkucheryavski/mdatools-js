@@ -6,10 +6,10 @@ import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 
 // import classes and related methods
-import { index, isindex, Index, ismatrix, matrix, Matrix, isvector, vector, Vector } from '../arrays/index.js';
+import { isindex, Index, ismatrix, Matrix, isvector, Vector } from '../src/arrays/index.js';
 
 // import non-class methods
-import { tcrossprod, crossprod, rbind, cbind, c, reshape } from '../arrays/index.js';
+import { tcrossprod, crossprod, rbind, cbind } from '../src/arrays/index.js';
 
 // set up test settings
 const expect = chai.expect;

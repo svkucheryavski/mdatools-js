@@ -1,10 +1,11 @@
 // import dependencies
 import {default as chai} from 'chai';
-import {sum, sd, mean, min, max} from '../stat/index.js';
-import { isvector, vector, Vector } from '../arrays/index.js';
+import {sum, sd, mean, min, max} from '../src/stat/index.js';
+import { isvector, vector, Vector } from '../src/arrays/index.js';
 
 // import of functions to test
-import {igamma, gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm, dt, pt, qt, df, pf, pchisq, qchisq} from '../distributions/index.js';
+import {igamma, gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm,
+   dt, pt, qt, df, pf, pchisq, qchisq} from '../src/distributions/index.js';
 
 const should = chai.should();
 const expect = chai.expect;

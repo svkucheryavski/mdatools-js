@@ -5,11 +5,11 @@
 // import dependencies
 import { default as chai} from 'chai';
 import { default as chaiAlmost} from 'chai-almost';
-import { vector, ismatrix, Vector, Matrix } from '../arrays/index.js';
-import { sd, mean } from '../stat/index.js';
+import { vector, ismatrix, Vector, Matrix } from '../src/arrays/index.js';
+import { sd, mean } from '../src/stat/index.js';
 
 // import methods to test
-import { scale, unscale } from '../prep/index.js';
+import { scale, unscale } from '../src/prep/index.js';
 
 
 // set up test settings
