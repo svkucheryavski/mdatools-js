@@ -659,6 +659,14 @@ describe('Tests of methods for class Matrix.', function () {
 
    it ('tests for method "subset"', function() {
       const X = reshape(Vector.seq(1, 24, 1), 6, 4);
+
+      // errors
+      expect(() => X.subset([0, 1, 2], [1, 2, 3])).to.throw('subset: parameter "rind" does not match size of the matrix.');
+      expect(() => X.subset([5, 6, 7], [1, 2, 3])).to.throw('subset: parameter "rind" does not match size of the matrix.');
+      expect(() => X.subset([1, 2, 3], [0, 1, 2])).to.throw('subset: parameter "cind" does not match size of the matrix.');
+      expect(() => X.subset([1, 2, 3], [3, 4, 5])).to.throw('subset: parameter "cind" does not match size of the matrix.');
+
+
       // consequent indices
 
       /// mid - mid

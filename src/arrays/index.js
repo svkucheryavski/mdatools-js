@@ -822,6 +822,13 @@ export class Matrix {
          throw Error('subset: parameter "cind" can be a number, null or instance of Index.');
       }
 
+      if (rind !== null && (min(rind) < 1 || max(rind) > this.nrows)) {
+         throw Error('subset: parameter "rind" does not match size of the matrix.');
+      }
+
+      if (cind !== null && (min(cind) < 1 || max(cind) > this.ncols)) {
+         throw Error('subset: parameter "cind" does not match size of the matrix.');
+      }
 
       // select all rows and a subset of columns
       if (rind === null) {
