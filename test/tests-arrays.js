@@ -870,6 +870,9 @@ describe('Tests of methods for class Vector.', function () {
       const x1a = x1.sort();
       const x1b = x1.sort(true);
 
+      expect(x1a).to.be.deep.equal(vector([-15.3, -8.2, 1, 3, 10, 100]));
+      expect(x1b).to.be.deep.equal(vector([100, 10, 3, 1, -8.2, -15.3]));
+
       const x2 = x1.shuffle();
       const x2a = x2.sort();
       const x2b = x2.sort(true);
@@ -877,6 +880,12 @@ describe('Tests of methods for class Vector.', function () {
       expect(x2.v).to.be.not.deep.equal(x1.v);
       expect(x2a.v).to.be.deep.equal(x1a.v);
       expect(x2b.v).to.be.deep.equal(x1b.v);
+
+      const i2a = x1.sortind();
+      const i2b = x1.sortind(true);
+      expect(i2a).to.be.deep.equal(index([5, 2, 4, 3, 1, 6]));
+      expect(i2b).to.be.deep.equal(index([6, 1, 3, 4, 2, 5]));
+
    });
 
    it ('tests for method "dot"', function() {

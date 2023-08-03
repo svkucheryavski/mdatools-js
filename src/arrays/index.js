@@ -248,7 +248,7 @@ export function reshape(obj, nrow, ncol) {
  *
  */
 export function ismatrix(X) {
-   return X.constructor === Matrix;
+   return X && X.constructor === Matrix;
 }
 
 
@@ -1235,7 +1235,7 @@ export class Matrix {
  *
  */
 export function isvector(x) {
-   return x.constructor === Vector;
+   return x && x.constructor === Vector;
 }
 
 
@@ -1342,6 +1342,18 @@ export class Vector {
     */
    sort(decreasing) {
       return new Vector(_sort(this.v, decreasing));
+   }
+
+   /**
+    * Sorts values in a vector and return indices of sorted values.
+    *
+    * @param {boolean} decreasing - if true, values will be sorted in decreasing order, otherwise in increasing.
+    *
+    * @returns {Index} vector with sorted values
+    *
+    */
+   sortind(decreasing) {
+      return new Index(_sortind(this.v, decreasing));
    }
 
 
@@ -1859,6 +1871,17 @@ export class Index {
       return new Index(_sort(this.v, decreasing));
    }
 
+   /**
+    * Sorts indices and return indices of sorted values.
+    *
+    * @param {boolean} decreasing - if true, values will be sorted in decreasing order, otherwise in increasing.
+    *
+    * @returns {Index} vector with sorted indices.
+    *
+    */
+   sortind(decreasing) {
+      return new Index(_sortind(this.v, decreasing));
+   }
 
    /**
     * Replicate the index object 'n' times.
@@ -2304,11 +2327,11 @@ function _repeach(obj, n) {
 function _opvv(v1, v2, fun) {
 
    if (v1.length !== v2.length) {
-      throw error("_opvv: arrays sizes do not match.");
+      throw new Error("_opvv: arrays sizes do not match.");
    }
 
    if (v1.constructor !== v2.constructor) {
-      throw error("_opvv: array types do not match.");
+      throw new Error("_opvv: array types do not match.");
    }
 
    const out = new v1.constructor(v1.length);
@@ -2411,10 +2434,26 @@ export function _shuffle(x) {
  * Sorts values in a vector.
  *
  * @param {Array|TypedArray} x - vector with values.
+ * @param {boolean} decreasing - should order be decreasing (true) or increasing (false).
  *
- * @returns {Array|TypedArray} vector with sorted values.
+ * @returns {Array} array with two vectors: sorted values and indices of the sorted values.
  *
  */
 export function _sort(x, decreasing = false) {
    return decreasing ? x.slice().sort((a, b) => b - a) : x.slice().sort((a, b) => a - b);
+}
+
+
+/**
+ * Sorts values in a vector.
+ *
+ * @param {Array|TypedArray} x - vector with values.
+ * @param {boolean} decreasing - should order be decreasing (true) or increasing (false).
+ *
+ * @returns {Array} array with two vectors: sorted values and indices of the sorted values.
+ *
+ */
+export function _sortind(x, decreasing = false) {
+   const ind = Index.seq(1, x.length).v;
+   return decreasing ? ind.sort((a, b) => x[b - 1] - x[a - 1]) : ind.sort((a, b) => x[a - 1] - x[b - 1]);
 }
