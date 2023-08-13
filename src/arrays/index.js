@@ -74,6 +74,10 @@ export function crossprod(X, Y) {
       Y = X;
    }
 
+   if (!ismatrix(X) || !ismatrix(Y)) {
+      throw Error('crossprod: both X and Y must be instance of Matrix class.');
+   }
+
    const nrx = X.nrows;
    const ncx = X.ncols;
 
@@ -292,7 +296,11 @@ export class Matrix {
          throw Error('Matrix: parameter "values" must be Float64Array.')
       }
 
-      if (values.length != nrows * ncols) {
+      if (nrows === 0 || ncols === 0) {
+         throw Error('Matrix: can not create matrix with zero rows or columns.')
+      }
+
+      if (values.length !== nrows * ncols) {
          throw Error('Matrix: number elements in "values" is not equal to "nrows" x "ncols".')
       }
 
