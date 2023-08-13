@@ -12,15 +12,43 @@ import { crossprod, Vector, Matrix, Index } from '../arrays/index.js';
  *
  * @param {Matrix} X - matrix to decompose.
  * @param {number} [ncomp] - number of components.
+ * @param {number} [pa=1.5] - oversampling factor (ncomp * pa + pb).
+ * @param {number} [pb=10] - oversampling increment (ncomp * pa + pb).
+ * @param {number} [its=4] - number of iterations
  *
  * @returns {JSON} JSON with three fields, 's' - vector with singular values,
  * 'U', 'V' - matrices with left and right singular vectors.
  *
  */
-export function rsvd(X, ncomp) {
+export function rsvd(X, ncomp, pa, pb, its) {
 
    const m = X.nrows;
    const n = X.ncols;
+
+   if (its === undefined) {
+      its = 4;
+   }
+
+   if (pb === undefined) {
+      pb = 10;
+   }
+
+   if (pa === undefined) {
+      pa = 1.2;
+   }
+
+   if (its < 1 || its > 10) {
+      throw new Error('rsvd: wrong value for parameter "its" (must be between 1 and 10).');
+   }
+
+   if (pa < 1 || pa > 5) {
+      throw new Error('rsvd: wrong value for parameter "pa" (must be between 1 and 5).');
+   }
+
+   if (pb < 1 || pb > 100) {
+      throw new Error('rsvd: wrong value for parameter "pb" (must be between 1 and 100).');
+   }
+
 
    if (ncomp === undefined) {
       ncomp = Math.round(Math.min(m - 1, n) / 1.5);
@@ -32,14 +60,10 @@ export function rsvd(X, ncomp) {
    }
 
    // the more the better but slower
-   const its = 3;
-   const l = ncomp + 5;
-
+   const l = Math.round(pa * ncomp + pb);
    let Q = qr(X.dot(Matrix.rand(n, l, -1, 1))).Q;
 
    for (let it = 1; it <= its; it++) {
-      // Q = qr(crossprod(X, Q)).Q;
-      // Q = qr(dot(X, Q)).Q;
       Q = lu(crossprod(X, Q)).L;
       Q = it < its ? lu(X.dot(Q)).L : qr(X.dot(Q)).Q;
    }
@@ -208,8 +232,8 @@ export function svd(X, ncomp) {
    }
    d[n - 1] = B.v[(n - 1) * n + n - 1];
 
-   const maxit = 500 * n * n;
-   const thresh = Math.pow(10, -16);
+   const maxit = 1000 * n * n;
+   const thresh = Math.pow(10, -64);
    let Gt = Matrix.eye(n);
    let P = Matrix.eye(n);
 
