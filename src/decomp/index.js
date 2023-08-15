@@ -26,7 +26,7 @@ export function rsvd(X, ncomp, pa, pb, its) {
    const n = X.ncols;
 
    if (its === undefined) {
-      its = 4;
+      its = 3;
    }
 
    if (pb === undefined) {
@@ -232,7 +232,7 @@ export function svd(X, ncomp) {
    }
    d[n - 1] = B.v[(n - 1) * n + n - 1];
 
-   const maxit = 1000 * n * n;
+   const maxit = 500 * n * n;
    const thresh = Math.pow(10, -64);
    let Gt = Matrix.eye(n);
    let P = Matrix.eye(n);

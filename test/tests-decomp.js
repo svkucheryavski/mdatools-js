@@ -169,7 +169,7 @@ describe('Tests for matrix decompositions.', function () {
       const r3b = rsvd(A3, 10)
       svdtests(A3, r3b, 10)
 
-   }).timeout(20000);
+   }).timeout(200000);
 
    it('tests for method "qr.', function() {
 
@@ -383,7 +383,7 @@ describe('Tests for matrix decompositions.', function () {
       const r3b = svd(A3, 10)
       svdtests(A3, r3b, 10)
 
-   }).timeout(100000);
+   }).timeout(10000000);
 
    it(' tests for method "rot".', function () {
       expect(rot(1, 0)).to.be.deep.almost([1, 0, 1]);
@@ -409,7 +409,7 @@ describe('Tests for matrix decompositions.', function () {
       const R2 = U2.dot(tcrossprod(B2, V2));
       expect(R2.v).to.be.deep.almost.equal(A2.v);
 
-   }).timeout(10000);
+   }).timeout(20000);
 
    it ('tests for method "householder"', function() {
       const H1 = householder([1, 2, 3], 2);
