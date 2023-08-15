@@ -34,7 +34,7 @@ export function rsvd(X, ncomp, pa, pb, its) {
    }
 
    if (pa === undefined) {
-      pa = 1.2;
+      pa = 1;
    }
 
    if (its < 1 || its > 10) {
