@@ -12,9 +12,9 @@ import { crossprod, Vector, Matrix, Index } from '../arrays/index.js';
  *
  * @param {Matrix} X - matrix to decompose.
  * @param {number} [ncomp] - number of components.
- * @param {number} [pa=1.5] - oversampling factor (ncomp * pa + pb).
+ * @param {number} [pa=1] - oversampling factor (ncomp * pa + pb).
  * @param {number} [pb=10] - oversampling increment (ncomp * pa + pb).
- * @param {number} [its=4] - number of iterations
+ * @param {number} [its=3] - number of iterations
  *
  * @returns {JSON} JSON with three fields, 's' - vector with singular values,
  * 'U', 'V' - matrices with left and right singular vectors.
@@ -55,7 +55,7 @@ export function rsvd(X, ncomp, pa, pb, its) {
    }
 
    if (m < n) {
-      const res = rsvd(X.t(), ncomp);
+      const res = rsvd(X.t(), ncomp, pa, pb, its);
       return {s: res.s, V: res.U, U: res.V}
    }
 
