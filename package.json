@@ -1,6 +1,6 @@
 {
   "name": "mdatools",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": false,
   "type": "module",
   "description": "Tools and methods for statistics and multivariate data analysis.",
@@ -8,16 +8,16 @@
     "test": "mocha",
     "speedtest": "node ./test/tests-speed.js"
   },
-   "exports": {
-      "./arrays":  "./src/arrays/index.js",
-      "./decomp":  "./src/decomp/index.js",
-      "./distributions":  "./src/distributions/index.js",
-      "./misc":  "./src/misc/index.js",
-      "./models":  "./src/models/index.js",
-      "./prep":  "./src/prep/index.js",
-      "./stat":  "./src/stat/index.js",
-      "./tests":  "./src/tests/index.js"
-   },
+  "exports": {
+    "./arrays": "./src/arrays/index.js",
+    "./decomp": "./src/decomp/index.js",
+    "./distributions": "./src/distributions/index.js",
+    "./misc": "./src/misc/index.js",
+    "./models": "./src/models/index.js",
+    "./prep": "./src/prep/index.js",
+    "./stat": "./src/stat/index.js",
+    "./tests": "./src/tests/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/svkucheryavski/mdatools-js/"
