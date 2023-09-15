@@ -2,7 +2,6 @@
 /*    Methods for computing matrix decompositions           */
 /************************************************************/
 
-
 import { ssq } from '../stat/index.js';
 import { crossprod, Vector, Matrix, Index } from '../arrays/index.js';
 
@@ -30,7 +29,7 @@ export function rsvd(X, ncomp, pa, pb, its) {
    }
 
    if (pb === undefined) {
-      pb = 10;
+      pb = 5;
    }
 
    if (pa === undefined) {
@@ -61,14 +60,15 @@ export function rsvd(X, ncomp, pa, pb, its) {
 
    // the more the better but slower
    const l = Math.round(pa * ncomp + pb);
-   let Q = qr(X.dot(Matrix.rand(n, l, -1, 1))).Q;
+   let Q = X.dot(Matrix.rand(n, l, -1, 1));
 
    for (let it = 1; it <= its; it++) {
       Q = lu(crossprod(X, Q)).L;
       Q = it < its ? lu(X.dot(Q)).L : qr(X.dot(Q)).Q;
    }
 
-   const res = svd(crossprod(Q, X), ncomp);
+   const B = crossprod(Q, X);
+   const res = svd(B, ncomp);
    return {s: res.s, V: res.V, U: Q.dot(res.U)};
 }
 
@@ -209,28 +209,23 @@ export function lu(X) {
  */
 export function svd(X, ncomp) {
 
-   if (X.nrows < X.ncols) {
-      const res = svd(X.t(), ncomp);
-      return {s: res.s, V: res.U, U: res.V}
-   }
+   let d, e, bV, bU, m, n, transposed;
 
-   const m = X.nrows;
-   const n = X.ncols;
+   if (X.nrows < X.ncols) {
+      [d, e, bV, bU] = bidiag(X.t());
+      m = X.ncols;
+      n = X.nrows;
+      transposed = true;
+   } else {
+      [d, e, bV, bU] = bidiag(X);
+      m = X.nrows;
+      n = X.ncols;
+      transposed = false;
+   }
 
    if (!ncomp) {
       ncomp = Math.min(m, n);
    }
-
-   let [B, V, U] = bidiag(X);
-
-   // get diagonal elements of B
-   let d = new Float64Array(n);
-   let e = new Float64Array(n - 1);
-   for (let i = 0; i < n - 1; i++) {
-      d[i] = B.v[i * n + i];
-      e[i] = B.v[(i + 1) * n + i];
-   }
-   d[n - 1] = B.v[(n - 1) * n + n - 1];
 
    const maxit = 500 * n * n;
    const thresh = Math.pow(10, -64);
@@ -242,7 +237,7 @@ export function svd(X, ncomp) {
       // find first nonzero element in e from bottom
       let iU = 0;
       for (let i = n - 1; i >= 1; i--) {
-         if (Math.abs(e[i - 1]) > thresh) {
+         if (Math.abs(e.v[i - 1]) > thresh) {
             iU = i
             break;
          }
@@ -251,7 +246,7 @@ export function svd(X, ncomp) {
       // find first nonzero element in e from top
       let iL = iU + 1;
       for (let i = 1; i <= n - 1; i++) {
-         if (Math.abs(e[i - 1]) > thresh) {
+         if (Math.abs(e.v[i - 1]) > thresh) {
             iL = i;
             break;
          }
@@ -260,57 +255,99 @@ export function svd(X, ncomp) {
       // check the convergence and return result
       if ((iU == iL && Math.abs(e[iU - 1]) <= thresh) || (iU < iL)) {
 
-         const s = d.slice(0, ncomp);
-         const Uout = Matrix.zeros(m, ncomp);
-         const Vout = Matrix.zeros(n, ncomp);
+         // compute final results:
+         // V = bU * P
+         // U = bV * Gt
+         // and correct sign of singular values and columns of V
+
+         const s = Vector.zeros(ncomp);
+         const U = Matrix.zeros(X.nrows, ncomp);
+         const V = Matrix.zeros(X.ncols, ncomp);
 
          for (let k = 1; k <= ncomp; k++) {
+            const sign = Math.sign(d.v[k - 1]);
+            s.v[k - 1] = Math.abs(d.v[k - 1]);
+
+            let uk, vk;
+            if (transposed) {
+               uk = V.getcolref(k);
+               vk = U.getcolref(k);
+            } else {
+               uk = U.getcolref(k);
+               vk = V.getcolref(k);
+            }
 
             const pk = P.getcolref(k);
             const gtk = Gt.getcolref(k);
 
-            const uk = Uout.getcolref(k);
-            const vk = Vout.getcolref(k);
-
-            const sign = Math.sign(s[k - 1]);
-
             for (let i = 0; i < n; i++) {
+               const pki = pk[i];
+               const gtki = gtk[i] * sign;
 
-               const ui = U.getcolref(i + 1);
-               const vi = V.getcolref(i + 1);
-
-               const pki = pk[i] * sign;
-               const gtki = gtk[i];
+               const bur = bU.getcolref(i + 1);
+               const vur = bV.getcolref(i + 1);
 
                for (let r = 0; r < n; r++) {
-                  uk[r] += ui[r] * pki;
-                  vk[r] += vi[r] * gtki;
+                  uk[r] += bur[r] * pki;
+                  vk[r] += vur[r] * gtki;
                }
-
                for (let r = n; r < m; r++) {
-                  uk[r] += ui[r] * pki;
+                  uk[r] += bur[r] * pki;
                }
             }
-
-            s[k - 1] = Math.abs(s[k - 1]);
          }
 
-         return {s: new Vector(s), U: Uout, V: Vout};
+         return {s: s, U: U, V: V};
       }
 
       // re-sweep
-      const [rd, re, rG, rPt] = vsweep(d.subarray(iL - 1, iU + 1), e.subarray(iL - 1, iU));
+      const cstart = iL - 1;
+      const cend = iU + 1;
+      const clen = iU - iL + 2;
+      const [rd, re, rG, rPt] = vsweep(d.v.subarray(cstart, cend), e.v.subarray(cstart, cend - 1));
 
       // replace elements of d and e
-      d.set(rd, iL - 1);
-      e.set(re, iL - 1);
+      d.v.set(rd, cstart);
+      e.v.set(re, cstart);
 
       // now we need to compute:
       // G = rG' * G = (G' * rG)' -> this should be done only fo selected columns in G
       // P =            P  * rP'  -> only for selected columns in P
 
+      // get local copy of the "clen" columns from G' and P starting from column "cstart"
+      const lgt = Gt.v.slice(cstart * n, cstart * n + clen * n);
+      const lp = P.v.slice(cstart * n, cstart * n + clen * n);
+
+      // compute dot(lG', rG) and save back to G'
+      // compute dot(P, rP') and save back to P
+      for (let c = 0; c < clen; c++) {
+
+         // get pointers to column "c" (c from "cstart" to "cend") of Gt and P - to save the results
+         const gtc = Gt.getcolref(c + cstart + 1);  // nc x 1
+         const pc = P.getcolref(c + cstart + 1);    // nc x 1
+
+         // get pointers to the columns of rG and rPt
+         const rgc = rG.getcolref(c + 1);           // clen x 1
+         const rptc = rPt.getcolref(c + 1);          // clen x 1
+
+         // copmpute and save the dot products
+         for (let r = 0; r < n; r++) {
+            // row "r" of lGt (nc x clen) times column "c" of rG (clen x 1)
+            // row of lP times column of rPt
+            let gtcr = 0;
+            let pcr = 0;
+            for (let i = 0; i < clen; i++) {
+               gtcr += lgt[i * n + r] * rgc[i];
+               pcr += lp[i * n + r] * rptc[i];
+            }
+            gtc[r] = gtcr;
+            pc[r] = pcr;
+         }
+      }
+
+
       // get local copy of selected columns from G' and P
-      const l = iU - iL + 2;
+      /*
       const lGt = Matrix.zeros(n, l);
       const lP = Matrix.zeros(n, l)
       for (let c = iL; c <= iU + 1; c++) {
@@ -326,6 +363,7 @@ export function svd(X, ncomp) {
          Gt.v.set(newgc.v, (c - 1 + iL - 1) * n);
          P.v.set(newpc.v, (c - 1 + iL - 1) * n);
       }
+      */
    }
 
    throw Error("svd: can not converge.")
@@ -445,8 +483,8 @@ export function bidiag(A) {
    let V = Matrix.eye(n);
    let B = A.copy();
 
-   for (let k = 1; k <= (m > n ? n : n - 1); k++) {
-
+  for (let k = 1; k <= (m > n ? n : n - 1); k++) {
+   // for (let k = 1; k <= 1; k++) {
       const mk = m - k + 1;
 
       // compute:
@@ -551,8 +589,15 @@ export function bidiag(A) {
       }
    }
 
-   const ind = Index.seq(1, n);
-   return [B.subset(ind, []), V, Ut.t().subset([], ind)];
+   const d = Vector.zeros(n);
+   const e = Vector.zeros(n - 1);
+   for (let i = 0; i < n - 1; i++) {
+      d.v[i] = B.v[i * m + i];
+      e.v[i] = B.v[(i + 1) * m + i];
+   }
+   d.v[n - 1] = B.v[(n - 1) * m + (n - 1)];
+
+   return [d, e, V, Ut.t()];
 }
 
 
@@ -570,7 +615,6 @@ export function householder(b, k) {
    // get vector with values
    const h = householderv(b, k);
    const n = h.length;
-
    // compute matrix as outer product of the vector
    const H = Matrix.zeros(n);
    for (let c = 0; c < n; c++) {
@@ -603,7 +647,6 @@ export function householderv(b, k) {
 
    const hlen = n - k + 1;
    const h = b.slice(k - 1);
-
    // to avoid computing norm2 twice we will
    // compute it based on the first norm
    const hssq = ssq(h);
@@ -624,7 +667,6 @@ export function householderv(b, k) {
    for (let i = 0; i < hlen; i++) {
       h[i] /=  hn2a;
    }
-
    return h;
 }
 
