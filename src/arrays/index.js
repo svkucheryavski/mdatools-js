@@ -577,7 +577,6 @@ export class Matrix {
       return this.op(X, (a, b) => a + b);
    }
 
-
    /**
     * Subtract a number or values from another matrix or vector.
     *
@@ -2065,76 +2064,6 @@ export class Index {
    }
 }
 
-
-/** Class representing a dataset */
-export class Dataset {
-
-
-   /**
-    * Constructor for a Dataset object.
-    *
-    * @param {Matrix} values - matrix with data values.
-    * @param {string} name - name of the dataset.
-    * @param {Object} rowAttrs - JSON with rows attributes (labels, axis name, axis values and vector with excluded items).
-    * @param {Object} colAttrs - JSON with columns attributes (same as for rows).
-    *
-    * @description  Dataset is a wrapper for Matrix objects letting them have additional attributes,
-    * for plotting and other functionalities. The attributes are first of all associated with rows and columns.
-    *
-    * The attributes consist of:
-    * - labels (short ID used e.g. for labeling points on scatter plots, e.g. "PC1", "Height")
-    * - axisLabels (longer ID uses for labeling axes on scatter plots, e.g. "PC1 (30%)" or "Height, cm")
-    * - axisValues (vector with numbers associated with rows or columns, e.g. time, wavelength, etc.)
-    * - axisName (name of axis if axisValues are used for one of the axis, e.g. in line or bar plots.)
-    *
-    * @returns {Dataset} Dataset object (see description).
-    * @constructor
-    *
-    */
-   constructor(values, name, rowAttrs, colAttrs) {
-
-      function processAttributes(attrs, n, name, label) {
-
-         if (!attrs || attrs.constructor !== ({}).constructor) {
-            attrs = {};
-         }
-
-         if (!attrs.axisValues || !isvector(attrs.axisValues) || attrs.axisValues.length !== n) {
-            attrs.axisValues = Vector.seq(1, n);
-         }
-
-         if (!attrs.axisName || attrs.axisName === "") {
-            attrs.axisName = name;
-         }
-
-         if (!attrs.labels || !Array.isArray(attrs.labels) || attrs.labels.length !== n) {
-            attrs.labels = Array(n).fill().map((e, i) => label + (i + 1));
-         }
-
-         if (!attrs.axisLabels || !Array.isArray(attrs.axisLabels) || attrs.axisLabels.length !== n) {
-            attrs.axisLabels = Array(n).fill().map((e, i) => label + (i + 1));
-         }
-
-         return attrs;
-      }
-
-      if (!ismatrix(values)) {
-         throw Error('Dataset: parameter "values" must be an instance of Matrix class.')
-      }
-
-      if (values.nrows < 1 || values.ncols < 1) {
-         throw Error('Dataset: parameter "values" must have at least one row and one column.')
-      }
-
-      this.values = values;
-      this.name = name;
-      this.rowAttrs = processAttributes(rowAttrs, values.nrows, "Objects", "O");
-      this.colAttrs = processAttributes(colAttrs, values.ncols, "Variables", "X");
-   }
-}
-
-
-
 /**
  * Return 'true' of 'x' is an Factor object, 'false' otherwise.
  *
@@ -2349,6 +2278,7 @@ function _opvv(v1, v2, fun) {
 
    return out;
 }
+
 
 
 /**
