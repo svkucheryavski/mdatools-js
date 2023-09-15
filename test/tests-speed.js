@@ -59,6 +59,7 @@ measure( () => X1.add(Y1), 'sum');
 measure( () => X1.subtract(Y1), 'difference');
 measure( () => X1.divide(Y1), 'division');
 measure( () => X1.mult(Y1), 'multiplication');
+measure( () => X1.t(), 'transposition');
 
 
 console.log('\nSpeed tests for operations with two 2.000 x 2.000 matrices:');
@@ -67,14 +68,16 @@ measure( () => tcrossprod(X2, Y2), 'tcrossprod');
 measure( () => crossprod(X2, Y2), 'crossprod');
 measure( () => X2.dot(Y2), 'dot');
 
+console.log('\nSpeed tests for decomposition of 2000 x 2000 matrix:');
+console.log('----------------------------------------------------');
+measure( () => qr(X2), 'qr');
+measure( () => lu(X2), 'lu');
 
 console.log('\nSpeed tests for decomposition of 200 x 200 matrix:');
 console.log('----------------------------------------------------');
 measure( () => bidiag(X3), 'bidiag');
 measure( () => svd(X3, 20), 'svd');
 measure( () => rsvd(X3, 20), 'rsvd');
-measure( () => qr(X3), 'qr');
-measure( () => lu(X3), 'lu');
 
 
 console.log('\nSpeed tests for modelling with 500 x 1000 matrix:');

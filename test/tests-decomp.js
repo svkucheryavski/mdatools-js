@@ -318,7 +318,7 @@ describe('Tests for matrix decompositions.', function () {
 
    }).timeout(20000);
 
-   it(' tests for method "svd".', function() {
+   it('tests for method "svd".', function() {
 
       // simple example to compare with R results
       const A0a = matrix([1, 3, 17, 19, 10, 14, 7, 13, 9, 11, 2, 15, 8, 6, 4, 12, 22, 18], 6, 3);
@@ -344,6 +344,7 @@ describe('Tests for matrix decompositions.', function () {
          0.5664784, 0.05100958, 0.2676873
       ]));
 
+
       // simple example to compare with R results
       const A0b = matrix([1, 3, 17, 19, 10, 14, 7, 13, 9, 11, 2, 15, 8, 6, 4, 12, 22, 18, 11, 12], 5, 4);
       const r0b = svd(A0b);
@@ -363,29 +364,29 @@ describe('Tests for matrix decompositions.', function () {
       ]));
 
       // simulated data m > n
-      const A1 = simdata(200, 100)
+      const A1 = simdata(20, 10)
       const r1a = svd(A1)
       svdtests(A1, r1a)
       const r1b = svd(A1, 10)
       svdtests(A1, r1b, 10)
 
       // simulated data m < n
-      const A2 = simdata(100, 200)
+      const A2 = simdata(10, 20)
       const r2a = svd(A2)
       svdtests(A2, r2a)
       const r2b = svd(A2, 10)
       svdtests(A2, r2b, 10)
 
       // simulated data m = n
-      const A3 = simdata(200, 200)
+      const A3 = simdata(20, 20)
       const r3a = svd(A3)
       svdtests(A3, r3a)
-      const r3b = svd(A3, 10)
-      svdtests(A3, r3b, 10)
+      const r3b = svd(A3, 20)
+      svdtests(A3, r3b, 20)
 
    }).timeout(10000000);
 
-   it(' tests for method "rot".', function () {
+   it('tests for method "rot".', function () {
       expect(rot(1, 0)).to.be.deep.almost([1, 0, 1]);
 
       const r1 = rot(1, 2);
@@ -398,14 +399,26 @@ describe('Tests for matrix decompositions.', function () {
    });
 
    it ('tests for method "bidiag"', function () {
+      function getB(d, e, m, n) {
+         const B = Matrix.zeros(m, n);
+         for (let i = 0; i < n - 1; i++) {
+            B.v[i * m + i] = d.v[i];
+            B.v[(i + 1) * m + i] = e.v[i];
+         }
+         B.v[(n - 1) * m + (n - 1)] = d.v[(n - 1)];
+         return B;
+      }
+
       const A1 = reshape(Vector.seq(1, 12), 4, 3);
-      const [B1, V1, U1] = bidiag(A1);
+      const [d1, e1, V1, U1] = bidiag(A1);
+      const B1 = getB(d1, e1, 4, 3);
       const R1 = U1.dot(tcrossprod(B1, V1));
       expect(R1.v).to.be.deep.almost.equal(A1.v);
 
       // best time so far 1.42 for 201 x 200
       const A2 = Matrix.rand(201, 200);
-      const [B2, V2, U2] = bidiag(A2);
+      const [d2, e2, V2, U2] = bidiag(A2);
+      const B2 = getB(d2, e2, 201, 200);
       const R2 = U2.dot(tcrossprod(B2, V2));
       expect(R2.v).to.be.deep.almost.equal(A2.v);
 

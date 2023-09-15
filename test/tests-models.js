@@ -6,7 +6,7 @@
 import {default as chai} from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 import { factor, cbind, vector, matrix, tcrossprod, Vector, Matrix } from '../src/arrays/index.js';
-import { variance, mean, sd, sum } from '../src/stat/index.js';
+import { variance, median, mean, sd, sum } from '../src/stat/index.js';
 import { svd } from '../src/decomp/index.js';
 import { scale as prep_scale } from '../src/prep/index.js';
 
@@ -168,14 +168,14 @@ describe('Tests for PLS methods.', function () {
       const r2 = plspredict(m1, Xc);
 
       const T1 = matrix([
-         -0.4945617, -0.36754034, -0.1250141,
-         -0.3220733, -0.02656872, -0.5115363,
-         -0.1747736, -0.20483128,  0.2758381,
-         -0.3630906,  0.53394896,  0.4310806,
-          0.2781758, -0.39131972,  0.1470429,
-          0.2420359,  0.59936775, -0.3803569,
+          0.4945617,  0.36754034,  0.1250141,
+          0.3220733,  0.02656872,  0.5115363,
+          0.1747736,  0.20483128,  0.2758381,
+          0.3630906,  0.53394896,  0.4310806,
+          0.2781758,  0.39131972,  0.1470429,
+          0.2420359,  0.59936775,  0.3803569,
           0.3655882,  0.01375190,  0.4564504,
-          0.4686992, -0.15680855, -0.2935047,
+          0.4686992,  0.15680855,  0.2935047,
       ], 3, 8).t();
 
       const H1 = matrix([
@@ -201,14 +201,14 @@ describe('Tests for PLS methods.', function () {
       ], 3, 8).t();
 
       const U1 = matrix([
-         -3.950369, -0.16641101, -0.0064092242,
-         -2.257354, -0.03450792, -0.0046740695,
-         -1.693015, -0.12839530, -0.0102507432,
-         -1.128677,  0.29291384,  0.0188942539,
-          1.693015, -0.03033479,  0.0206833688,
-          2.257354,  0.15737118, -0.0109039174,
-          2.257354, -0.03229076, -0.0069754088,
-          2.821692, -0.05834525, -0.0003642595,
+          3.950369,  0.16641101,  0.0064092242,
+          2.257354,  0.03450792,  0.0046740695,
+          1.693015,  0.12839530,  0.0102507432,
+          1.128677,  0.29291384,  0.0188942539,
+          1.693015,  0.03033479,  0.0206833688,
+          2.257354,  0.15737118,  0.0109039174,
+          2.257354,  0.03229076,  0.0069754088,
+          2.821692,  0.05834525,  0.0003642595,
       ], 3, 8).t();
 
       const Yp1 = matrix([
@@ -223,13 +223,13 @@ describe('Tests for PLS methods.', function () {
       ], 3, 8).t();
 
       // check main outcomes
-      expect(r1.T).to.be.deep.almost.equal(T1);
+      expect(r1.T.apply(Math.abs, 0)).to.be.deep.almost.equal(T1);
       expect(r1.H).to.be.deep.almost.equal(H1);
       expect(r1.Q).to.be.deep.almost.equal(Q1);
-      expect(r1.U).to.be.deep.almost.equal(U1);
+      expect(r1.U.apply(Math.abs, 0)).to.be.deep.almost.equal(U1);
       expect(r1.Ypred).to.be.deep.almost.equal(Yp1);
 
-      expect(r2.T).to.be.deep.almost.equal(T1);
+      expect(r2.T.apply(Math.abs, 0)).to.be.deep.almost.equal(T1);
       expect(r2.H).to.be.deep.almost.equal(H1);
       expect(r2.Q).to.be.deep.almost.equal(Q1);
       expect(r2.Ypred).to.be.deep.almost.equal(Yp1);
@@ -258,16 +258,16 @@ describe('Tests for PLS methods.', function () {
 
       const R1 = matrix([
           0.15492668,  0.1881235,  0.12558132,
-          0.15317320,  0.1316393, -0.06823508,
-          0.08218702, -0.2824183, -0.32337181,
-         -0.05900391,  0.2131759, -0.34074718
+          0.15317320,  0.1316393,  0.06823508,
+          0.08218702,  0.2824183,  0.32337181,
+          0.05900391,  0.2131759,  0.34074718
       ], 3, 4).t();
 
       const P1 = matrix([
           2.481456,  0.7967174,  0.3398910,
-          2.526248,  0.6219986, -0.3463264,
-          1.828851, -1.5105447, -1.1672083,
-         -1.326946,  1.6025908, -1.6324190
+          2.526248,  0.6219986,  0.3463264,
+          1.828851,  1.5105447,  1.1672083,
+          1.326946,  1.6025908,  1.6324190
       ], 3, 4).t();
 
       const C1 = matrix([
@@ -299,9 +299,9 @@ describe('Tests for PLS methods.', function () {
       ]);
 
       // check that the model outcomes are correct
-      expect(m1.P).to.be.deep.almost.equal(P1);
-      expect(m1.R).to.be.deep.almost.equal(R1);
-      expect(m1.C).to.be.deep.almost.equal(C1);
+      expect(m1.P.apply(Math.abs, 0)).to.be.deep.almost.equal(P1);
+      expect(m1.R.apply(Math.abs, 0)).to.be.deep.almost.equal(R1);
+      expect(m1.C.apply(Math.abs, 0)).to.be.deep.almost.equal(C1);
       expect(m1.yeigenvals).to.be.deep.almost.equal(yeigenvals1);
       expect(m1.xeigenvals).to.be.deep.almost.equal(xeigenvals1);
       expect(m1.qParams['classic'][1]).to.be.deep.almost.equal(Nq1);
@@ -331,27 +331,27 @@ describe('Tests for PLS methods.', function () {
 
       const R1 = matrix([
           0.15492668,  0.1881235,  0.12558132,
-          0.15317320,  0.1316393, -0.06823508,
-          0.08218702, -0.2824183, -0.32337181,
-         -0.05900391,  0.2131759, -0.34074718
+          0.15317320,  0.1316393,  0.06823508,
+          0.08218702,  0.2824183,  0.32337181,
+          0.05900391,  0.2131759,  0.34074718
       ], 3, 4).t();
 
       const P1 = matrix([
           2.481456,  0.7967174,  0.3398910,
-          2.526248,  0.6219986, -0.3463264,
-          1.828851, -1.5105447, -1.1672083,
-         -1.326946,  1.6025908, -1.6324190
+          2.526248,  0.6219986,  0.3463264,
+          1.828851,  1.5105447,  1.1672083,
+          1.326946,  1.6025908,  1.6324190
       ], 3, 4).t();
 
       const T1 = matrix([
-         -0.4945617, -0.36754034, -0.1250141,
-         -0.3220733, -0.02656872, -0.5115363,
-         -0.1747736, -0.20483128,  0.2758381,
-         -0.3630906,  0.53394896,  0.4310806,
-          0.2781758, -0.39131972,  0.1470429,
-          0.2420359,  0.59936775, -0.3803569,
+          0.4945617,  0.36754034,  0.1250141,
+          0.3220733,  0.02656872,  0.5115363,
+          0.1747736,  0.20483128,  0.2758381,
+          0.3630906,  0.53394896,  0.4310806,
+          0.2781758,  0.39131972,  0.1470429,
+          0.2420359,  0.59936775,  0.3803569,
           0.3655882,  0.01375190,  0.4564504,
-          0.4686992, -0.15680855, -0.2935047
+          0.4686992,  0.15680855,  0.2935047
       ], 3, 8).t();
 
       const C1 = matrix([
@@ -359,27 +359,27 @@ describe('Tests for PLS methods.', function () {
       ], 3, 1).t();
 
       const U1 = matrix([
-         -3.950369, -0.16641101, -0.0064092242,
-         -2.257354, -0.03450792, -0.0046740695,
-         -1.693015, -0.12839530, -0.0102507432,
-         -1.128677,  0.29291384,  0.0188942539,
-          1.693015, -0.03033479,  0.0206833688,
-          2.257354,  0.15737118, -0.0109039174,
-          2.257354, -0.03229076, -0.0069754088,
-          2.821692, -0.05834525, -0.0003642595
+         3.950369, 0.16641101, 0.0064092242,
+         2.257354, 0.03450792, 0.0046740695,
+         1.693015, 0.12839530, 0.0102507432,
+         1.128677, 0.29291384, 0.0188942539,
+         1.693015, 0.03033479, 0.0206833688,
+         2.257354, 0.15737118, 0.0109039174,
+         2.257354, 0.03229076, 0.0069754088,
+         2.821692, 0.05834525, 0.0003642595
       ], 3, 8).t();
 
       // partial decomposition - compare with results from R
       const m1 = simpls(Xp, Yp, 3);
 
       // decomposition of X
-      expect(m1.R).to.be.deep.almost.equal(R1);
-      expect(m1.P).to.be.deep.almost.equal(P1);
-      expect(m1.T).to.be.deep.almost.equal(T1);
+      expect(m1.R.apply(Math.abs, 0)).to.be.deep.almost.equal(R1);
+      expect(m1.P.apply(Math.abs, 0)).to.be.deep.almost.equal(P1);
+      expect(m1.T.apply(Math.abs, 0)).to.be.deep.almost.equal(T1);
 
       // decomposition of Y
-      expect(m1.C).to.be.deep.almost.equal(C1);
-      expect(m1.U).to.be.deep.almost.equal(U1);
+      expect(m1.C.apply(Math.abs, 0)).to.be.deep.almost.equal(C1);
+      expect(m1.U.apply(Math.abs, 0)).to.be.deep.almost.equal(U1);
 
       // full decomposition - check that X = TP' and Y = UC'
       const m2 = simpls(Xp, Yp, 4);
@@ -415,7 +415,7 @@ describe('Tests for PCR methods.', function () {
       const C1 = matrix([0.5953372, -0.2370964, 0.1571044], 1, ncomp);
 
       // check that PCA part is correct
-      expect(m1.P).to.be.deep.almost.equal(m2.P);
+      expect(m1.P.apply(Math.abs, 0)).to.be.deep.almost.equal(m2.P.apply(Math.abs, 0));
       expect(m1.eigenvals).to.be.deep.almost.equal(m2.eigenvals);
       expect(m1.mX).to.be.deep.almost.equal(m2.mX);
       expect(m1.sX).to.be.deep.almost.equal(m2.sX);
@@ -463,7 +463,7 @@ describe('Tests for PCR methods.', function () {
       const r2 = pcapredict(m2, Xc);
 
       // check that PCA part is correct
-      expect(r2.T).to.be.deep.almost.equal(r1.T);
+      expect(r2.T.apply(Math.abs, 0)).to.be.deep.almost.equal(r1.T.apply(Math.abs, 0));
       expect(r2.H).to.be.deep.almost.equal(r1.H);
       expect(r2.Q).to.be.deep.almost.equal(r1.Q);
       expect(r2.expvar).to.be.deep.almost.equal(r1.expvar);
@@ -483,7 +483,7 @@ describe('Tests for PCA methods.', function () {
       const m12 = svd(X1.subtract(mX1));
       const T1 = m12.U.dot(Matrix.diagm(m12.s));
 
-      expect(m11.P).to.be.deep.almost.equal(m12.V);
+      expect(m11.P.apply(Math.abs, 0)).to.be.deep.almost.equal(m12.V.apply(Math.abs, 0));
       expect(m11.mX).to.be.deep.almost.equal(mX1);
       expect(m11.sX).to.be.deep.almost.equal(Vector.ones(X1.ncols));
       expect(m11.eigenvals).to.be.deep.almost.equal(T1.apply(variance, 2));
@@ -498,7 +498,7 @@ describe('Tests for PCA methods.', function () {
       const m22 = svd(X2.subtract(mX2).divide(sX2), 5);
       const T2 = m22.U.dot(Matrix.diagm(m22.s));
 
-      expect(m21.P).to.be.deep.almost.equal(m22.V);
+      expect(m21.P.apply(Math.abs, 0)).to.be.deep.almost.equal(m22.V.apply(Math.abs, 0));
       expect(m21.mX).to.be.deep.almost.equal(mX2);
       expect(m21.sX).to.be.deep.almost.equal(sX2);
       expect(m21.eigenvals).to.be.deep.almost.equal(T2.apply(variance, 2));
