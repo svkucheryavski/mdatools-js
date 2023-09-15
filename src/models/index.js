@@ -3,7 +3,7 @@ import { pf, pt, qt, qchisq } from '../distributions/index.js';
 import { norm2, variance, median, iqr, mean, sd, ssq } from '../stat/index.js';
 import { scale as prep_scale, unscale as prep_unscale } from '../prep/index.js';
 import { _dot, isfactor, factor, cbind, tcrossprod, crossprod, reshape, ismatrix, Index,
-   Matrix, vector, isvector, Vector, Dataset } from '../arrays/index.js';
+   Matrix, vector, isvector, Vector } from '../arrays/index.js';
 
 /**
  * Check if an object has a proper class.
@@ -444,7 +444,7 @@ export function pcrpredict(m, X, Y, name) {
 /**
  * Fit a Principal Component Analysis model.
  *
- * @param {Matrix|MDAData} data - matrix or dataset with data values.
+ * @param {Matrix} X - matrix or dataset with data values.
  * @param {number} ncomp - number of components to compute.
  * @param {boolean|Vector} [center=true] - logical (mean center or not) or vector with values for centering.
  * @param {boolean|Vector} [scale=false]  - logical (standardize or not) or vector with values for scaling.
@@ -452,7 +452,7 @@ export function pcrpredict(m, X, Y, name) {
  * @returns {Object} JSON with model parameters.
  *
  */
-export function pcafit(data, ncomp, center, scale) {
+export function pcafit(X, ncomp, center, scale) {
 
    if (center === undefined) {
       center = true;
@@ -462,29 +462,8 @@ export function pcafit(data, ncomp, center, scale) {
       scale = false;
    }
 
-   let X, varAttrs, objAttrs;
-   if (data.constructor === Dataset) {
-      X = data.values;
-      varAttrs = data.colAttrs;
-      objAttrs = data.rowAttrs;
-   } else if (ismatrix(data)) {
-      X = data;
-
-      const varLabels = Array(data.ncols).fill().map((e, i) => 'X' + (i + 1));
-      varAttrs = {
-         labels: varLabels,
-         axisLabels: varLabels,
-         axisValues: Vector.seq(1, data.ncols),
-         axisName: 'Variables'
-      };
-
-      const objLabels = Array(data.nrows).fill().map((e, i) => 'O' + (i + 1));
-      objAttrs = {
-         labels: objLabels,
-         axisLabels: objLabels,
-         axisValues: Vector.seq(1, data.nrows),
-         axisName: 'Objects'
-      };
+   if (!ismatrix(X) || X.ncols < 2 || X.nrows < 2) {
+      throw Error('plsfit: parameter "X" must be a matrix with at least two rows and two columns.');
    }
 
    if (!ncomp) {
@@ -503,7 +482,7 @@ export function pcafit(data, ncomp, center, scale) {
    const eigenvals = m.s.apply(v => v * v / (X.nrows - 1));
 
    // compute main PCA results for calibration set
-   const calres = pcagetmainres(Xp, m.U.dot(Matrix.diagm(m.s)), m.V, eigenvals, objAttrs);
+   const calres = pcagetmainres(Xp, m.U.dot(Matrix.diagm(m.s)), m.V, eigenvals);
 
    // compute mean values for distances
    const hParams = getDistParams(calres.H);
@@ -521,9 +500,7 @@ export function pcafit(data, ncomp, center, scale) {
       qParams: qParams,
       hParams: hParams,
       ncomp: ncomp,
-      varAttrs: varAttrs,
       nCalObj: Xp.nrows,
-      compAttrs: calres.compAttrs,
       results: {'cal': calres}
    }
 }
@@ -577,12 +554,11 @@ export function getDistParams(U) {
  * @param {Matrix} T - matrix with scores.
  * @param {Matrix} P - matrix with loadings.
  * @param {Vector} eigenvals - vector with eigenvalues.
- * @param {Object} objAttrs - optional JSON with object attributes (labels, axis values, etc.)
  *
  * @returns {Object} JSON with main outcomes (scores, distances, variances).
  *
  */
-export function pcagetmainres(Xp, T, P, eigenvals, objAttrs) {
+export function pcagetmainres(Xp, T, P, eigenvals) {
 
    const ncomp = P.ncols;
    const nrows = Xp.nrows;
@@ -598,14 +574,6 @@ export function pcagetmainres(Xp, T, P, eigenvals, objAttrs) {
    const ha = new Vector.valuesConstructor(nrows);
    const E = Xp.copy();
    const totssq = ssq(Xp.v);
-
-   // prepare component based attributes
-   const compAttrs = {
-      labels: Array(ncomp),
-      axisValues: Array(ncomp),
-      axisLabels: Array(ncomp),
-      axisName: "Components"
-   }
 
    // loop for computing variances and distances
    for (let a = 1; a <= ncomp; a++) {
@@ -634,10 +602,6 @@ export function pcagetmainres(Xp, T, P, eigenvals, objAttrs) {
 
       cumexpvar.v[a - 1] = 100 * (1 - qs / totssq);
       expvar.v[a - 1] = a === 1 ? cumexpvar.v[a - 1] : cumexpvar.v[a - 1] - cumexpvar.v[a - 2];
-
-      compAttrs.labels[a - 1] = "PC" + a;
-      compAttrs.axisValues[a - 1] = a;
-      compAttrs.axisLabels[a - 1] = "PC" + a + " (" + expvar.v[a - 1].toFixed(1) + "%)";
    }
 
    return {
@@ -646,9 +610,7 @@ export function pcagetmainres(Xp, T, P, eigenvals, objAttrs) {
       H: H,
       Q: Q,
       expvar: expvar,
-      cumexpvar: cumexpvar,
-      objAttrs: objAttrs,
-      compAttrs: compAttrs
+      cumexpvar: cumexpvar
    }
 }
 
@@ -670,33 +632,24 @@ export function getfulldistance(h, q, h0, q0, Nh, Nq) {
  * Project new data to a PCA model and create object with main outcomes.
  *
  * @param {Object} m - JSON with PCA model created by 'pcafit()'.
- * @param {Matrix|MDAData} data - matrix or dataset with data values.
+ * @param {Matrix} X - matrix with data values.
  * @param {string} name - name/label for the result object (e.g. "cal", "val", etc.).
  *
  * @returns {Object} - JSON wiht main outcomes (scores, distances, variance, etc.).
  *
  */
-export function pcapredict(m, data, name) {
+export function pcapredict(m, X, name) {
 
-   let Xp, objAttrs;
-   if (data.constructor === Dataset) {
-      Xp = prep_scale(data.values, m.mX, m.sX);
-      objAttrs = data.rowAttrs;
-   } else if (ismatrix(data)) {
-      Xp = prep_scale(data, m.mX, m.sX);
-
-      const objLabels = Array(data.nrows).fill().map((e, i) => 'O' + (i + 1));
-      objAttrs = {
-         labels: objLabels,
-         axisLabels: objLabels,
-         axisValues: Vector.seq(1, data.nrows),
-         axisName: 'Objects'
-      };
-   } else {
-      throw new Error('pcapredict: parameter "data" must be a dataset or a matrix.');
+   if (!ismatrix(X) || X.nrows < 1) {
+      throw Error('pcapredict: parameter "X" must be a matrix.');
    }
 
-   let res = pcagetmainres(Xp, Xp.dot(m.P), m.P, m.eigenvals, objAttrs);
+   if (X.ncols != m.P.nrows) {
+      throw Error('pcapredict: parameter "X" has wrong number of columns.');
+   }
+
+   const Xp = prep_scale(X, m.mX, m.sX);
+   const res = pcagetmainres(Xp, Xp.dot(m.P), m.P, m.eigenvals);
    res.name = name;
 
    return res;
