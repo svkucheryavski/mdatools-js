@@ -5,33 +5,38 @@
 
 // Speed tests for operations with two 10.000 x 10.000 matrices:
 // ---------------------------------------------------------------
-// sum - done in: 0.315 s.
-// difference - done in: 1.244 s.
-// division - done in: 1.276 s.
-// multiplication - done in: 1.268 s.
+// sum - done in: 0.152 s.
+// difference - done in: 0.964 s.
+// division - done in: 0.981 s.
+// multiplication - done in: 0.951 s.
+// transposition - done in: 0.331 s.
 
 // Speed tests for operations with two 2.000 x 2.000 matrices:
 // -------------------------------------------------------------
-// tcrossprod - done in: 10.69 s.
-// crossprod - done in: 9.536 s.
-// dot - done in: 9.25 s.
+// tcrossprod - done in: 7.808 s.
+// crossprod - done in: 7.336 s.
+// dot - done in: 6.76 s.
+
+// Speed tests for decomposition of 2000 x 2000 matrix:
+// ----------------------------------------------------
+// qr - done in: 30.673 s.
+// lu - done in: 4.524 s.
 
 // Speed tests for decomposition of 200 x 200 matrix:
 // ----------------------------------------------------
-// bidiag - done in: 1.967 s.
-// svd - done in: 342.243 s.
-// rsvd - done in: 3.082 s.
-// qr - done in: 0.053 s.
-// lu - done in: 0.023 s.
+// bidiag - done in: 1.535 s.
+// svd - done in: 290.863 s.
+// rsvd - done in: 0.979 s.
 
 // Speed tests for modelling with 500 x 1000 matrix:
 // ---------------------------------------------------
-// pcafit - done in: 16.385 s.
-// pcapredict - done in: 0.049 s.
-// pcrfit - done in: 10.749 s.
-// pcrpredict - done in: 0.055 s.
-// plsfit - done in: 3.486 s.
-// plspredict - done in: 0.036 s.
+// pcafit - done in: 4.111 s.
+// pcapredict - done in: 0.03 s.
+// pcrfit - done in: 4.219 s.
+// pcrpredict - done in: 0.029 s.
+// plsfit - done in: 1.373 s.
+// plspredict - done in: 0.026 s.
+
 
 // import  methods
 import { Matrix, tcrossprod, crossprod } from '../src/arrays/index.js';
