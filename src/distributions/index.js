@@ -2,9 +2,14 @@
 /*    Methods for statistical distributions                            */
 /* =================================================================== */
 
-import { isvector, Vector } from '../arrays/index.js';
-import { integrate } from '../misc/index.js';
+import { range } from '../stat/index.js';
+import { isvector, vector, Vector } from '../arrays/index.js';
+import { closestind, integrate } from '../misc/index.js';
 
+// threshold to switch between two approximation for chi-square distribution
+const CHISQ_DOF_THRESHOLD = 30;
+// tolerance for chi-square distribution search
+const CHISQ_TOL = 0.0000001;
 
 /**
  * Generates 'n' random numbers from a uniform distribution.
@@ -398,22 +403,51 @@ export function pf(F, d1, d2) {
  * @param {number|Vector|Array} x - chi-square value.
  * @param {number} dof - degrees of freedom.
  *
+ * @description if DoF is relatively small (< 30) the method computes probabilities via
+ * approximation of lower incomplete gamma function, `igamma()`, and gamma function, `gamma()`.
+ * If the DoF is larger than 30 it uses the a modified power series approximation
+ * (doi:10.1016/j.csda.2004.04.001) and normal distribution.
+ *
  * @returns {number|Vector} computed probabilities.
  *
  */
 export function pchisq(x, dof) {
 
    if (Array.isArray(x)) {
-      return qchisq(vector(x), dof);
+      return pchisq(vector(x), dof);
    }
 
+   const mu = 5/6 - 1 / (9 * dof) - 7 / (648 * dof * dof) + 25 / (2187 * dof * dof * dof);
+   const sigma2 = 1 / (18 * dof) + 1 / (162 * dof * dof) - 37 / (1164 * dof * dof * dof);
+   const sigma = Math.sqrt(sigma2);
 
-   function F(x) {
+   // works well for large dof
+   function F2(x) {
       if (x === 0) return 0;
       if (dof === 0) return 1;
+      if (dof > 100 && x > dof * 2) return 1;
+      if (dof > 50 && x > dof * 3) return 1;
+      if (dof > 10 && x > dof * 5) return 1;
+      if (dof > 5 && x > dof * 8) return 1;
+      if (x > dof * 30) return 1;
+      const l0 = x / dof;
+      const l = Math.pow(l0, 1/6) - 0.5 * Math.pow(l0, 1/3) + (1/3) * Math.pow(l0, 1/2);
+      return pnorm(l, mu, sigma);
+   }
+
+   // works well for small dof
+   function F1(x) {
+      if (x === 0) return 0;
+      if (dof === 0) return 1;
+      if (dof > 100 && x > dof * 2) return 1;
+      if (dof > 50 && x > dof * 3) return 1;
+      if (dof > 10 && x > dof * 5) return 1;
+      if (dof > 5 && x > dof * 8) return 1;
+      if (x > dof * 30) return 1;
       return igamma(x/2, dof/2) / gamma(dof/2)
    }
 
+   const F = dof > CHISQ_DOF_THRESHOLD ? F2 : F1;
    return isvector(x) ? x.apply(F) : F(x)
 }
 
@@ -424,7 +458,13 @@ export function pchisq(x, dof) {
  * @param {number|Vector|Array} p - probability or vector/array with probabilities.
  * @param {number} dof - degrees of freedom.
  *
- * @description a modified Severo-Zelen approximation is applied (https://doi.org/10.2307/2347163)
+ * @description if DoF is relatively small (< 30) the method computes quantiles by sequential
+ * improving, splitting possible quantile range into intervals, computing probabilities for each
+ * element of the interval using `pchisq()`, then find the quantile which has the closest
+ * probability value, make a new split around it and so on until the probability of the
+ * currently selected quintile is close to the desired one. For large DoF (>30) the it uses
+ * the a modified power series approximation (doi:10.1016/j.csda.2004.04.001) and
+ * normal distribution.
  *
  * @returns {number|Vector} computed quantiles.
  *
@@ -435,19 +475,63 @@ export function qchisq(p, dof) {
       return qchisq(vector(p), dof);
    }
 
-   const f0 = (9 * dof + 16)
-   const f1 = 2 / (9 * dof);
-   const f2 = 1 / (486 * dof * dof);
-   const f3 = Math.sqrt(2 * dof);
+   // compute parameters of normal distribution for power approximation
+   const mu = 5/6 - 1 / (9 * dof) - 7 / (648 * dof * dof) + 25 / (2187 * dof * dof * dof);
+   const sigma2 = 1 / (18 * dof) + 1 / (162 * dof * dof) - 37 / (1164 * dof * dof * dof);
+   const sigma = Math.sqrt(sigma2);
 
-   function f(z) {
+   // compute quantile for one probability value using power approximations
+   // and inverse solution
+   function F2(x) {
+      if (x === 0) return 0;
+      if (x === 0) return Inf;
       if (dof === 0) return 0;
-      const h = ( f0 * (z * z * z - 3 * z) - 24 * (z * z - 1) * dof ) * f2
-      return dof * Math.pow(1 - f1 + (z - h) * Math.sqrt(f1), 3)
+      const l = qnorm(x, mu, sigma);
+      const o = Math.pow(Math.sqrt(36 * l * l - 30 * l + 13)/4 + (3 * l - 3/2)/2 + 1/8, 1/3);
+      return Math.pow(o - 3 / (4 * o) + 0.5, 6) * dof;
    }
 
-   const z = qnorm(p);
-   return isvector(z) ? z.apply(f) : f(z)
+   // compute quantile using sequential splits of quantile range
+   function F1(x) {
+      if (x === 0) return 0;
+      if (x === 0) return Inf;
+      if (dof === 0) return 0;
+
+      // initial split (start, end, and delta)
+      let qs = 0;
+      let qe = CHISQ_DOF_THRESHOLD * 10;
+      let qd = qe / 30;
+
+      // loop for sequential splits
+      for (let i = 0; i < 30; i++) {
+
+         // compute vector of quantiles and corresponding probabilities
+         const q = Vector.seq(qs, qe, qd);
+         const p = pchisq(q, dof);
+
+         // find index of quantile which has probability closest to x
+         const ind = closestind(p, x) - 1;
+
+         // if the probability is close enough to the desired one return the quantile
+         if (Math.abs(p.v[ind] - x) < CHISQ_TOL) return q.v[ind];
+
+         // if not make a new split by taking left and right neighbors quantiles
+         qs = ind == 0 ? q.v[0] : q.v[ind - 1];
+         qe = ind == q.v.length - 1? q.v[ind] : q.v[ind + 1];
+
+         // if the boundaries are the same stop
+         if (qs == qe) return qs;
+
+         // compute delta for new boundaries
+         qd = (qe - qs) / 30;
+      }
+
+      // if the loop did not converge we simply return the middle quantile
+      return (qe + qs) / 2;
+   }
+
+   const F = dof > CHISQ_DOF_THRESHOLD ? F2 : F1;
+   return isvector(p) ? p.apply(F) : F(p)
 }
 
 

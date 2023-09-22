@@ -415,27 +415,59 @@ describe('Tests for theoretical distribution functions.', function () {
    });
 
    it ('tests for method "pchisq".', function () {
+      // all outcomes are compared with similar outcomes from R
 
       // single value
-      const x1 = 10
-      pchisq(x1,   0).should.be.equal(1);
-      pchisq(x1,   1).should.be.closeTo(0.9984346, 0.0001);
-      pchisq(x1,   5).should.be.closeTo(0.9247648, 0.0001);
-      pchisq(x1,  10).should.be.closeTo(0.5595067, 0.0001);
-      pchisq(x1, 100).should.be.closeTo(0.0000000, 0.0001);
+      let x = 0.5
+      pchisq(x,   0).should.be.equal(1);
+      pchisq(x,   1).should.be.closeTo(0.5205000, 0.0001);
+      pchisq(x,   2).should.be.closeTo(0.2211990, 0.0001);
+      pchisq(x,   5).should.be.closeTo(0.0078767, 0.0001);
+      pchisq(x,  10).should.be.closeTo(0.0000000, 0.0001);
+      pchisq(x,  20).should.be.closeTo(0.0000000, 0.0001);
+      pchisq(x, 100).should.be.closeTo(0.0000000, 0.0001);
+      pchisq(x, 250).should.be.closeTo(0.0000000, 0.0001);
 
-      const x2 = 0
-      pchisq(x2, 0).should.be.equal(0);
-      pchisq(x2, 5).should.be.equal(0);
-      pchisq(x2, 10).should.be.equal(0);
-      pchisq(x2, 100).should.be.equal(0);
+      x = 5
+      pchisq(x,   0).should.be.equal(1);
+      pchisq(x,   1).should.be.closeTo(0.9746527, 0.0001);
+      pchisq(x,   2).should.be.closeTo(0.9179150, 0.0001);
+      pchisq(x,   5).should.be.closeTo(0.5841198, 0.0001);
+      pchisq(x,  10).should.be.closeTo(0.1088220, 0.0001);
+      pchisq(x,  20).should.be.closeTo(0.0002774, 0.0001);
+      pchisq(x, 100).should.be.closeTo(0.0000000, 0.0001);
+      pchisq(x, 250).should.be.closeTo(0.0000000, 0.0001);
 
-      const x3 = 3.16
-      pchisq(x3,   0).should.be.equal(1);
-      pchisq(x3,   1).should.be.closeTo(0.9245368, 0.0001);
-      pchisq(x3,   5).should.be.closeTo(0.3246659, 0.0001);
-      pchisq(x3,  10).should.be.closeTo(0.0225961, 0.0001);
-      pchisq(x3, 100).should.be.closeTo(0.0000000, 0.0001);
+      x = 10
+      pchisq(x,   0).should.be.equal(1);
+      pchisq(x,   1).should.be.closeTo(0.9984346, 0.0001);
+      pchisq(x,   2).should.be.closeTo(0.9932621, 0.0001);
+      pchisq(x,   5).should.be.closeTo(0.9247648, 0.0001);
+      pchisq(x,  10).should.be.closeTo(0.5595067, 0.0001);
+      pchisq(x,  20).should.be.closeTo(0.0318281, 0.0001);
+      pchisq(x, 100).should.be.closeTo(0.0000000, 0.0001);
+      pchisq(x, 250).should.be.closeTo(0.0000000, 0.0001);
+
+      x = 50
+      pchisq(x,   0).should.be.equal(1);
+      pchisq(x,   1).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x,   2).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x,   5).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x,  10).should.be.closeTo(0.9999997, 0.0001);
+      pchisq(x,  20).should.be.closeTo(0.9997785, 0.0001);
+      pchisq(x, 100).should.be.closeTo(0.0000000, 0.0001);
+      pchisq(x, 250).should.be.closeTo(0.0000000, 0.0001);
+
+      x = 150
+      pchisq(x,   0).should.be.equal(1);
+      pchisq(x,   1).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x,   2).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x,   5).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x,  10).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x,  20).should.be.closeTo(1.0000000, 0.0001);
+      pchisq(x, 100).should.be.closeTo(0.9990961, 0.0001);
+      pchisq(x, 150).should.be.closeTo(0.5153564, 0.0001);
+      pchisq(x, 250).should.be.closeTo(0.0000000, 0.0001);
 
       // vector with values
       const x4 = vector([10, 0, 3.16]);
@@ -449,19 +481,88 @@ describe('Tests for theoretical distribution functions.', function () {
    });
 
    it ('tests for method "qchisq".', function () {
+      // all outcomes are compared with similar outcomes from R
 
       // single value
-      const p1 = 0.05
-      qchisq(p1, 0).should.be.equal(0);
-      qchisq(p1, 5).should.be.closeTo(1.15, 0.01);
-      qchisq(p1, 10).should.be.closeTo(3.94, 0.01);
-      qchisq(p1, 100).should.be.closeTo(77.93, 0.01);
+      let p = 0.001
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(0.000000, 0.0001);
+      qchisq(p,   2).should.be.closeTo(0.002001, 0.001);
+      qchisq(p,   5).should.be.closeTo(0.210213, 0.001);
+      qchisq(p,  10).should.be.closeTo(1.478740, 0.001);
+      qchisq(p,  20).should.be.closeTo(5.921040, 0.001);
+      qchisq(p, 100).should.be.closeTo(61.9179, 0.01);
+      qchisq(p, 250).should.be.closeTo(186.554, 0.01);
 
-      const p2 = 0.01
-      qchisq(p2, 0).should.be.equal(0);
-      qchisq(p2, 5).should.be.closeTo(0.55, 0.02);
-      qchisq(p2, 10).should.be.closeTo(2.56, 0.02);
-      qchisq(p2, 100).should.be.closeTo(70.07, 0.02);
+      p = 0.01
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(0.000157, 0.0001);
+      qchisq(p,   2).should.be.closeTo(0.020101, 0.001);
+      qchisq(p,   5).should.be.closeTo(0.554298, 0.001);
+      qchisq(p,  10).should.be.closeTo(2.558210, 0.001);
+      qchisq(p,  20).should.be.closeTo(8.260400, 0.001);
+      qchisq(p, 100).should.be.closeTo(70.0649, 0.01);
+      qchisq(p, 250).should.be.closeTo(200.939, 0.01);
+
+      p = 0.05
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(0.003932, 0.0001);
+      qchisq(p,   2).should.be.closeTo(0.102587, 0.001);
+      qchisq(p,   5).should.be.closeTo(1.145476, 0.001);
+      qchisq(p,  10).should.be.closeTo(3.940299, 0.001);
+      qchisq(p,  20).should.be.closeTo(10.85081, 0.001);
+      qchisq(p, 100).should.be.closeTo(77.92947, 0.01);
+      qchisq(p, 250).should.be.closeTo(214.3916, 0.01);
+
+      p = 0.10
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(0.0157908, 0.0001);
+      qchisq(p,   2).should.be.closeTo(0.210721, 0.001);
+      qchisq(p,   5).should.be.closeTo(1.61031, 0.001);
+      qchisq(p,  10).should.be.closeTo(4.86518, 0.001);
+      qchisq(p,  20).should.be.closeTo(12.4426, 0.001);
+      qchisq(p, 100).should.be.closeTo(82.3581, 0.01);
+      qchisq(p, 250).should.be.closeTo(221.806, 0.01);
+
+      p = 0.90
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(2.70554, 0.0001);
+      qchisq(p,   2).should.be.closeTo(4.60517, 0.001);
+      qchisq(p,   5).should.be.closeTo(9.23636, 0.001);
+      qchisq(p,  10).should.be.closeTo(15.9872, 0.001);
+      qchisq(p,  20).should.be.closeTo(28.4120, 0.001);
+      qchisq(p, 100).should.be.closeTo(118.498, 0.01);
+      qchisq(p, 250).should.be.closeTo(279.050, 0.01);
+
+      p = 0.95
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(3.84146, 0.001);
+      qchisq(p,   2).should.be.closeTo(5.99146, 0.001);
+      qchisq(p,   5).should.be.closeTo(11.0705, 0.001);
+      qchisq(p,  10).should.be.closeTo(18.3070, 0.001);
+      qchisq(p,  20).should.be.closeTo(31.4104, 0.001);
+      qchisq(p, 100).should.be.closeTo(124.342, 0.01);
+      qchisq(p, 250).should.be.closeTo(287.882, 0.01);
+
+      p = 0.99
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(6.63490, 0.001);
+      qchisq(p,   2).should.be.closeTo(9.21034, 0.001);
+      qchisq(p,   5).should.be.closeTo(15.0863, 0.001);
+      qchisq(p,  10).should.be.closeTo(23.2093, 0.001);
+      qchisq(p,  20).should.be.closeTo(37.5662, 0.001);
+      qchisq(p, 100).should.be.closeTo(135.807, 0.01);
+      qchisq(p, 250).should.be.closeTo(304.94, 0.01);
+
+      p = 0.999
+      qchisq(p,   0).should.be.equal(0);
+      qchisq(p,   1).should.be.closeTo(10.8276, 0.001);
+      qchisq(p,   2).should.be.closeTo(13.8155, 0.001);
+      qchisq(p,   5).should.be.closeTo(20.5150, 0.001);
+      qchisq(p,  10).should.be.closeTo(29.5883, 0.001);
+      qchisq(p,  20).should.be.closeTo(45.3147, 0.001);
+      qchisq(p, 100).should.be.closeTo(149.449, 0.01);
+      qchisq(p, 250).should.be.closeTo(324.832, 0.01);
 
       // vector with values
       const p3 = vector([0.01, 0.05]);
