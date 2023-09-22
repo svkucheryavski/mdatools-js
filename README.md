@@ -13,7 +13,7 @@ released 22/09/2023
 
 * improvements to chi-square distribution functions (`qchisq` and `pchisq`), to make better approximation, especially when DoF is large (above 30).
 
-## v. 1.2.0
+### v. 1.2.0
 released 15/09/2023
 
 * improvements to singular value decomposition methods (`svd` and `rsvd`).
