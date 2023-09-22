@@ -4,9 +4,21 @@ A simple library with implementation of most common methods for descriptive and 
 
 ## What is new
 
-<span style="color:crimson">Version **1.x.x** introduces many breaking changes as the library was almost fully re-written from the scratch. If you used a pre-release version (0.6.1), do not upgrade.</span>
+Version **1.x.x** introduces many breaking changes as the library was almost fully re-written from the scratch. If you used a pre-release version (0.6.1), do not upgrade.
 
 The documentation below has been also re-written to match the new version.
+
+### v. 1.3.0
+released 22/09/2023
+
+* improvements to chi-square distribution functions (`qchisq` and `pchisq`), to make better approximation, especially when DoF is large (above 30).
+
+## v. 1.2.0
+released 15/09/2023
+
+* improvements to singular value decomposition methods (`svd` and `rsvd`).
+* refactoring and small improvements for PCA methods.
+
 
 ## Matrices, vectors and indices
 
