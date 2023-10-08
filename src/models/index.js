@@ -893,7 +893,7 @@ export function reggetmainres(T, C, mY, sY, Yref) {
    const Ypred = Matrix.zeros(nrows, ncomp);
 
    // if no reference values, compute predictions and return
-   if (Yref === undefined || Yref === null || Yref === []) {
+   if (Yref === undefined || Yref === null || Yref.length === 0) {
       for (let a = 1; a <= ncomp; a++) {
          // compute predictions
          const cind = Index.seq(1, a);
