@@ -256,7 +256,6 @@ export function plsfit(X, Y, ncomp, center, scale) {
       sX: sX,
       P: m.P,
       R: m.R,
-      C: m.C,
       xeigenvals: m.xeigenvals,
 
       // Y part
