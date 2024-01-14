@@ -484,7 +484,7 @@ export function qchisq(p, dof) {
    // and inverse solution
    function F2(x) {
       if (x === 0) return 0;
-      if (x === 0) return Inf;
+      if (x === 1) return Inf;
       if (dof === 0) return 0;
       const l = qnorm(x, mu, sigma);
       const o = Math.pow(Math.sqrt(36 * l * l - 30 * l + 13)/4 + (3 * l - 3/2)/2 + 1/8, 1/3);
@@ -494,7 +494,7 @@ export function qchisq(p, dof) {
    // compute quantile using sequential splits of quantile range
    function F1(x) {
       if (x === 0) return 0;
-      if (x === 0) return Inf;
+      if (x === 1) return Inf;
       if (dof === 0) return 0;
 
       // initial split (start, end, and delta)
