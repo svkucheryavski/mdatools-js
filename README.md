@@ -8,6 +8,10 @@ Version **1.x.x** introduces many breaking changes as the library was almost ful
 
 The documentation below has been also re-written to match the new version.
 
+### v. 1.3.x
+
+* contain small bug fixes.
+
 ### v. 1.3.0
 released 22/09/2023
 
