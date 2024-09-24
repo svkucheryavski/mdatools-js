@@ -9,7 +9,7 @@ import { vector } from '../src/arrays/index.js';
 import { quantile } from '../src/stat/index.js';
 
 // import methods to test
-import { closestind, getoutliers, expandgrid, integrate, round } from '../src/misc/index.js';
+import { closestind, closestindleft, closestindright, getoutliers, expandgrid, integrate, round } from '../src/misc/index.js';
 
 // set up test settings
 const should = chai.should();
@@ -65,6 +65,44 @@ describe('Tests for misc extra functions.', function () {
       expect(z2[2]).to.eql(vector([-20, -20, -20, -20, -20, -20, 20, 20, 20, 20, 20, 20]));
 
    });
+
+   it ('tests for method "closestindleft".', function() {
+      const x1 = vector([-200, -100, -50, -0.5, 0.1, 1.5, 20, 500, 1000]);
+
+      closestindleft(x1, -120).should.equal(1);
+      closestindleft(x1, -101).should.equal(1);
+      closestindleft(x1, -99).should.equal(2);
+      closestindleft(x1, -51).should.equal(2);
+      closestindleft(x1, -50).should.equal(3);
+      closestindleft(x1, -49).should.equal(3);
+      closestindleft(x1, 0).should.equal(4);
+      closestindleft(x1, 0.099999).should.equal(4);
+      closestindleft(x1, 0.1).should.equal(5);
+      closestindleft(x1, 0.11).should.equal(5);
+      closestindleft(x1, 499).should.equal(7);
+      closestindleft(x1, 501).should.equal(8);
+      closestindleft(x1, 2000).should.equal(9);
+   });
+
+   it ('tests for method "closestindright".', function() {
+      const x1 = vector([-200, -100, -50, -0.5, 0.1, 1.5, 20, 500, 1000]);
+
+      closestindright(x1, -1200).should.equal(1);
+      closestindright(x1, -120).should.equal(2);
+      closestindright(x1, -101).should.equal(2);
+      closestindright(x1, -99).should.equal(3);
+      closestindright(x1, -51).should.equal(3);
+      closestindright(x1, -50).should.equal(3);
+      closestindright(x1, -49).should.equal(4);
+      closestindright(x1, 0).should.equal(5);
+      closestindright(x1, 0.099999).should.equal(5);
+      closestindright(x1, 0.1).should.equal(5);
+      closestindright(x1, 0.11).should.equal(6);
+      closestindright(x1, 499).should.equal(8);
+      closestindright(x1, 501).should.equal(9);
+      closestindright(x1, 2000).should.equal(9);
+   });
+
 
    it ('tests for method "closestind".', function() {
       const x1 = vector([-200, -0.5, -0.45, 1.2, -5.1, 4.2, -10.0]);
