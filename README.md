@@ -8,6 +8,11 @@ Version **1.x.x** introduces many breaking changes as the library was almost ful
 
 The documentation below has been also re-written to match the new version.
 
+### v. 1.4.0
+released 24/09/2024
+
+* added methods for incomplete beta function, CDF anf quantile function for F-distribution, and corresponding helper methods.
+
 ### v. 1.3.x
 
 * contain small bug fixes.
