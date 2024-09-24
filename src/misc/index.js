@@ -25,6 +25,50 @@ export function closestind(x, a) {
    return x.indexOf(c) + 1;
 }
 
+/**
+ * Finds index of value in x which is closest to the value a from the left.
+ *
+ * @param {Array|Vector} x - a vector with values.
+ * @param {number} a - a value
+ *
+ * @returns {number} the index value (starts from 1).
+ *
+ */
+export function closestindleft(x, a) {
+
+   if (isvector(x)) {
+      return closestindleft(x.v, a);
+   }
+
+   if (x[0] > a) return 1;
+   for (let i = 1; i < x.length; i++) {
+      if (x[i] > a) return i;
+   }
+   return x.length;
+}
+
+/**
+ * Finds index of value in x which is closest to the value a from the right.
+ *
+ * @param {Array|Vector} x - a vector with values.
+ * @param {number} a - a value
+ *
+ * @returns {number} the index value (starts from 1).
+ *
+ */
+export function closestindright(x, a) {
+
+   if (isvector(x)) {
+      return closestindright(x.v, a);
+   }
+
+   if (x[x.length - 1] < a) return x.length;
+   for (let i = (x.length - 1); i >= 0; i--) {
+      if (x[i] < a) return i + 2;
+   }
+   return 1;
+}
+
 
 /**
  * Computes numeric integral for function "f" with limits (a, b).
