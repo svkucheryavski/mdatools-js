@@ -5,7 +5,7 @@ import { isvector, vector, Vector } from '../src/arrays/index.js';
 
 // import of functions to test
 import {igamma, gamma, beta, runif, dunif, punif, rnorm, dnorm, pnorm, qnorm,
-   dt, pt, qt, df, pf, pchisq, qchisq} from '../src/distributions/index.js';
+   dt, pt, qt, df, pf, qf, pchisq, qchisq} from '../src/distributions/index.js';
 
 const should = chai.should();
 const expect = chai.expect;
@@ -225,7 +225,7 @@ describe('Tests for theoretical distribution functions.', function () {
    });
 
    it('tests for method "rnorm".', function () {
-      const n = 1000000;
+      const n = 10000000;
 
       const r1 = rnorm(n);
       expect(r1.v).to.have.lengthOf(n)
@@ -300,6 +300,16 @@ describe('Tests for theoretical distribution functions.', function () {
       p3.v[n-1].should.be.closeTo(0.9999884, 0.001);
       p3.v[n/2].should.be.closeTo(0.5, 0.001);
 
+      // special cases
+      const p4 = pt(2.9703, 200)
+      p4.should.be.closeTo(0.9983, 0.0001);
+
+      const p5 = pt(1.97, 200)
+      p5.should.be.closeTo(0.9748907, 0.0001);
+
+      const p6 = pt(3, 500)
+      p6.should.be.closeTo(0.9985828, 0.0001);
+
    });
 
    it ('tests for method "qt".', function () {
@@ -358,9 +368,9 @@ describe('Tests for theoretical distribution functions.', function () {
       // errors
       expect(() => qt(-0.0001, 1)).to.throw(Error, 'Parameter "p" must be between 0 and 1.');
       expect(() => qt( 1.0001, 1)).to.throw(Error, 'Parameter "p" must be between 0 and 1.');
-      expect(() => qt(0.2)).to.throw(Error, 'Parameter "dof" (degrees of freedom) must be an integer number >= 1.');
-      expect(() => qt(0.2, -1)).to.throw(Error, 'Parameter "dof" (degrees of freedom) must be an integer number >= 1.');
-      expect(() => qt(0.2, 0.5)).to.throw(Error, 'Parameter "dof" (degrees of freedom) must be an integer number >= 1.');
+      expect(() => qt(0.2)).to.throw(Error, 'Parameter "df" (degrees of freedom) must be an integer number >= 1.');
+      expect(() => qt(0.2, -1)).to.throw(Error, 'Parameter "df" (degrees of freedom) must be an integer number >= 1.');
+      expect(() => qt(0.2, 0.5)).to.throw(Error, 'Parameter "df" (degrees of freedom) must be an integer number >= 1.');
 
       // long vectors
       p = Vector.seq(0.0001, 0.9999, 0.9998/(n - 1));
@@ -368,6 +378,10 @@ describe('Tests for theoretical distribution functions.', function () {
       expect(q.v).to.have.lengthOf(n);
       q.v[0].should.be.equal(qt(0.0001, 10));
       q.v[n - 1].should.be.equal(qt(0.9998999999999999, 10));
+
+      // special case
+      const t4 = qt(0.9983, 200);
+      t4.should.be.closeTo(2.97, 0.01);
    });
 
    it ('tests for method "df".', function () {
@@ -411,6 +425,10 @@ describe('Tests for theoretical distribution functions.', function () {
       p2.v[0].should.be.closeTo(0, 0.001);
       p2.v[n].should.be.closeTo(0.9976484, 0.001);
       p2.v[n/2].should.be.closeTo(0.9773861, 0.001);
+
+      // special cases
+      const p31 = pf(2.97, 1, 200);
+      p31.should.be.closeTo(0.9136327, 0.0001);
 
    });
 
@@ -576,6 +594,111 @@ describe('Tests for theoretical distribution functions.', function () {
       q4.v[0].should.be.closeTo(0.55, 0.02);
       q4.v[1].should.be.closeTo(1.15, 0.02);
    });
+
+   it ('tests for method "qf".', function () {
+      // all outcomes are compared with similar outcomes from R
+
+      // single value
+      let p ;
+
+      p = 0.001
+      qf(p,   0,   1).should.be.NaN;
+      qf(p,   1,   0).should.be.NaN;
+      qf(p,   1,   1).should.be.closeTo(0.000003, 0.000001);
+      qf(p,   2,   3).should.be.closeTo(0.001, 0.0001);
+      qf(p,   5,  10).should.be.closeTo(0.0371, 0.0001);
+      qf(p,  10,  20).should.be.closeTo(0.128, 0.001);
+      qf(p,  20,  30).should.be.closeTo(0.250, 0.01);
+      qf(p, 100, 200).should.be.closeTo(0.572, 0.01);
+      qf(p,   1, 200).should.be.closeTo(0.0000016, 0.0000001);
+      qf(p, 250, 500).should.be.closeTo(0.7065, 0.0001);
+
+      p = 0.01
+      qf(p,   0,   1).should.be.NaN;
+      qf(p,   1,   0).should.be.NaN;
+      qf(p,   1,   1).should.be.closeTo(0.000247, 0.000001);
+      qf(p,   2,   3).should.be.closeTo(0.010084, 0.000001);
+      qf(p,   5,  10).should.be.closeTo(0.099492, 0.000001);
+      qf(p,  10,  20).should.be.closeTo(0.2269944, 0.000001);
+      qf(p,  20,  30).should.be.closeTo(0.3599084, 0.000001);
+      qf(p, 100, 200).should.be.closeTo(0.6585758, 0.000001);
+      qf(p,   1, 200).should.be.closeTo(0.000157, 0.000001);
+      qf(p, 250, 500).should.be.closeTo(0.7707644, 0.000001);
+
+      p = 0.05
+      qf(p,   1,   1).should.be.closeTo(0.006194, 0.000001);
+      qf(p,   2,   3).should.be.closeTo(0.052180, 0.000001);
+      qf(p,   5,  10).should.be.closeTo(0.211190, 0.000001);
+      qf(p,  10,  20).should.be.closeTo(0.3604881, 0.000001);
+      qf(p,  20,  30).should.be.closeTo(0.4904158, 0.000001);
+      qf(p, 100, 200).should.be.closeTo(0.745352, 0.000001);
+      qf(p,   1, 200).should.be.closeTo(0.003942, 0.000001);
+      qf(p, 250, 500).should.be.closeTo(0.8322605, 0.000001);
+
+      p = 0.10
+      qf(p,   1,   1).should.be.closeTo(0.02508563, 0.000001);
+      qf(p,   2,   3).should.be.closeTo(0.109149, 0.000001);
+      qf(p,   5,  10).should.be.closeTo(0.3032691, 0.000001);
+      qf(p,  10,  20).should.be.closeTo(0.4543918, 0.000001);
+      qf(p,  20,  30).should.be.closeTo(0.5753002, 0.000001);
+      qf(p, 100, 200).should.be.closeTo(0.7954999, 0.000001);
+      qf(p,   1, 200).should.be.closeTo(0.01583093, 0.000001);
+      qf(p, 250, 500).should.be.closeTo(0.8667542, 0.000001);
+
+      p = 0.90
+      qf(p,   1,   1).should.be.closeTo(39.86346, 0.0001);
+      qf(p,   2,   3).should.be.closeTo(5.462383, 0.00001);
+      qf(p,   5,  10).should.be.closeTo(2.521641, 0.00001);
+      qf(p,  10,  20).should.be.closeTo(1.936738, 0.00001);
+      qf(p,  20,  30).should.be.closeTo(1.667309, 0.00001);
+      qf(p, 100, 200).should.be.closeTo(1.241822, 0.00001);
+      qf(p,   1, 200).should.be.closeTo(2.730783, 0.00001);
+      qf(p, 250, 500).should.be.closeTo(1.148128, 0.00001);
+
+
+      p = 0.95
+      qf(p,   1,   1).should.be.closeTo(161.4476, 0.0001);
+      qf(p,   2,   3).should.be.closeTo(9.552094, 0.00001);
+      qf(p,   5,  10).should.be.closeTo(3.325835, 0.00001);
+      qf(p,  10,  20).should.be.closeTo(2.347878, 0.00001);
+      qf(p,  20,  30).should.be.closeTo(1.931653, 0.00001);
+      qf(p, 100, 200).should.be.closeTo(1.320637, 0.00001);
+      qf(p,   1, 200).should.be.closeTo(3.888375, 0.00001);
+      qf(p, 250, 500).should.be.closeTo(1.194013, 0.00001);
+
+      p = 0.99
+      qf(p,   1,   1).should.be.closeTo(4052.181, 0.01);
+      qf(p,   2,   3).should.be.closeTo(30.81652, 0.0001);
+      qf(p,   5,  10).should.be.closeTo(5.636326, 0.00001);
+      qf(p,  10,  20).should.be.closeTo(3.368186, 0.00001);
+      qf(p,  20,  30).should.be.closeTo(2.548659, 0.00001);
+      qf(p, 100, 200).should.be.closeTo(1.481056, 0.00001);
+      qf(p,   1, 200).should.be.closeTo(6.763299, 0.00001);
+      qf(p, 250, 500).should.be.closeTo(1.284611, 0.00001);
+
+      p = 0.999
+      qf(p,   1,   1).should.be.closeTo(405284.1, 20);
+      qf(p,   2,   3).should.be.closeTo(148.5, 0.1);
+      qf(p,   5,  10).should.be.closeTo(10.48072, 0.01);
+      qf(p,  10,  20).should.be.closeTo(5.075246, 0.00001);
+      qf(p,  20,  30).should.be.closeTo(3.492784, 0.00001);
+      qf(p, 100, 200).should.be.closeTo(1.68243, 0.00001);
+      qf(p,   1, 200).should.be.closeTo(11.1545, 0.00001);
+      qf(p, 250, 500).should.be.closeTo(1.393628, 0.00001);
+
+      // vector with values
+      const p3 = vector([0.01, 0.99]);
+      const q3 = qf(p3, 5, 10)
+      q3.v[0].should.be.closeTo(0.09949242, 0.000001);
+      q3.v[1].should.be.closeTo(5.636326, 0.00001);
+
+      // array with values
+      const p4 = [0.01, 0.99];
+      const q4 = qf(p4, 5, 10)
+      q4.v[0].should.be.closeTo(0.09949242, 0.000001);
+      q4.v[1].should.be.closeTo(5.636326, 0.00001);
+   });
+
 
 });
 
