@@ -21,8 +21,13 @@ export function closestind(x, a) {
       return closestind(x.v, a);
    }
 
-   const c = x.reduce((prev, curr) => Math.abs(curr - a) < Math.abs(prev - a) ? curr : prev);
-   return x.indexOf(c) + 1;
+   let bestInd = 0;
+   let bestDist = Math.abs(x[0] - a);
+   for (let i = 1; i < x.length; i++) {
+      const d = Math.abs(x[i] - a);
+      if (d < bestDist) { bestDist = d; bestInd = i; }
+   }
+   return bestInd + 1;
 }
 
 /**
@@ -79,11 +84,12 @@ export function closestindright(x, a) {
  * @param {number} [acc=0.000001] - absolute accuracy.
  * @param {number} [eps=0.00001] - relative accuracy.
  * @param {number[]} oldfs - vector of values needed for recursion.
+ * @param {number} [depth=0] - current recursion depth (internal).
  *
  * @returns {number} result of integration.
  *
  */
-export function integrate(f, a, b, acc, eps, oldfs) {
+export function integrate(f, a, b, acc, eps, oldfs, depth) {
 
    if (acc === undefined) {
       acc = 0.000001;
@@ -91,6 +97,10 @@ export function integrate(f, a, b, acc, eps, oldfs) {
 
    if (eps === undefined) {
       eps = 0.00001
+   }
+
+   if (depth === undefined) {
+      depth = 0;
    }
 
    if (typeof(a) !== "number" || typeof(b) !== "number") {
@@ -147,15 +157,15 @@ export function integrate(f, a, b, acc, eps, oldfs) {
    let tol = acc + eps * Math.abs(q4);
    let err = Math.abs((q4 - q2)/3);
 
-   if (err < tol) return q4;
+   if (err < tol || depth >= 200) return q4;
 
    acc = acc / Math.sqrt(2.);
    const mid = (a + b) / 2;
    const left = fs.filter((v, i) => i < n/2);
    const right = fs.filter((v, i) => i >= n/2);
 
-   const ql = integrate(f, a, mid, eps, acc, left);
-   const qr = integrate(f, mid, b, eps, acc, right);
+   const ql = integrate(f, a, mid, eps, acc, left, depth + 1);
+   const qr = integrate(f, mid, b, eps, acc, right, depth + 1);
 
    return ql + qr;
 }

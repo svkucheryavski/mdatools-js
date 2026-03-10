@@ -16,7 +16,7 @@
 
 
 // import dependencies
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 import { crossprod, tcrossprod, reshape, isvector, vector, Vector,
    ismatrix, matrix, Matrix, Index } from '../src/arrays/index.js';

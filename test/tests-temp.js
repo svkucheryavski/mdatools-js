@@ -1,7 +1,7 @@
 
 
 // import dependencies
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 import { quantile } from 'mdatools/stat';
 import { crossprod, tcrossprod, reshape, isvector, vector, Vector,

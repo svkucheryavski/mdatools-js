@@ -3,7 +3,7 @@
 /****************************************************************/
 
 // import dependencies
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 import { factor, cbind, vector, matrix, tcrossprod, Vector, Matrix } from '../src/arrays/index.js';
 import { variance, median, mean, sd, sum } from '../src/stat/index.js';
@@ -803,6 +803,27 @@ describe('Tests for lm (MLR) methods.', function () {
 
       const yp2 = lmpredict(m2, X2)
       yp2.should.be.eql(m2.fitted);
+   });
+
+   it ('tests for bug fixes in models module.', function () {
+
+      // bug 1.10: plsfit/pcrfit default ncomp used undefined ncols/nrows
+      const X = matrix([1,2,3,4,5,6,7,8,9,10,11,12], 4, 3);
+      const Y = matrix([1,2,3,4], 4, 1);
+
+      const m1 = plsfit(X, Y);
+      m1.ncomp.should.equal(3);
+
+      const m2 = pcrfit(X, Y);
+      m2.ncomp.should.equal(3);
+
+      // bug 1.12: simcapredict used factor() instead of isfactor() for validation
+      // passing a non-factor as cRef should throw with correct error message
+      const pcaModel = pcafit(X);
+      const simcaParams = getsimcaparams('test', 0.05, 'classic');
+      expect(() => simcapredict(
+         pcaModel, simcaParams, X, "notafactor"
+      )).to.throw(Error, 'simcapredict: parameter "cRef" must be instance of Factor class.');
    });
 
 });

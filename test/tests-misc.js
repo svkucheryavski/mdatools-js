@@ -3,7 +3,7 @@
 /****************************************************************/
 
 // import dependencies
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 import { vector } from '../src/arrays/index.js';
 import { quantile } from '../src/stat/index.js';

@@ -1,5 +1,5 @@
 // import dependencies
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {sum, sd, mean, min, max} from '../src/stat/index.js';
 import { isvector, vector, Vector } from '../src/arrays/index.js';
 
@@ -699,6 +699,28 @@ describe('Tests for theoretical distribution functions.', function () {
       q4.v[1].should.be.closeTo(5.636326, 0.00001);
    });
 
+   it ('tests for bug fixes in distributions.', function () {
+
+      // bug 1.3: pt() was using undefined "x" instead of "t" for large df
+      pt(2, 200000).should.be.closeTo(0.97725, 0.0001);
+      pt(0, 200000).should.be.closeTo(0.5, 0.0001);
+
+      // bug 1.5: qf() and qchisq() were using "Inf" instead of "Infinity"
+      qf(1, 5, 10).should.equal(Infinity);
+      qf(0, 5, 10).should.equal(0);
+      qchisq(1, 5).should.equal(Infinity);
+      qchisq(0, 5).should.equal(0);
+
+      // bug 1.6: df() was rejecting valid parameter combinations (d1 > d2)
+      df(1.5, 10, 5).should.be.a('number');
+      df(1.5, 10, 5).should.be.above(0);
+      df(1.5, 5, 10).should.be.a('number');
+      df(1.5, 5, 10).should.be.above(0);
+
+      // bug 1.6: df() should reject d1=0 or d2=0
+      expect(() => df(1, 0, 5)).to.throw(Error);
+      expect(() => df(1, 5, 0)).to.throw(Error);
+   });
 
 });
 

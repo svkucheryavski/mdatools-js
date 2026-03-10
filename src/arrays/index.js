@@ -328,7 +328,7 @@ export class Matrix {
 
          if (this.islowertriangular()) {
             // it means diagonal
-            return Matrix.diagm(this.diag().apply(v => Math.abs(v) > Number.EPSILON ? 1 / v : x));
+            return Matrix.diagm(this.diag().apply(v => Math.abs(v) > Number.EPSILON ? 1 / v : 0));
          }
 
          // prepare matrices - we will transpose X to work with columns instead of rows
@@ -805,6 +805,11 @@ export class Matrix {
     */
    subset(rind, cind) {
 
+      if ((rind === null || rind === undefined) && (cind === null || cind === undefined)) {
+         // no rows or columns to subset, return a copy of original matrix
+         return new Matrix(this.v.slice(), this.nrows, this.ncols);
+      }
+
       if (typeof(rind) === 'number') {
          rind = index([rind]);
       }
@@ -895,7 +900,8 @@ export class Matrix {
       }
 
       const nvar = this.ncols;
-      const ndigits = Math.round(Math.abs(Math.log10(max(this.v)))) + ndec + 3;
+      const m = Math.max(Math.abs(max(this.v)), 1);
+      const ndigits = Math.round(Math.abs(Math.log10(m))) + ndec + 3;
 
       let str = "";
       const Xt = this.t();
@@ -1768,7 +1774,7 @@ export class Vector {
  *
  */
 export function isindex(x) {
-   return x.constructor === Index;
+   return x && x.constructor === Index;
 }
 
 
@@ -2073,7 +2079,7 @@ export class Index {
  *
  */
 export function isfactor(x) {
-   return x.constructor === Factor;
+   return x && x.constructor === Factor;
 }
 
 /**
@@ -2108,7 +2114,7 @@ export function factor(x) {
 /** Class representing a factor — vector with categorical variables */
 export class Factor {
 
-   static valuesConstructor = Uint8Array;
+   static valuesConstructor = Uint16Array;
 
    /**
     * Constructor for a Factor object.
@@ -2126,8 +2132,8 @@ export class Factor {
          throw Error('Factor: wrong class for parameter "values".')
       }
 
-      if (values.nrows < 1 || values.ncols < 1) {
-         throw Error('Factor: parameter "values" must have at least one row and one column.')
+      if (values.length < 1) {
+         throw Error('Factor: parameter "values" must have at least one element.')
       }
 
       if (!labels || !Array.isArray(labels)) {

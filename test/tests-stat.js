@@ -3,14 +3,14 @@
 /****************************************************************/
 
 // import dependencies
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 import { isvector, vector, Vector } from '../src/arrays/index.js';
 
 // import methods to test
 import {
    norm2, quantile, count, mids, split, diff, ppoints, cumsum,
-   cor, cov, skewness, kurtosis, rank, mean, sd, sum, prod, min, minind, max, maxind,
+   cor, cov, skewness, kurtosis, rank, mean, sd, variance, sum, prod, min, minind, max, maxind,
    median, iqr
 } from '../src/stat/index.js';
 
@@ -239,9 +239,12 @@ describe('Tests of stat methods.', function () {
 
       //  i:       1   2   3   4   5   6   7
       // sorted:  -2  -2  -2   1   3  10  11
-      // rank:     1   5   1   4   6   7   1
+      // average rank: 2   5   2   4   6   7   2  (ties at -2 get average of positions 1,2,3 = 2)
       const x2 = vector([-2,  3, -2, 1, 10, 11, -2]);
-      expect(rank(x2)).to.eql(vector([1, 5, 1, 4, 6, 7, 1]));
+      expect(rank(x2)).to.eql(vector([2, 5, 2, 4, 6, 7, 2]));
+
+      // min rank (old behavior)
+      expect(rank(x2, "min")).to.eql(vector([1, 5, 1, 4, 6, 7, 1]));
    });
 
    it ('tests for methods "minind" and "min"', function () {
@@ -376,6 +379,47 @@ describe('Tests of stat methods.', function () {
       cov(vector([1, 2, 3]), vector([10, 20, 30])).should.equal(10);
       cov(vector([1, 2, 3]), vector([30, 20, 10])).should.equal(-10);
       cov(vector([1, 2, 1, 2]), vector([10, 10, 20, 20])).should.equal(0);
+   });
+
+   it ('tests for method "split" with Vector input.', function () {
+      // bug 1.1: split() was missing return for Vector input
+      const s = split(vector([1, 2, 3, 4, 5]), 2);
+      isvector(s).should.be.true;
+      s.v.should.have.lengthOf(3);
+      s.v[0].should.equal(1);
+      s.v[2].should.equal(5);
+   });
+
+   it ('tests for method "variance" with biased parameter.', function () {
+      // bug 1.2: variance() was dropping biased parameter for Vector input
+      const x = vector([1, 2, 3, 4, 5]);
+      const vUnbiased = variance(x);
+      const vBiased = variance(x, true);
+      const vBiasedArr = variance([1, 2, 3, 4, 5], true);
+
+      vUnbiased.should.be.closeTo(2.5, 0.00001);
+      vBiased.should.be.closeTo(2.0, 0.00001);
+      vBiased.should.equal(vBiasedArr);
+   });
+
+   it ('tests for method "count" not mutating bins.', function () {
+      // bug 1.16: count() was mutating the input bins array
+      const bins = [0, 1, 2, 3];
+      const origBins = [...bins];
+      count([0.5, 1.5, 2.5], bins);
+      expect(bins).to.eql(origBins);
+
+      // also ensure values at the boundary are counted
+      const c = count([0, 1, 2, 3], bins);
+      c.v[0].should.equal(1); // 0 falls in [0, 1)
+      c.v[1].should.equal(1); // 1 falls in [1, 2)
+      c.v[2].should.equal(2); // 2 and 3 fall in [2, 3*1.0001)
+   });
+
+   it ('tests for method "cor" with Spearman.', function () {
+      // bug 2.1: rank() with average ties gives correct Spearman correlation
+      cor(vector([1, 2, 3, 4, 5]), vector([5, 4, 3, 2, 1]), "spearman").should.be.closeTo(-1, 0.00001);
+      cor(vector([1, 2, 3, 4, 5]), vector([1, 2, 3, 4, 5]), "spearman").should.be.closeTo(1, 0.00001);
    });
 
    it ('tests for method "cor".', function() {

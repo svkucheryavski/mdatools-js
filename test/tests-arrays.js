@@ -2,7 +2,7 @@
 /*  Tests for array methods (Index/Vector/Matrix classes)       */
 /****************************************************************/
 
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 
 // import classes and related methods
@@ -1523,6 +1523,38 @@ describe('Tests of constructors.', function () {
       const x3 = ['red', 'red', 'red', 'red', 'red', 'red', 'red', 'red', 'red'];
       const f3 = factor(x3);
       testFactorStructure(f3, 9, [0, 0, 0, 0, 0, 0, 0, 0, 0], ['red']);
+   });
+
+   it ('tests for bug fixes in arrays module.', function () {
+
+      // bug 1.13: Matrix.inv() diagonal case with near-zero element
+      const Md = Matrix.diagm(vector([2, 0, 3]));
+      const Mi = Md.inv();
+      expect(Mi.v[0]).to.equal(0.5);
+      expect(Mi.v[4]).to.equal(0);
+      Mi.v[8].should.be.almost.equal(1/3);
+
+      // bug 1.14: Matrix.subset() with no indices returns a copy
+      const M = matrix([1, 2, 3, 4, 5, 6], 2, 3);
+      const Mc = M.subset();
+      expect(Mc.nrows).to.equal(2);
+      expect(Mc.ncols).to.equal(3);
+      expect(Mc.v[0]).to.equal(1);
+      expect(Mc.v[5]).to.equal(6);
+
+      // bug 1.15: isindex() and isfactor() should not crash on null/undefined
+      expect(!isindex(null)).to.be.true;
+      expect(!isindex(undefined)).to.be.true;
+      expect(!isfactor(null)).to.be.true;
+      expect(!isfactor(undefined)).to.be.true;
+
+      // bug 3.4: Factor constructor should check length, not nrows/ncols
+      expect(() => factor([], ['a'])).to.throw(Error);
+
+      // bug 3.5: Matrix.toString() should not crash on all-zero matrices
+      const Mz = Matrix.zeros(2, 2);
+      expect(Mz.toString()).to.be.a('string');
+      expect(Mz.toString().length).to.be.above(0);
    });
 
 });

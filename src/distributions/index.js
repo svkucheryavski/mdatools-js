@@ -327,7 +327,7 @@ export function pt(t, df) {
    if (df === 3) return (0.5 + (t / Math.sqrt(3) / (1 + (t * t) / 3) + Math.atan(t / Math.sqrt(3))) / Math.PI);
    if (df === 4) return (0.5 + ((t / Math.sqrt(1 + t * t * 0.25)) * (1 - (t * t) / (12 * (1 + t * t * 0.25))) * 3) / 8);
 
-   if (!Number.isFinite(df) || df > 1e5) return pnorm(x, 0.0, 1.0);
+   if (!Number.isFinite(df) || df > 1e5) return pnorm(t, 0.0, 1.0);
 
    const dft = 1 + (t / df) * t;
    const val = (df > t * t) ? (1 - pbeta(t * t / (df + t * t), 0.5, df / 2.)) : pbeta(1. / dft, df / 2., 0.5);
@@ -425,12 +425,8 @@ export function qt(p, df) {
  *
  */
 export function df(F, d1, d2) {
-  if (F < 0 || d1 < 0 || d2 < 0) {
+  if (F < 0 || d1 <= 0 || d2 <= 0) {
     throw new Error("All 3 parameters must be positive.");
-  }
-
-  if (d2 <= d1) {
-    throw new Error('Parameter "d1" must be larger "d2".');
   }
 
   if (isvector(F)) {
@@ -470,8 +466,6 @@ export function pf(F, df1, df2) {
    }
 
    if (F <= 0) return 0;
-
-   if (df1 <= 0. || df2 <= 0.) ML_ERR_return_NAN;
 
    if (df2 == Number.POSITIVE_INFINITY) {
 
@@ -515,7 +509,7 @@ export function pf(F, df1, df2) {
 export function qf(p, df1, df2) {
 
    if (p === 0) return 0;
-   if (p === 1) return Inf;
+   if (p === 1) return Infinity;
    if (df1 <= 0) return NaN;
    if (df2 <= 0) return NaN;
 
@@ -536,7 +530,7 @@ export function qf(p, df1, df2) {
   // compute quantile using sequential splits of quantile range
    function F(x, df1, df2) {
      if (x === 0) return 0;
-     if (x === 1) return Inf;
+     if (x === 1) return Infinity;
      if (df1 === 0) return NaN;
      if (df2 === 0) return NaN;
 
@@ -639,7 +633,7 @@ export function qchisq(p, df) {
    // and inverse solution
    function F2(x) {
       if (x === 0) return 0;
-      if (x === 1) return Inf;
+      if (x === 1) return Infinity;
       if (df === 0) return 0;
       const l = qnorm(x, mu, sigma);
       const o = Math.pow(Math.sqrt(36 * l * l - 30 * l + 13) / 4 + (3 * l - 3 / 2) / 2 + 1 / 8, 1 / 3);
@@ -649,7 +643,7 @@ export function qchisq(p, df) {
    // compute quantile using sequential splits of quantile range
    function F1(x) {
       if (x === 0) return 0;
-      if (x === 1) return Inf;
+      if (x === 1) return Infinity;
       if (df === 0) return 0;
 
       const pfun = (v) => pchisq(v, df);
@@ -1313,7 +1307,7 @@ function betaln(a0, b0) {
             a += -1.;
             w *= a / (a / b + 1.);
          }
-         return log(w) - n * log(b) + (gamln(a) + algdiv(a, b));
+         return Math.log(w) - n * Math.log(b) + (gamln(a) + algdiv(a, b));
       }
 
     } else {
@@ -1514,7 +1508,7 @@ function psi(x) {
 
    aug = 0.;
    if (x < 0.5) {
-   	if (fabs(x) <= xsmall) {
+   	if (Math.abs(x) <= xsmall) {
 	      if (x == 0.) return 0;
          aug = -1. / x;
 	   } else {
@@ -1549,9 +1543,9 @@ function psi(x) {
 	      m += m;
 	      if (m == n) {
       		if (z == 0.) return 0;
-   		   aug = sgn * (cos(z) / sin(z) * 4.);
+   		   aug = sgn * (Math.cos(z) / Math.sin(z) * 4.);
 	      } else {
-		      aug = sgn * (sin(z) / cos(z) * 4.);
+		      aug = sgn * (Math.sin(z) / Math.cos(z) * 4.);
 	      }
 	   }
 
@@ -1586,7 +1580,7 @@ function psi(x) {
 	   aug = upper / (den + q2[3]) - 0.5 / x + aug;
    }
 
-   return aug + log(x);
+   return aug + Math.log(x);
 }
 
 function fsper(a, b, x, eps) {
@@ -1595,7 +1589,7 @@ function fsper(a, b, x, eps) {
 
    if (a > eps * 0.001) {
 	   t = a * Math.log(x);
-	   if (t < Math.exparg(1)) {
+	   if (t < exparg(1)) {
 	      return 0.;
 	   }
 	   ans = Math.exp(t);

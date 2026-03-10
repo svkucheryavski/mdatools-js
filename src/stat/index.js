@@ -26,7 +26,8 @@ export function median(x) {
  *
  */
 export function iqr(x) {
-   return quantile(x, 0.75) - quantile(x, 0.25);
+   const q = quantile(x, [0.25, 0.75]);
+   return q.v[1] - q.v[0];
 }
 
 
@@ -86,14 +87,15 @@ export function count(x, bins) {
 
    const n = bins.length;
 
-   // add a bit extra to right side of the last bin
-   bins[n - 1] = bins[n - 1] * 1.0001
+   // use a slightly extended upper bound for the last bin to include the max value
+   const lastBinUpper = bins[n - 1] * 1.0001;
 
    // count
    let counts = new Vector.valuesConstructor(n - 1);
    for (let i = 0; i < x.length; i++) {
       for (let j = 0; j < n - 1; j++) {
-         if (x[i] >= bins[j] && x[i] < bins[j + 1]) counts[j] += 1;
+         const upper = (j < n - 2) ? bins[j + 1] : lastBinUpper;
+         if (x[i] >= bins[j] && x[i] < upper) counts[j] += 1;
       }
    }
 
@@ -136,7 +138,7 @@ export function mids(x) {
 export function split(x, n) {
 
    if (isvector(x)) {
-      split(x.v, n);
+      return split(x.v, n);
    }
 
    const rn = range(x);
@@ -343,19 +345,38 @@ export function cov(x, y, biased = false, mx = undefined, my = undefined) {
  * Returns ranks of values in a vector (ranks start from 1, not 0).
  *
  * @param {Array|Vector} x - vector with values.
+ * @param {string} [method="average"] - tie handling: "average" (default) or "min".
  *
  * @returns {Vector} vector with ranks.
  *
  */
-export function rank(x) {
+export function rank(x, method = "average") {
 
    if (isvector(x)) {
-      return rank(x.v);
+      return rank(x.v, method);
    }
 
    const y = [...x].sort((a, b) => a - b);
 
-   return new Vector(x.map(v => y.indexOf(v) + 1));
+   if (method === "min") {
+      return new Vector(x.map(v => y.indexOf(v) + 1));
+   }
+
+   // average rank: for each unique value, compute mean of its positions
+   const avgRanks = new Map();
+   for (let i = 0; i < y.length; i++) {
+      const v = y[i];
+      if (!avgRanks.has(v)) {
+         let sum = 0, count = 0;
+         for (let j = i; j < y.length && y[j] === v; j++) {
+            sum += j + 1;
+            count++;
+         }
+         avgRanks.set(v, sum / count);
+      }
+   }
+
+   return new Vector(x.map(v => avgRanks.get(v)));
 }
 
 
@@ -486,7 +507,7 @@ export function variance(x, biased) {
    }
 
    if (isvector(x)) {
-      return variance(x.v);
+      return variance(x.v, biased);
    }
 
    const m = mean(x);

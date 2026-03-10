@@ -34,7 +34,7 @@ export function getpvalue(pfun, crit, tail, params = []) {
 
 
 /**
- * Makes two-sample t-test for a difference of means assuming population variances equal.
+ * Makes Welch's two-sample t-test for a difference of means (not assuming equal variances).
  *
  * @param {Vector} x - vector with sample 1 values.
  * @param {Vector} y - vector with sample 2 values.
@@ -53,9 +53,10 @@ export function ttest2(x, y, alpha = 0.05, tail = "both") {
 
    const effectExpected = 0;
    const effectObserved = mx - my;
-   const se = Math.sqrt( (variance(x) / nx) + (variance(y) / ny));
+   const v1 = variance(x), v2 = variance(y);
+   const se = Math.sqrt(v1 / nx + v2 / ny);
    const tValue = (effectObserved - effectExpected) / se;
-   const DoF = (nx - 1) + (ny - 1);
+   const DoF = Math.floor((v1 / nx + v2 / ny) ** 2 / ((v1 / nx) ** 2 / (nx - 1) + (v2 / ny) ** 2 / (ny - 1)));
    const errMargin = qt(1 - alpha/2, DoF) * se;
 
    return {

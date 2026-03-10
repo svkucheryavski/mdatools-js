@@ -138,7 +138,7 @@ export function simcapredict(m, params, X, cRef) {
       throw new Error('simcapredict: parameter "X" must be instance of Matrix class.');
    }
 
-   if (cRef && !factor(cRef)) {
+   if (cRef && !isfactor(cRef)) {
       throw new Error('simcapredict: parameter "cRef" must be instance of Factor class.');
    }
 
@@ -225,7 +225,7 @@ export function plsfit(X, Y, ncomp, center, scale) {
    }
 
    if (!ncomp) {
-      ncomp = Math.min(ncols, nrows - 1);
+      ncomp = Math.min(X.ncols, X.nrows - 1);
    }
 
    // center and scale the training set
@@ -297,7 +297,7 @@ export function plspredict(m, X, Y, name) {
    if (Y !== undefined && Y !== null) {
 
       if (!ismatrix(Y)) {
-         throw Error('plcapredict: parameter "Y" must be a matrix with one column or null/undefined.');
+         throw Error('plspredict: parameter "Y" must be a matrix with one column or null/undefined.');
       }
 
       const Yp = prep_scale(Y, m.mY, m.sY);
@@ -360,7 +360,7 @@ export function pcrfit(X, Y, ncomp, center, scale) {
    }
 
    if (!ncomp) {
-      ncomp = Math.min(ncols, nrows - 1);
+      ncomp = Math.min(X.ncols, X.nrows - 1);
    }
 
    // center and scale the training set
@@ -462,7 +462,7 @@ export function pcafit(X, ncomp, center, scale) {
    }
 
    if (!ismatrix(X) || X.ncols < 2 || X.nrows < 2) {
-      throw Error('plsfit: parameter "X" must be a matrix with at least two rows and two columns.');
+      throw Error('pcafit: parameter "X" must be a matrix with at least two rows and two columns.');
    }
 
    if (!ncomp) {
@@ -619,7 +619,7 @@ export function getfulldistance(h, q, h0, q0, Nh, Nq) {
    const fq = Nq / q0;
 
    const f = Vector.zeros(h.length);
-   for (let r = 0; r <= f.length; r++) {
+   for (let r = 0; r < f.length; r++) {
          f.v[r] = h.v[r] * fh + q.v[r] * fq;
    }
 

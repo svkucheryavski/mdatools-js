@@ -32,8 +32,8 @@
   },
   "homepage": "https://github.com/svkucheryavski/mdatools-js/",
   "devDependencies": {
-    "chai": "^4.x",
-    "chai-almost": "^1.x",
-    "mocha": "^10.x"
+    "chai": "^6.2.2",
+    "chai-almost": "^1.0.1",
+    "mocha": "^11.7.5"
   }
 }

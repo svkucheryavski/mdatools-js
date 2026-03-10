@@ -3,7 +3,7 @@
 //  ******************************************************************/
 
 // import dependencies
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {pnorm} from '../src/distributions/index.js';
 import {vector} from '../src/arrays/index.js';
 
@@ -199,6 +199,21 @@ describe('Tests of methods for hypothesis testing.', function () {
       res.pValue.should.be.closeTo(0.3466, 0.0001);
       res.ci[0].should.be.closeTo(-2.355387, 0.00001);
       res.ci[1].should.be.closeTo(4.355387, 0.00001);
+   });
+
+   it('tests for "ttest2" with unequal variances (Welch DoF).', function () {
+      // bug 2.2: ttest2 used pooled DoF with unpooled SE (inconsistent)
+      // now uses Welch's DoF formula consistently
+      const x = vector([1, 2, 3, 4, 5]);
+      const y = vector([10, 20, 30, 40, 50, 60, 70]);
+
+      const res = ttest2(x, y);
+      res.DoF.should.be.a('number');
+      res.DoF.should.be.above(0);
+
+      // Welch DoF should differ from pooled DoF (nx-1 + ny-1 = 10)
+      // with very unequal variances, Welch DoF < pooled DoF
+      res.DoF.should.be.below(10);
    });
 
 });

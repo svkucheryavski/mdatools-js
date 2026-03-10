@@ -2,7 +2,7 @@
 /*  Tests for array methods (Index/Vector/Matrix classes)       */
 /****************************************************************/
 
-import {default as chai} from 'chai';
+import * as chai from 'chai';
 import {default as chaiAlmost} from 'chai-almost';
 
 // import classes and related methods
