@@ -18,6 +18,10 @@ import { pt, qt } from '../distributions/index.js';
  */
 export function getpvalue(pfun, crit, tail, params = []) {
 
+   if (tail !== "left" && tail !== "right" && tail !== "both") {
+      throw Error('Parameter "tail" must be "left", "right", or "both".');
+   }
+
    if (tail === "left") {
       return(pfun(crit, ...params));
    }
@@ -45,6 +49,10 @@ export function getpvalue(pfun, crit, tail, params = []) {
  *
  */
 export function ttest2(x, y, alpha = 0.05, tail = "both") {
+
+   if (x.length < 2 || y.length < 2) {
+      throw Error("ttest2: both samples must contain at least 2 values.");
+   }
 
    const nx = x.length;
    const mx = mean(x);
@@ -89,6 +97,10 @@ export function ttest(x, mu = 0, alpha = 0.05, tail = "both") {
 
    if (typeof(mu) !== "number") {
       throw Error("Parameter 'mu' should be a number.");
+   }
+
+   if (x.length < 2) {
+      throw Error("ttest: sample must contain at least 2 values.");
    }
 
    const nx = x.length;

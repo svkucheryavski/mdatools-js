@@ -45,6 +45,10 @@ export function closestindleft(x, a) {
       return closestindleft(x.v, a);
    }
 
+   if (x.length === 0) {
+      throw Error("closestindleft: input array can not be empty.");
+   }
+
    if (x[0] > a) return 1;
    for (let i = 1; i < x.length; i++) {
       if (x[i] > a) return i;
@@ -65,6 +69,10 @@ export function closestindright(x, a) {
 
    if (isvector(x)) {
       return closestindright(x.v, a);
+   }
+
+   if (x.length === 0) {
+      throw Error("closestindright: input array can not be empty.");
    }
 
    if (x[x.length - 1] < a) return x.length;
@@ -183,6 +191,10 @@ export function integrate(f, a, b, acc, eps, oldfs, depth) {
  */
 export function getoutliers(x, q1 = undefined, q3 = undefined) {
 
+   if (isvector(x)) {
+      return getoutliers(x.v, q1, q3);
+   }
+
    if (q1 === undefined) q1 = quantile(x, 0.25);
    if (q3 === undefined) q3 = quantile(x, 0.75);
 
@@ -190,7 +202,7 @@ export function getoutliers(x, q1 = undefined, q3 = undefined) {
    const bl = q1 - iqr15
    const bu = q3 + iqr15
 
-   return new Vector(x.v.filter(v => v < bl || v > bu));
+   return new Vector(x.filter(v => v < bl || v > bu));
 }
 
 

@@ -12,7 +12,7 @@ import { crossprod, Vector, Matrix, Index } from '../arrays/index.js';
  * @param {Matrix} X - matrix to decompose.
  * @param {number} [ncomp] - number of components.
  * @param {number} [pa=1] - oversampling factor (ncomp * pa + pb).
- * @param {number} [pb=10] - oversampling increment (ncomp * pa + pb).
+ * @param {number} [pb=5] - oversampling increment (ncomp * pa + pb).
  * @param {number} [its=3] - number of iterations
  *
  * @returns {JSON} JSON with three fields, 's' - vector with singular values,
@@ -253,7 +253,7 @@ export function svd(X, ncomp) {
       }
 
       // check the convergence and return result
-      if ((iU == iL && Math.abs(e[iU - 1]) <= thresh) || (iU < iL)) {
+      if ((iU == iL && Math.abs(e.v[iU - 1]) <= thresh) || (iU < iL)) {
 
          // compute final results:
          // V = bU * P

@@ -1183,7 +1183,7 @@ export class Matrix {
       }
 
       // filter empty rows out
-      rows = rows.filter(v => v.trim().length > 1);
+      rows = rows.filter(v => v.trim().length > 0);
 
       // check if first column contains labels
       let labels = [];
@@ -2190,8 +2190,8 @@ function _seq(start, end, by, classRef) {
    // by default increment is unit
    if (by === undefined) by = (start <= end) ? 1 : -1;
 
-   // compute length of sequence
-   const length = Math.floor((end - start) / by) + 1;
+   // compute length of sequence (add small epsilon before floor to handle floating-point edge cases)
+   const length = Math.floor((end - start) / by + 1e-12) + 1;
 
    if (length < 1) {
       throw Error('seq: wrong combination of parameters.');

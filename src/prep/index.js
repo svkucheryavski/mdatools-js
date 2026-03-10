@@ -88,6 +88,9 @@ export function scale(X, center, scale, full) {
       const xpc = Xp.getcolref(c);
 
       const cv = centerValues.v[c - 1];
+      if (scaleValues.v[c - 1] === 0) {
+         throw Error("scale: column " + c + " has zero variance and can not be scaled.");
+      }
       const sv = 1 / scaleValues.v[c - 1];
 
       for (let r = 0; r < X.nrows; r++) {

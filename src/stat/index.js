@@ -88,7 +88,7 @@ export function count(x, bins) {
    const n = bins.length;
 
    // use a slightly extended upper bound for the last bin to include the max value
-   const lastBinUpper = bins[n - 1] * 1.0001;
+   const lastBinUpper = bins[n - 1] + Math.abs(bins[n - 1]) * 0.0001 + Number.EPSILON;
 
    // count
    let counts = new Vector.valuesConstructor(n - 1);
