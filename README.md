@@ -4,14 +4,15 @@ A simple library with implementation of most common methods for descriptive and 
 
 ## What is new
 
-Version **1.x.x** introduces many breaking changes as the library was almost fully re-written from the scratch. If you used a pre-release version (0.6.1), do not upgrade.
+### v. 1.5.0
+released 10/03/2026
 
-The documentation below has been also re-written to match the new version.
+* code revision with numerous small improvements and bug fixes.
 
 ### v. 1.4.0
 released 24/09/2024
 
-* added methods for incomplete beta function, CDF anf quantile function for F-distribution, and corresponding helper methods.
+* added methods for incomplete beta function, CDF and quantile function for F-distribution, and corresponding helper methods.
 
 ### v. 1.3.x
 
@@ -36,7 +37,7 @@ The values are represented using instances of the following classes:
 * `Vector` is a class for representing sequence of values. The values are stored inside the class instances as `Float64Array`.
 * `Matrix` is a class for representing numerical matrices (2D Arrays). The values are stored inside the class instances as `Float64Array`.
 * `Index` is a class for representing vectors of indices — integer numbers specifying positions of values in vectors and matrices. The values are stored inside the class instances as `Int32Array`.
-* `Factor` is a class for representing categorical variable, which is turned to array of labels for the categories (as strings) and array of indices (as `Uint8Array`).
+* `Factor` is a class for representing categorical variable, which is turned to array of labels for the categories (as strings) and array of indices (as `Uint16Array`).
 
 These classes and their methods can be imported from `'mdatools/arrays'` module.
 
@@ -79,7 +80,7 @@ The simplest way to create an instance of `Vector` class is to use method `vecto
 * `Vector.seq(start, end, by)` — creates a sequence of values, similar to the `seq` method for `Index` class.
 * `Vector.c(a, b, ...)` — concatenates any amount of numbers, arrays or/and vectors into a vector.
 
-The `Vector` object object also has class methods `rep(n)` and `repeach(n)` which work similar to the methods for `Index` objects.
+The `Vector` object also has class methods `rep(n)` and `repeach(n)` which work similar to the methods for `Index` objects.
 
 Similar to indices, several vectors can be concatenated into a single vector by using method `c`:
 
@@ -123,7 +124,7 @@ Factors are vectors representing categorical variables. To create an instance of
 ```javascript
 import {factor} from 'mdatools/arrays';
 
-const f = factor(["red", "green", "red", "green", "red", "green", "blue]);
+const f = factor(["red", "green", "red", "green", "red", "green", "blue"]);
 ```
 
 Factor has following class methods:
@@ -266,7 +267,7 @@ Methods can be imported from `'mdatools/stat'` module.
 * `skewness(x)` — returns skewness of values from vector `x`.
 * `kurtosis(x)` — returns kurtosis of values from vector `x`.
 * `cor(x, y, method='pearson')` — returns a correlation ("pearson" or "spearman") of values from the two vectors.
-* `cov(x, y)` — returns a covariance ("pearson" or "spearman") of values from the two vectors.
+* `cov(x, y)` — returns a covariance of values from the two vectors.
 
 
 ### Methods for computing vectors of statistics
@@ -289,10 +290,10 @@ The following methods implement Probability Density Function (PDF), Cumulative D
 Methods can be imported from `'mdatools/distributions'` module.
 
 
-* `dnorm(x, mu, sigma)`, `pnorm(x, mu, sigma)`, `qnorm(p, mu, sigma)`, `rnorm(x, mu, sigma)` — PDF, CDF, ICDF, and random numbers generator for normal distribution. Default values for the paramaters are `mu=0`, `sigma=1`.
-* `dunif(x, a, b)`, `punif(x, a, b)`, `runif(x, a, b)` — PDF, CDF, and random numbers generator for uniform distribution. Default values for the paramaters are `a=0`, `b=1`.
-* `dt(t, dof)`, `pt(x, mu, sigma)`, `qt(p, mu, sigma)` — PDF, CDF, abd ICDF for Student's t-distribution.
-* `df(F, dof1, dof2)`, `pf(F, dof1, dof2)` — PDF and CDF for F-distribution.
+* `dnorm(x, mu, sigma)`, `pnorm(x, mu, sigma)`, `qnorm(p, mu, sigma)`, `rnorm(n, mu, sigma)` — PDF, CDF, ICDF, and random numbers generator for normal distribution. Default values for the parameters are `mu=0`, `sigma=1`.
+* `dunif(x, a, b)`, `punif(x, a, b)`, `runif(n, a, b)` — PDF, CDF, and random numbers generator for uniform distribution. Default values for the parameters are `a=0`, `b=1`.
+* `dt(t, dof)`, `pt(t, dof)`, `qt(p, dof)` — PDF, CDF, and ICDF for Student's t-distribution.
+* `df(F, dof1, dof2)`, `pf(F, dof1, dof2)`, `qf(p, dof1, dof2)` — PDF, CDF, and ICDF for F-distribution.
 * `pchisq(x, dof)`, `qchisq(p, dof)` — CDF and ICDF function for chi-square distribution.
 
 There are also a set of helper functions used to compute the values for the distributions, which can be useful:
@@ -301,6 +302,7 @@ There are also a set of helper functions used to compute the values for the dist
 * `beta(x, y)` — Beta function (approximation via numerical integration).
 * `gamma(z)` — Gamma function (approximation).
 * `ibeta(x, a, b)` — incomplete Beta function (approximation via numerical integration).
+* `igamma(x, a)` — incomplete Gamma function (approximation via numerical integration).
 
 Because the distribution values are computed using approximated functions they are not very accurate. The accuracy achieved in tests is about 10<sup>-5</sup> comparing to implementation of the corresponding methods in e.g. R.
 
@@ -312,6 +314,7 @@ Methods can be imported from `'mdatools/misc'` module.
 * `integrate(f, a, b)` — computes an integral of function `f` with limits `a`and `b`.
 * `getoutliers(x)` — returns values from `x`, lying beyond the 1.5IQR distance from the first and the third quartiles.
 * `expandgrid(...args)` — generates all possible combinations of values from two or more vectors provided as arguments to the function. Values must be unique.
+* `round(x, n)` — rounds values in vector `x` to `n` decimal places.
 
 ## Hypothesis testing
 
@@ -337,9 +340,9 @@ Functions can be imported from `'mdatools/decomp'` module.
 Methods for computing decomposition of matrices and related methods (e.g. inverse).
 
 * `qr(X)` — computes QR decomposition of `X` using Householder reflections.
-* `lu(X)` — computes LU decomposition of `X` using Givens rotations.
+* `lu(X)` — computes LU decomposition of `X` using Gaussian elimination.
 * `svd(X)` — computes SVD decomposition of `X` using Golub-Reinsch bidiagonalization.
-* `rsvd(X)` — randomized version of SVD which is must faster than the original method.
+* `rsvd(X)` — randomized version of SVD which is much faster than the original method.
 
 ## Preprocessing
 
@@ -367,7 +370,7 @@ Methods for fitting various models. Every method returns a JSON with fitted mode
 * `polyfit(x, y, d)` — polynomial regression model (univariate).
 * `polypredict(m, x)` — computes predictions using polynomial model from `polyfit()`.
 
-### Principal component anaylsis
+### Principal component analysis
 
 * `pcafit(X, ncomp)` — fits PCA model with given number of components.
 * `pcapredict(m, X)` — projects data from `X` to the PCA model and computes main outcomes (scores, distances, variance, etc.).
